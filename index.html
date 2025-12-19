@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Goldmorr Innovation Hub | Enterprise Suite v8.0</title>
+    <title>Goldmorr Innovation Hub | Professional Enterprise Suite</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        :root { --g-navy: #0a192f; --g-cyan: #00cfde; --g-red: #dc2626; }
+        :root { --g-navy: #0a192f; --g-cyan: #00cfde; --g-red: #dc2626; --g-slate: #8892b0; }
         body { background-color: var(--g-navy); color: white; font-family: 'Inter', sans-serif; overflow-x: hidden; }
         .tech-font { font-family: 'Orbitron', sans-serif; }
         .glass { background: rgba(17, 34, 64, 0.85); backdrop-filter: blur(12px); border: 1px solid rgba(0, 207, 222, 0.2); transition: all 0.3s ease; }
@@ -18,242 +18,253 @@
         .btn-toggle { border: 1px solid #1e3a8a; transition: all 0.3s; background: transparent; }
         .btn-toggle.active { background: var(--g-cyan); color: #0a192f; border-color: white; font-weight: bold; }
         
-        /* The WOW Factor: Professional Scanning Bar */
+        /* THE WOW FACTOR: High-Fidelity Scanning Animation */
         .scanning-loader { width: 100%; height: 4px; background: #1e3a8a; position: relative; overflow: hidden; border-radius: 10px; }
         .scanning-loader::after { content: ''; position: absolute; left: -100%; width: 100%; height: 100%; background: var(--g-cyan); animation: scan 1.8s linear; }
         @keyframes scan { 0% { left: -100%; } 100% { left: 100%; } }
         
-        .report-paper { background: white; color: #1a1a1a; padding: 60px; font-family: 'Times New Roman', serif; box-shadow: 0 0 50px rgba(0,0,0,0.5); }
-        .cyan-glow:hover { box-shadow: 0 0 20px rgba(0, 207, 222, 0.3); border-color: var(--g-cyan); }
+        .report-paper { background: white; color: #1a1a1a; padding: 60px; font-family: 'Times New Roman', serif; box-shadow: 0 0 50px rgba(0,0,0,0.5); position: relative; }
+        .report-header { border-bottom: 3px solid #000; padding-bottom: 20px; margin-bottom: 30px; }
+        .cyan-glow:hover { box-shadow: 0 0 25px rgba(0, 207, 222, 0.3); border-color: var(--g-cyan); }
     </style>
 </head>
 <body class="min-h-screen">
 
     <header class="p-6 border-b border-cyan-900/50 flex justify-between items-center glass sticky top-0 z-50">
         <div class="flex items-center gap-4">
-            <div class="w-10 h-10 bg-[var(--g-cyan)] rounded flex items-center justify-center font-bold text-navy-900 shadow-[0_0_15px_rgba(0,207,222,0.5)]">G</div>
+            <div class="w-10 h-10 bg-[var(--g-cyan)] rounded flex items-center justify-center font-bold text-navy-900 shadow-[0_0_20px_rgba(0,207,222,0.6)]">G</div>
             <div class="tech-font text-[12px] tracking-[0.4em] text-[var(--g-cyan)] uppercase">Goldmorr Innovation Hub</div>
         </div>
-        <button onclick="location.reload()" class="text-[10px] border border-gray-700 px-4 py-2 rounded hover:bg-gray-800 transition-all uppercase tracking-widest font-bold">System Reset</button>
+        <button onclick="location.reload()" class="text-[10px] border border-gray-700 px-4 py-2 rounded hover:bg-gray-800 transition-all uppercase tracking-widest font-black">System Reset</button>
     </header>
 
-    <div id="hub-view" class="max-w-6xl mx-auto py-20 px-6">
-        <div class="text-center mb-16">
-            <h1 class="tech-font text-3xl mb-4 tracking-tighter">SELECT OPERATIONS MODULE</h1>
-            <p class="text-[var(--g-cyan)] uppercase text-[10px] tracking-[0.5em]">Proprietary Digital Utility Suite</p>
+    <div id="hub-view" class="max-w-6xl mx-auto py-24 px-6">
+        <div class="text-center mb-20">
+            <h1 class="tech-font text-4xl mb-4 tracking-tighter">SELECT OPERATIONS MODULE</h1>
+            <p class="text-[var(--g-cyan)] uppercase text-xs tracking-[0.6em] font-light">Proprietary Digital Diagnostic Suite</p>
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
-            <div onclick="openApp('member')" class="glass p-12 rounded-[40px] cursor-pointer cyan-glow group">
-                <div class="w-16 h-16 bg-[var(--g-cyan)] rounded-2xl mb-8 flex items-center justify-center text-navy-900 shadow-lg">
-                    <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-16">
+            <div onclick="openApp('member')" class="glass p-14 rounded-[50px] cursor-pointer cyan-glow group">
+                <div class="w-20 h-20 bg-[var(--g-cyan)] rounded-2xl mb-10 flex items-center justify-center text-navy-900 shadow-xl">
+                    <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
                 </div>
-                <h2 class="tech-font text-2xl mb-4 text-white uppercase">Member Contractor Suite</h2>
-                <ul class="text-xs text-slate-400 space-y-2 mb-8 font-light">
+                <h2 class="tech-font text-2xl mb-4 text-white uppercase tracking-tight">Member Contractor Suite</h2>
+                <ul class="text-xs text-slate-400 space-y-3 mb-10 font-light leading-relaxed">
                     <li>• GSPQ Project Quantifier Engine</li>
                     <li>• Dynamic Field Protocol Guard</li>
-                    <li>• Margin Protection & Profit Engine</li>
+                    <li>• Margin Protection & Profitability Guard</li>
                 </ul>
-                <div class="text-[var(--g-cyan)] font-bold tracking-widest text-xs uppercase group-hover:underline">Initialize Module →</div>
+                <div class="text-[var(--g-cyan)] font-bold tracking-[0.2em] text-[10px] uppercase group-hover:underline">Launch Enterprise Module →</div>
             </div>
 
-            <div onclick="openApp('manager')" class="glass p-12 rounded-[40px] cursor-pointer hover:border-white transition-all group">
-                <div class="w-16 h-16 bg-white rounded-2xl mb-8 flex items-center justify-center text-navy-900 shadow-lg">
-                    <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+            <div onclick="openApp('manager')" class="glass p-14 rounded-[50px] cursor-pointer hover:border-white transition-all group">
+                <div class="w-20 h-20 bg-white rounded-2xl mb-10 flex items-center justify-center text-navy-900 shadow-xl">
+                    <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
                 </div>
-                <h2 class="tech-font text-2xl mb-4 text-white uppercase">Facility GoldmorrGuard</h2>
-                <ul class="text-xs text-slate-400 space-y-2 mb-8 font-light">
+                <h2 class="tech-font text-2xl mb-4 text-white uppercase tracking-tight">Facility GoldmorrGuard</h2>
+                <ul class="text-xs text-slate-400 space-y-3 mb-10 font-light leading-relaxed">
                     <li>• Liability & Incident Audit AI</li>
-                    <li>• Environmental Risk Analysis Summary</li>
+                    <li>• Executive Analysis Risk Summary</li>
                     <li>• Certified Project Strategy Generator</li>
                 </ul>
-                <div class="text-white font-bold tracking-widest text-xs uppercase group-hover:underline">Start Assessment →</div>
+                <div class="text-white font-bold tracking-[0.2em] text-[10px] uppercase group-hover:underline">Start Assessment Module →</div>
             </div>
         </div>
     </div>
 
     <div id="member-app" class="hidden max-w-7xl mx-auto py-10 px-6">
-        <div class="flex gap-10 border-b border-gray-800 mb-10">
-            <button onclick="tabMember('m-q')" id="tab-m-q" class="active-tab pb-4 tech-font text-xs tracking-widest uppercase">01. Quantifier & Protocol</button>
-            <button onclick="tabMember('m-p')" id="tab-m-p" class="pb-4 tech-font text-xs tracking-widest uppercase">02. Profitability Guard</button>
+        <div class="flex gap-12 border-b border-gray-800 mb-12">
+            <button onclick="tabMember('m-q')" id="tab-m-q" class="active-tab pb-6 tech-font text-xs tracking-widest uppercase">01. Quantifier & Protocol</button>
+            <button onclick="tabMember('m-p')" id="tab-m-p" class="pb-6 tech-font text-xs tracking-widest uppercase">02. Profitability Guard</button>
         </div>
 
-        <div id="m-q" class="grid grid-cols-1 lg:grid-cols-3 gap-10 items-start">
-            <div class="glass p-8 rounded-3xl h-fit">
-                <h3 class="tech-font text-sm mb-8 text-[var(--g-cyan)] uppercase tracking-widest">Project Parameters</h3>
-                <div class="space-y-6">
+        <div id="m-q" class="grid grid-cols-1 lg:grid-cols-3 gap-12 items-start">
+            <div class="glass p-10 rounded-[40px] h-fit border-l-8 border-[var(--g-cyan)]">
+                <h3 class="tech-font text-sm mb-10 text-[var(--g-cyan)] uppercase tracking-widest">Diagnostic Parameters</h3>
+                <div class="space-y-8">
                     <div>
-                        <label class="block text-[9px] uppercase text-gray-400 mb-2 font-bold tracking-widest">Treatment Area (Sq Ft)</label>
-                        <input type="number" id="sqft" placeholder="Enter Sq Ft" class="w-full p-3 rounded-xl text-xs">
+                        <label class="block text-[10px] uppercase text-gray-500 mb-2 font-black tracking-widest">Treatment Area (Sq Ft)</label>
+                        <input type="number" id="sqft" placeholder="Enter Sq Ft" class="w-full p-4 rounded-2xl outline-none text-sm">
                     </div>
                     <div>
-                        <label class="block text-[9px] uppercase text-gray-400 mb-2 font-bold tracking-widest">Surface Porosity</label>
-                        <select id="porosity" class="w-full p-3 rounded-xl text-xs">
-                            <option value="1">Porous (Drywall/Wood)</option>
-                            <option value="0.75">Semi-Porous (Concrete)</option>
+                        <label class="block text-[10px] uppercase text-gray-500 mb-2 font-black tracking-widest">Structure Environment</label>
+                        <select id="m-struct" class="w-full p-4 rounded-2xl outline-none text-sm">
+                            <option>Residential Standard</option>
+                            <option>Commercial / Healthcare</option>
+                            <option>Industrial / High Clearance</option>
                         </select>
                     </div>
                     <div>
-                        <label class="block text-[9px] uppercase text-gray-400 mb-2 font-bold tracking-widest">Contamination Severity</label>
-                        <select id="severity" class="w-full p-3 rounded-xl text-xs">
-                            <option value="1">Level 1: Surface Staining</option>
+                        <label class="block text-[10px] uppercase text-gray-400 mb-2 font-black tracking-widest">Surface Porosity</label>
+                        <select id="porosity" class="w-full p-4 rounded-2xl outline-none text-sm">
+                            <option value="1">Porous (Drywall/Wood)</option>
+                            <option value="0.75">Semi-Porous (Masonry)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] uppercase text-gray-400 mb-2 font-black tracking-widest">Contamination Severity</label>
+                        <select id="severity" class="w-full p-4 rounded-2xl outline-none text-sm">
+                            <option value="1">Level 1: Localized Staining</option>
                             <option value="1.5">Level 2: Active Growth</option>
                             <option value="2">Level 3: Biological Ingress</option>
                         </select>
                     </div>
-                    <div>
-                        <label class="block text-[9px] uppercase text-gray-400 mb-2 font-bold tracking-widest">Structure Type</label>
-                        <select id="structure" class="w-full p-3 rounded-xl text-xs">
-                            <option value="1">Residential Standard</option>
-                            <option value="1.2">Commercial (High Clearance)</option>
-                            <option value="0.9">Crawlspace/Containment</option>
-                        </select>
-                    </div>
 
-                    <div id="member-processing" class="hidden py-4">
-                        <p class="text-[9px] text-[var(--g-cyan)] tech-font animate-pulse mb-2 uppercase">Analyzing System Volume...</p>
+                    <div id="member-processing" class="hidden py-4 text-center">
+                        <p class="text-[9px] text-[var(--g-cyan)] tech-font animate-pulse mb-3 uppercase tracking-widest">Analyzing System Volumetrics...</p>
                         <div class="scanning-loader"></div>
                     </div>
 
-                    <button onclick="runMemberQuantifier()" id="member-calc-btn" class="w-full bg-[var(--g-cyan)] text-navy-900 font-black py-4 rounded-xl tech-font text-xs tracking-widest shadow-xl">Generate Project Protocols</button>
+                    <button onclick="runMemberQuantifier()" id="member-calc-btn" class="w-full bg-[var(--g-cyan)] text-navy-900 font-black py-5 rounded-2xl tech-font text-xs tracking-widest shadow-2xl hover:brightness-110 transition-all">Generate Project Protocols</button>
                 </div>
             </div>
             
-            <div id="m-results" class="hidden lg:col-span-2 glass p-8 rounded-3xl border-l-8 border-[var(--g-cyan)]">
-                <h3 class="tech-font text-sm mb-8 uppercase tracking-widest text-[var(--g-cyan)]">Goldmorr System Deployment Summary</h3>
-                <div class="grid grid-cols-2 md:grid-cols-3 gap-6 mb-10 text-center">
-                    <div class="bg-navy-900 p-6 rounded-2xl border border-gray-800">
-                        <p class="text-[10px] text-gray-500 uppercase tracking-tighter mb-2 font-bold">GM6000 Concentrate</p>
-                        <p id="res-gm6" class="text-3xl font-black text-[var(--g-cyan)]">0.0 Gal</p>
+            <div id="m-results" class="hidden lg:col-span-2 glass p-12 rounded-[50px] border border-cyan-500/30">
+                <h3 class="tech-font text-sm mb-10 uppercase tracking-widest text-[var(--g-cyan)] font-bold">Goldmorr System Deployment Summary</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12 text-center">
+                    <div class="bg-navy-900/50 p-8 rounded-3xl border border-gray-800">
+                        <p class="text-[10px] text-gray-500 uppercase tracking-widest mb-3 font-bold">GM6000 Dosage</p>
+                        <p id="res-gm6" class="text-4xl font-black text-[var(--g-cyan)]">0.0 Gal</p>
                     </div>
-                    <div class="bg-navy-900 p-6 rounded-2xl border border-gray-800">
-                        <p class="text-[10px] text-gray-500 uppercase tracking-tighter mb-2 font-bold">Air Protocol</p>
+                    <div class="bg-navy-900/50 p-8 rounded-3xl border border-gray-800">
+                        <p class="text-[10px] text-gray-500 uppercase tracking-widest mb-3 font-bold">Air Sterilization</p>
                         <p class="text-xl font-black text-white uppercase tracking-widest">GM2000 Fogging</p>
                     </div>
-                    <div class="bg-navy-900 p-6 rounded-2xl border border-gray-800">
-                        <p class="text-[10px] text-gray-500 uppercase tracking-tighter mb-2 font-bold">Est. Labor Time</p>
-                        <p id="res-labor" class="text-3xl font-black text-white">0.0 Hrs</p>
+                    <div class="bg-navy-900/50 p-8 rounded-3xl border border-gray-800">
+                        <p class="text-[10px] text-gray-500 uppercase tracking-widest mb-3 font-bold">Est. Labor Time</p>
+                        <p id="res-labor" class="text-4xl font-black text-white">0.0 Hrs</p>
                     </div>
                 </div>
-                <div class="p-8 bg-cyan-900/10 border border-cyan-500/30 rounded-2xl">
-                    <p class="text-[10px] font-bold text-[var(--g-cyan)] mb-4 uppercase tracking-[0.2em]">Goldmorr Field Guidance:</p>
-                    <div id="member-analysis-text" class="text-xs text-gray-300 space-y-3 font-light leading-relaxed"></div>
+                <div class="p-10 bg-cyan-900/10 border-2 border-dashed border-cyan-500/20 rounded-[40px]">
+                    <p class="text-[10px] font-black text-[var(--g-cyan)] mb-6 uppercase tracking-[0.3em] border-b border-cyan-500/20 pb-4">Executive Field Guidance:</p>
+                    <div id="member-analysis-text" class="text-sm text-gray-300 space-y-5 font-light leading-relaxed italic"></div>
                 </div>
             </div>
         </div>
 
-        <div id="m-p" class="hidden glass p-10 rounded-3xl">
-            <h3 class="tech-font text-sm mb-10 text-[var(--g-cyan)] uppercase tracking-widest">Margin Protection & Profitability Guard</h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
-                <div class="space-y-6">
-                    <div class="p-6 bg-navy-900 rounded-2xl border border-gray-800 text-sm font-light">
-                        <p class="text-[10px] text-gray-500 mb-4 uppercase font-bold tracking-widest">Variable COGS</p>
-                        <div class="flex justify-between py-2 border-b border-gray-800"><span>GM Product Cost</span><span id="p-prod">$0.00</span></div>
-                        <div class="flex justify-between py-2 border-b border-gray-800"><span>Labor Cost (@$45/hr)</span><span id="p-lab">$0.00</span></div>
-                        <div class="flex justify-between font-bold text-[var(--g-cyan)] pt-4"><span>Total Variable COGS</span><span id="p-total">$0.00</span></div>
+        <div id="m-p" class="hidden glass p-16 rounded-[60px]">
+            <h3 class="tech-font text-lg mb-12 text-[var(--g-cyan)] uppercase tracking-[0.3em]">Margin Protection & Profitability Guard</h3>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16">
+                <div class="space-y-8">
+                    <div class="p-10 bg-navy-900/50 rounded-[40px] border border-gray-800">
+                        <p class="text-[10px] text-gray-500 mb-8 uppercase font-black tracking-widest">Direct Operational Costs (COGS)</p>
+                        <div class="flex justify-between text-base py-4 border-b border-gray-800 font-light"><span>Goldmorr Product Spend</span><span id="p-prod" class="font-bold">$0.00</span></div>
+                        <div class="flex justify-between text-base py-4 border-b border-gray-800 font-light"><span>Technician Labor (@$45/hr)</span><span id="p-lab" class="font-bold">$0.00</span></div>
+                        <div class="flex justify-between font-black text-[var(--g-cyan)] text-lg pt-6"><span>Total Variable Project COGS</span><span id="p-total">$0.00</span></div>
                     </div>
                 </div>
-                <div class="flex flex-col items-center justify-center p-12 bg-green-900/10 border-2 border-dashed border-green-500/30 rounded-[40px] text-center">
-                    <p class="text-xs uppercase font-bold text-green-400 mb-2 tracking-widest">Optimized Retail Project Bid</p>
-                    <p id="p-bid" class="text-6xl font-black text-green-400 mb-4">$0.00</p>
-                    <p class="text-xs text-gray-400 italic font-light tracking-widest">"Guarding 68.9% Member Gross Margin"</p>
+                <div class="flex flex-col items-center justify-center p-16 bg-green-900/10 border-2 border-dashed border-green-500/40 rounded-[60px] text-center shadow-inner">
+                    <p class="text-xs uppercase font-black text-green-400 mb-4 tracking-[0.4em]">Optimized Retail Project Bid</p>
+                    <p id="p-bid" class="text-8xl font-black text-green-400 mb-6">$0.00</p>
+                    <p class="text-sm text-gray-400 font-light tracking-widest">"Guarding 68.9% Certified Member Gross Margin"</p>
                 </div>
             </div>
         </div>
     </div>
 
     <div id="manager-app" class="hidden max-w-7xl mx-auto py-10 px-6">
-        <div class="flex gap-10 border-b border-gray-800 mb-10">
-            <button onclick="tabManager('f-a')" id="tab-f-a" class="active-tab pb-4 tech-font text-xs tracking-widest uppercase">01. Liability Assessment</button>
-            <button onclick="tabManager('f-d')" id="tab-f-d" class="pb-4 tech-font text-xs tracking-widest uppercase">02. Project Strategy Report</button>
+        <div class="flex gap-12 border-b border-gray-800 mb-12">
+            <button onclick="tabManager('f-a')" id="tab-f-a" class="active-tab pb-6 tech-font text-xs tracking-widest uppercase">01. Liability Assessment</button>
+            <button onclick="tabManager('f-d')" id="tab-f-d" class="pb-6 tech-font text-xs tracking-widest uppercase">02. Project Strategy Report</button>
         </div>
 
-        <div id="f-a" class="grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
-            <div class="glass p-10 rounded-3xl border-l-8 border-red-600">
-                <h3 class="tech-font text-sm mb-8 text-red-500 uppercase tracking-widest">Diagnostic Parameters</h3>
-                <div class="space-y-6">
-                    <div class="grid grid-cols-2 gap-4">
+        <div id="f-a" class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+            <div class="glass p-12 rounded-[50px] border-l-8 border-red-600">
+                <h3 class="tech-font text-sm mb-10 text-red-500 uppercase tracking-widest font-bold">Diagnostic Risk Parameters</h3>
+                <div class="space-y-8">
+                    <div class="grid grid-cols-2 gap-6">
                         <div>
-                            <label class="block text-[9px] uppercase text-gray-400 mb-2 font-bold tracking-widest">Structure Type</label>
-                            <select id="f-struct" class="w-full p-3 rounded-xl text-xs">
+                            <label class="block text-[9px] uppercase text-gray-400 mb-2 font-black tracking-widest">Facility Type</label>
+                            <select id="f-struct" class="w-full p-4 rounded-2xl outline-none text-xs">
                                 <option>Commercial Office</option>
-                                <option>Healthcare Facility</option>
-                                <option>School / University</option>
-                                <option>Industrial Complex</option>
+                                <option>Healthcare/Medical</option>
+                                <option>Educational Campus</option>
+                                <option>Industrial Center</option>
                             </select>
                         </div>
                         <div>
-                            <label class="block text-[9px] uppercase text-gray-400 mb-2 font-bold tracking-widest">Est. Size (Sq Ft)</label>
-                            <input type="number" id="f-sqft" placeholder="Sq Ft" class="w-full p-3 rounded-xl text-xs">
+                            <label class="block text-[9px] uppercase text-gray-400 mb-2 font-black tracking-widest">Est. Area (Sq Ft)</label>
+                            <input type="number" id="f-sqft" placeholder="Sq Ft" class="w-full p-4 rounded-2xl text-xs">
                         </div>
                     </div>
                     <div>
-                        <label class="block text-[9px] uppercase text-gray-400 mb-2 font-bold tracking-widest">Impacted Surface</label>
-                        <select id="f-surface" class="w-full p-3 rounded-xl text-xs">
-                            <option>Porous (Drywall/Wood)</option>
-                            <option>Semi-Porous (Masonry)</option>
+                        <label class="block text-[9px] uppercase text-gray-400 mb-2 font-black tracking-widest">Primary Substrate Impacted</label>
+                        <select id="f-surface" class="w-full p-4 rounded-2xl outline-none text-xs">
+                            <option>Porous (Drywall/Insulation)</option>
+                            <option>Semi-Porous (Masonry/Brick)</option>
                         </select>
                     </div>
                     <div>
-                        <label class="block text-[9px] uppercase text-gray-400 mb-2 font-bold tracking-widest">Discovery Timeline</label>
-                        <select id="f-time" class="w-full p-3 rounded-xl text-xs">
-                            <option value="48">Over 48 Hours Since Event (Critical)</option>
-                            <option value="24">Under 48 Hours Since Event (Moderate)</option>
+                        <label class="block text-[9px] uppercase text-gray-400 mb-2 font-black tracking-widest">Incident discovery Timeline</label>
+                        <select id="f-time" class="w-full p-4 rounded-2xl text-xs">
+                            <option value="48">Over 48 Hours Post-Moisture Event (Critical)</option>
+                            <option value="24">Under 48 Hours Post-Moisture Event (Moderate)</option>
                         </select>
                     </div>
-                    <div class="space-y-3">
-                        <button id="f-hvac" onclick="this.classList.toggle('active')" class="btn-toggle w-full p-4 rounded-xl text-left text-[10px] font-bold uppercase tracking-wider">HVAC Air Handler Involvement</button>
-                        <button id="f-water" onclick="this.classList.toggle('active')" class="btn-toggle w-full p-4 rounded-xl text-left text-[10px] font-bold uppercase tracking-wider">Black Water / Cat 3 Source</button>
+                    <div class="space-y-4">
+                        <button id="f-hvac" onclick="this.classList.toggle('active')" class="btn-toggle w-full p-5 rounded-2xl text-left text-[11px] font-black uppercase tracking-widest shadow-sm">HVAC Air Handler Involvement</button>
+                        <button id="f-water" onclick="this.classList.toggle('active')" class="btn-toggle w-full p-5 rounded-2xl text-left text-[11px] font-black uppercase tracking-widest shadow-sm">Black Water / Category 3 Source</button>
                     </div>
                     
-                    <div id="audit-processing" class="hidden py-4">
-                        <p class="text-[9px] text-[var(--g-cyan)] tech-font animate-pulse mb-2 uppercase">Analyzing Liability Risk...</p>
+                    <div id="f-processing" class="hidden py-4 text-center">
+                        <p class="text-[9px] text-[var(--g-cyan)] tech-font animate-pulse mb-3 uppercase tracking-widest">Analyzing Biological Proliferation...</p>
                         <div class="scanning-loader"></div>
                     </div>
 
-                    <button onclick="runAuditProcess()" id="audit-btn" class="w-full bg-red-600 text-white font-black py-5 rounded-xl tech-font text-xs tracking-widest shadow-xl">RUN RISK AUDIT</button>
+                    <button onclick="runAuditProcess()" id="f-calc-btn" class="w-full bg-red-600 text-white font-black py-6 rounded-2xl tech-font text-xs tracking-[0.2em] shadow-2xl hover:bg-red-700 transition-all">RUN RISK AUDIT</button>
                 </div>
             </div>
 
-            <div id="f-res" class="hidden glass p-10 rounded-3xl border-2 border-red-500/50 text-center">
+            <div id="f-res" class="hidden glass p-14 rounded-[60px] border-2 border-red-500/50 shadow-2xl text-center">
                 <div class="flex flex-col items-center">
-                    <div class="w-32 h-32 rounded-full border-[10px] border-red-600 flex items-center justify-center mb-6 shadow-[0_0_20px_rgba(220,38,38,0.5)]">
-                        <span id="f-status" class="text-xl font-black text-red-600 uppercase tracking-tighter">Critical</span>
+                    <div class="w-36 h-36 rounded-full border-[12px] border-red-600 flex items-center justify-center mb-10 shadow-[0_0_30px_rgba(220,38,38,0.5)]">
+                        <span id="f-status" class="text-2xl font-black text-red-600 uppercase tracking-tighter">Critical</span>
                     </div>
-                    <h4 class="text-red-500 font-bold mb-6 tech-font text-sm uppercase tracking-widest">Executive Analysis Summary</h4>
-                    <div id="f-analysis-text" class="text-xs text-gray-300 space-y-4 text-left leading-relaxed font-light border-t border-gray-700 pt-6"></div>
-                    <button onclick="tabManager('f-d')" class="mt-8 bg-[var(--g-cyan)] text-navy-900 font-black px-8 py-3 rounded-lg text-[10px] uppercase tracking-widest">Advance to Strategy Report</button>
+                    <h4 class="text-red-500 font-black mb-8 tech-font text-base uppercase tracking-widest">Executive Analysis Summary</h4>
+                    <div id="f-analysis-text" class="text-sm text-gray-300 space-y-6 text-left leading-relaxed font-light border-t border-gray-800 pt-10 px-6"></div>
+                    <button onclick="tabManager('f-d')" class="mt-12 bg-[var(--g-cyan)] text-navy-900 font-black px-12 py-5 rounded-2xl text-xs uppercase tracking-widest shadow-xl hover:scale-105 transition-all">Advance to Strategy Report</button>
                 </div>
             </div>
         </div>
 
-        <div id="f-d" class="hidden glass p-16 rounded-[40px] border border-cyan-900/40 text-center">
-            <div class="max-w-xl mx-auto">
-                <div class="w-20 h-20 bg-cyan-900/30 rounded-full flex items-center justify-center mx-auto mb-8 border border-cyan-500/30 text-[var(--g-cyan)]">
-                    <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+        <div id="f-d" class="hidden glass p-24 rounded-[70px] border border-cyan-900/40 text-center">
+            <div class="max-w-2xl mx-auto">
+                <div class="w-24 h-24 bg-cyan-900/30 rounded-3xl flex items-center justify-center mx-auto mb-12 border border-cyan-500/30 text-[var(--g-cyan)] shadow-lg">
+                    <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                 </div>
-                <h3 class="tech-font text-lg mb-4 text-[var(--g-cyan)] uppercase tracking-widest font-bold">Project Strategy Report</h3>
-                <p class="text-sm text-slate-400 mb-10 leading-relaxed font-light">Cross-reference diagnostic parameters with Goldmorr standards. Finalize justification for property stakeholders.</p>
+                <h3 class="tech-font text-2xl mb-6 text-[var(--g-cyan)] uppercase tracking-[0.3em]">Project Strategy Engine</h3>
+                <p class="text-base text-slate-400 mb-12 leading-relaxed font-light">Cross-reference diagnostic parameters with proprietary Goldmorr standards. Finalize certified remediation strategy for stakeholders.</p>
                 
-                <div id="report-processing" class="hidden py-4 mb-4">
-                    <p class="text-[9px] text-[var(--g-cyan)] tech-font animate-pulse mb-2 uppercase text-center">Generating Protocol Strategy PDF...</p>
-                    <div class="scanning-loader"></div>
+                <div id="report-processing" class="hidden py-6 mb-10 text-center">
+                    <p class="text-[10px] text-[var(--g-cyan)] tech-font animate-pulse mb-4 uppercase tracking-[0.4em]">Compiling Strategy Report & Data Analysis...</p>
+                    <div class="scanning-loader mx-auto w-1/2"></div>
                 </div>
 
-                <button onclick="runReportProcess()" id="report-btn" class="bg-[var(--g-cyan)] text-navy-900 font-black px-12 py-5 rounded-2xl tech-font text-sm uppercase shadow-lg">Generate Certified Report</button>
+                <button onclick="runReportProcess()" id="report-btn" class="bg-[var(--g-cyan)] text-navy-900 font-black px-16 py-6 rounded-3xl tech-font text-sm uppercase tracking-widest shadow-2xl hover:brightness-110">Generate Certified Report</button>
             </div>
         </div>
     </div>
 
-    <div id="modal" class="fixed inset-0 bg-black/95 z-[60] hidden overflow-y-auto p-10">
-        <div class="max-w-3xl mx-auto report-paper relative">
-            <div class="absolute top-8 right-8 text-[9px] text-gray-400 tech-font">REF: GM-GUA-2025</div>
-            <h1 class="text-2xl font-black mb-8 border-b-4 border-black pb-4 uppercase tracking-tighter">Project Strategy Report</h1>
-            <div id="modal-content" class="text-sm leading-relaxed space-y-6"></div>
-            <button onclick="document.getElementById('modal').classList.add('hidden')" class="mt-12 bg-black text-white px-8 py-3 rounded tech-font text-[10px] uppercase">Close Document</button>
+    <div id="modal" class="fixed inset-0 bg-black/95 z-[100] hidden overflow-y-auto p-12">
+        <div class="max-w-4xl mx-auto report-paper">
+            <div class="report-header flex justify-between items-end">
+                <div>
+                    <h2 class="text-4xl font-black uppercase tracking-tighter mb-1">Goldmorr System</h2>
+                    <p class="text-xs font-bold text-gray-500 uppercase tracking-widest">Certified Recovery Strategy | REF: GM-GUA-2025</p>
+                </div>
+                <div class="text-right text-[10px] text-gray-400 uppercase tracking-widest">Verified by Innovation Hub v9.0</div>
+            </div>
+            <div id="modal-content" class="text-base leading-relaxed space-y-8">
+                </div>
+            <div class="mt-20 pt-10 border-t border-gray-300 text-[10px] text-gray-400 uppercase tracking-widest text-center">
+                This document is a proprietary environmental recovery plan under the Goldmorr System standards.
+            </div>
+            <button onclick="document.getElementById('modal').classList.add('hidden')" class="mt-14 bg-black text-white px-10 py-4 rounded-xl tech-font text-[10px] uppercase tracking-[0.2em] shadow-lg">Close Document</button>
         </div>
     </div>
 
     <script>
+        // --- GLOBAL APP HUB ENGINE ---
         function openApp(type) {
             document.getElementById('hub-view').classList.add('hidden');
             document.getElementById(type + '-app').classList.remove('hidden');
@@ -275,10 +286,10 @@
             document.getElementById('tab-' + id).classList.add('active-tab');
         }
 
-        // MEMBER PORTAL LOGIC (GSPQ)
+        // --- MEMBER PORTAL (GSPQ) LOGIC ---
         function runMemberQuantifier() {
             let sVal = document.getElementById('sqft').value;
-            if(!sVal || sVal <= 0) { alert('Enter Square Footage'); return; }
+            if(!sVal || sVal <= 0) { alert('Enter Treatment Area Sq Ft'); return; }
             document.getElementById('member-calc-btn').classList.add('hidden');
             document.getElementById('member-processing').classList.remove('hidden');
             
@@ -290,50 +301,52 @@
                 let s = parseFloat(sVal);
                 let p = parseFloat(document.getElementById('porosity').value);
                 let sev = parseFloat(document.getElementById('severity').value);
-                let struct = parseFloat(document.getElementById('structure').value);
+                let struct = document.getElementById('m-struct').value;
                 
                 let gm6 = (s / 250) * p * sev;
-                let labor = (s / 150) * sev * struct;
+                let labor = (s / 150) * sev;
                 
                 document.getElementById('res-gm6').innerText = gm6.toFixed(1) + ' Gal';
                 document.getElementById('res-labor').innerText = labor.toFixed(1) + ' Hrs';
 
-                let prod = gm6 * 120, lab = labor * 45, total = prod + lab + 45;
-                let bid = total / 0.31;
-                document.getElementById('p-prod').innerText = '$' + prod.toFixed(2);
-                document.getElementById('p-lab').innerText = '$' + lab.toFixed(2);
-                document.getElementById('p-total').innerText = '$' + total.toFixed(2);
-                document.getElementById('p-bid').innerText = '$' + bid.toFixed(2);
+                let prodCost = gm6 * 120, labCost = labor * 45, totalCogs = prodCost + labCost + 45;
+                document.getElementById('p-prod').innerText = '$' + prodCost.toFixed(2);
+                document.getElementById('p-lab').innerText = '$' + labCost.toFixed(2);
+                document.getElementById('p-total').innerText = '$' + totalCogs.toFixed(2);
+                document.getElementById('p-bid').innerText = '$' + (totalCogs/0.31).toFixed(2);
 
                 document.getElementById('member-analysis-text').innerHTML = `
-                    <p>• <strong>System Volume:</strong> Calculated dosage for ${s} Sq Ft environment confirmed.</p>
-                    <p>• <strong>Substrate Penetration:</strong> Application of GM6000 required to all identified porous substrates.</p>
-                    <p>• <strong>Bio-Aerosol Neutralization:</strong> Whole-structure fogging via GM2000 mandatory for final air clearance.</p>
+                    <p>• <strong>Diagnostic Protocol:</strong> System dosage customized for ${struct} environment (${s} Sq Ft).</p>
+                    <p>• <strong>Microbial Neutralization:</strong> Precision saturation of all identified porous substrates with GM6000 modifiers.</p>
+                    <p>• <strong>Final Air Clearance:</strong> Whole-structure particulate sterilization via non-mechanical GM2000 fogging protocol mandatory.</p>
                 `;
             }, 1800);
         }
 
-        // FACILITY PORTAL LOGIC (GOLDMORRGUARD)
+        // --- FACILITY PORTAL (GOLDMORRGUARD) LOGIC ---
         function runAuditProcess() {
             let sVal = document.getElementById('f-sqft').value;
-            if(!sVal || sVal <= 0) { alert('Enter Sq Ft'); return; }
-            document.getElementById('audit-btn').classList.add('hidden');
+            if(!sVal || sVal <= 0) { alert('Enter Incident Area Sq Ft'); return; }
+            document.getElementById('f-calc-btn').classList.add('hidden');
             document.getElementById('audit-processing').classList.remove('hidden');
             
             setTimeout(() => {
                 document.getElementById('audit-processing').classList.add('hidden');
-                document.getElementById('audit-btn').classList.remove('hidden');
+                document.getElementById('f-calc-btn').classList.remove('hidden');
                 document.getElementById('f-res').classList.remove('hidden');
                 
                 const h = document.getElementById('f-hvac').classList.contains('active');
                 const w = document.getElementById('f-water').classList.contains('active');
-                let risk = (h || w || document.getElementById('f-time').value === '48') ? 'CRITICAL' : 'MODERATE';
+                const t = document.getElementById('f-time').value === '48';
+                
+                let risk = (h || w || t) ? 'CRITICAL' : 'MODERATE';
                 document.getElementById('f-status').innerText = risk;
                 
                 document.getElementById('f-analysis-text').innerHTML = `
-                    <p>• <strong>Liability Vector:</strong> Post-remediation air quality metrics likely to fail under traditional protocols.</p>
-                    <p>• <strong>Environmental Assessment:</strong> Microbial colonization confirmed based on incubation timeline.</p>
-                    <p>• <strong>Scientific Compliance:</strong> Whole-structure particulate sterilization via GM2000 modifiers required.</p>
+                    <p>• <strong>Liability Vector:</strong> Post-remediation air quality metrics projected to fail under standard removal protocols.</p>
+                    <p>• <strong>Environmental Exposure:</strong> Analysis indicates active microbial colonization on ${document.getElementById('f-surface').value} substrates.</p>
+                    <p>• <strong>Structural Protocol:</strong> Mandatory whole-structure fogging using GM2000 biological modifiers required for particulate sterilization.</p>
+                    ${h ? "<p>• <strong>HVAC Warning:</strong> Cross-contamination into forced-air handler confirmed. System sterilization required.</p>" : ""}
                 `;
             }, 1500);
         }
@@ -341,6 +354,7 @@
         function runReportProcess() {
             document.getElementById('report-btn').classList.add('hidden');
             document.getElementById('report-processing').classList.remove('hidden');
+            
             setTimeout(() => {
                 document.getElementById('report-processing').classList.add('hidden');
                 document.getElementById('report-btn').classList.remove('hidden');
@@ -352,18 +366,21 @@
                 const surf = document.getElementById('f-surface').value;
 
                 document.getElementById('modal-content').innerHTML = `
-                    <div class="bg-gray-100 p-6 rounded mb-8 text-[11px] font-bold grid grid-cols-2 gap-4 uppercase border-b border-gray-300">
-                        <p>Facility: ${type}</p>
-                        <p>Area: ${sqft} Sq Ft</p>
+                    <div class="bg-gray-100 p-8 rounded-xl mb-10 text-[11px] font-black grid grid-cols-2 gap-8 uppercase border-b border-gray-300 shadow-sm">
+                        <p>Facility Environment: ${type}</p>
+                        <p>Total Assessment Area: ${sqft} Sq Ft</p>
+                        <p>Primary Substrate: ${surf}</p>
+                        <p>Air Quality Risk: ${h ? "HVAC Impacted" : "Localized"}</p>
                     </div>
-                    <p><strong>Professional Remediation Strategy:</strong></p>
-                    <p>Based on the analyzed environmental load for this ${type} facility, localized removal is insufficient. The following protocols are strictly required to ensure structural air quality:</p>
-                    <ul class="list-disc pl-6 space-y-4 font-bold">
-                        <li>Penetrating GM6000 treatment of ${surf} substrates.</li>
-                        ${h ? "<li>Mechanical Sterilization: Air handler involvement requires forced fogging protocol.</li>" : ""}
-                        ${w ? "<li>Biological Sanitation: Category 3 moisture modifiers mandatory for load reduction.</li>" : ""}
-                        <li>Final Clearance: Whole-structure non-mechanical fogging via GM2000.</li>
+                    <p class="font-bold text-lg">SUBJECT: Certified Remediation Strategy and Liability Analysis</p>
+                    <p>Based on the environmental audit for this ${type} facility, the moisture event has progressed beyondlocalized mechanical removal thresholds. To meet IICRC standards and ensure structural integrity, the following Goldmorr protocols are strictly required:</p>
+                    <ul class="list-disc pl-8 space-y-6 font-bold text-gray-800">
+                        <li><strong>Structural Penetration:</strong> Application of GM6000 penetrating modifiers to all identified ${surf} substrates.</li>
+                        ${h ? "<li><strong>System Sterilization:</strong> Confirmed HVAC handler involvement requires forced air fogging protocol.</li>" : ""}
+                        ${w ? "<li><strong>Biological Ingress Sanitation:</strong> Category 3 source detected. Biological load reduction modifiers mandatory.</li>" : ""}
+                        <li><strong>Particle Clearance:</strong> Final whole-structure non-mechanical air scrubbing via proprietary GM2000 system.</li>
                     </ul>
+                    <p class="mt-10 font-bold italic">Conclusion: Implementation of the proprietary Goldmorr System provides the only pathway to air quality clearance without structural demolition of building materials.</p>
                 `;
                 document.getElementById('modal').classList.remove('hidden');
             }, 2000);
