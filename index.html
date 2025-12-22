@@ -9,7 +9,7 @@
     <style>
         :root { 
             --g-navy: #0a192f; 
-            --g-cyan: #D4AF37; /* Updated to Goldmorr Gold */
+            --g-cyan: #D4AF37; 
             --g-red: #dc2626; 
             --g-slate: #8892b0; 
         }
@@ -28,7 +28,7 @@
         .glass { 
             background: rgba(17, 34, 64, 0.85); 
             backdrop-filter: blur(12px); 
-            border: 1px solid rgba(212, 175, 55, 0.2); 
+            border: 1px solid rgba(0, 207, 222, 0.2); 
             transition: all 0.3s ease; 
         }
         
@@ -68,7 +68,7 @@
             background: var(--g-cyan); 
             color: #0a192f; 
             border-color: white; 
-            box-shadow: 0 0 10px rgba(212, 175, 55, 0.4); 
+            box-shadow: 0 0 10px rgba(0, 207, 222, 0.4); 
         }
         
         /* THE WOW FACTOR: SCANNING LOADER */
@@ -96,51 +96,69 @@
             100% { left: 100%; } 
         }
         
-        /* FANTASTIC REPORT OUTPUT DESIGN */
+        /* FANTASTIC REPORT OUTPUT DESIGN - CLEANED UP */
         .report-paper { 
             background: white; 
             color: #1a1a1a; 
-            padding: 60px; 
-            font-family: 'Times New Roman', serif; 
+            padding: 50px; 
+            font-family: 'Inter', sans-serif; 
             box-shadow: 0 0 50px rgba(0,0,0,0.6); 
             position: relative; 
             font-size: 14px; 
+            line-height: 1.6;
         }
         
         .report-header { 
-            border-bottom: 8px solid #000; 
-            padding-bottom: 15px; 
-            margin-bottom: 35px; 
+            border-bottom: 4px solid #000; 
+            padding-bottom: 20px; 
+            margin-bottom: 30px; 
         }
         
         .report-grid-header {
-            background: #f3f4f6;
-            padding: 20px;
-            border-radius: 8px;
+            background: #f8fafc;
+            padding: 24px;
+            border-radius: 4px;
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            border: 2px solid #e5e7eb;
-            margin-bottom: 30px;
+            gap: 24px;
+            border: 1px solid #e2e8f0;
+            margin-bottom: 35px;
         }
 
         .report-conclusion-box { 
             background: #000; 
             color: #fff; 
             padding: 25px; 
-            border-radius: 8px; 
-            margin-top: 40px; 
+            border-radius: 4px; 
+            margin-top: 35px; 
             text-align: center; 
             text-transform: uppercase; 
-            font-weight: 900; 
-            font-size: 13px; 
-            line-height: 1.4; 
+            font-weight: 800; 
+            font-size: 12px; 
+            line-height: 1.5; 
+            letter-spacing: 0.5px;
+        }
+
+        .report-download-btn {
+            background: var(--g-cyan);
+            color: #0a192f;
+            font-weight: 800;
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 12px;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
         }
     </style>
 </head>
 <body class="min-h-screen">
 
-    <header class="p-4 border-b border-yellow-900/30 flex justify-between items-center glass sticky top-0 z-50">
+    <header class="p-4 border-b border-cyan-900/50 flex justify-between items-center glass sticky top-0 z-50">
         <div class="flex items-center gap-3">
             <div class="w-10 h-10 bg-[var(--g-cyan)] rounded flex items-center justify-center font-bold text-navy-900 shadow-lg tech-font text-lg">G</div>
             <div class="tech-font text-[12px] tracking-[0.4em] uppercase font-bold">
@@ -355,23 +373,29 @@
             <div class="absolute top-8 right-8 text-[9px] text-gray-400 tech-font">REF ID: GM-HUB-2025-MASTER</div>
             <div class="report-header flex justify-between items-end">
                 <div>
-                    <h2 class="text-4xl font-black uppercase tracking-tighter mb-1 italic">Goldmorr System</h2>
-                    <p class="text-[11px] font-bold text-gray-600 uppercase tracking-[0.4em]">Proprietary Structural Recovery Blueprint</p>
+                    <h2 class="text-3xl font-black uppercase tracking-tighter mb-1 italic">GOLDMORR SYSTEM</h2>
+                    <p class="text-[10px] font-bold text-gray-500 uppercase tracking-[0.4em] tracking-widest">Proprietary Structural Recovery Blueprint</p>
                 </div>
-                <div class="text-right text-[11px] font-bold uppercase tracking-widest text-black italic">Innovation Hub v9.0</div>
+                <div class="text-right text-[10px] font-bold uppercase tracking-widest text-black italic">Innovation Hub v9.0</div>
             </div>
             
-            <div id="modal-content" class="text-[15px] leading-relaxed space-y-12 text-slate-800">
+            <div id="modal-content" class="text-[14px] leading-relaxed space-y-10 text-slate-800">
                 </div>
             
             <div class="report-conclusion-box" id="report-conclusion-box">
                 </div>
             
-            <div class="mt-16 pt-10 border-t-2 border-gray-300 text-[10px] text-gray-500 text-center font-bold uppercase tracking-[0.3em]">
-                Verified Bio-Remediation Strategy • IICRC S520 Compliance Audit
-            </div>
-            <div class="flex justify-center mt-12 no-print">
-                <button onclick="document.getElementById('modal').classList.add('hidden')" class="bg-black text-white px-16 py-5 rounded-2xl tech-font text-[11px] uppercase tracking-widest shadow-lg hover:scale-105 transition-all">Close Strategy Document</button>
+            <div class="flex flex-col items-center gap-4 mt-12 border-t-2 border-gray-100 pt-10">
+                <div class="text-[10px] text-gray-400 text-center font-bold uppercase tracking-[0.3em]">
+                    Verified Bio-Remediation Strategy • IICRC S520 Compliance Audit
+                </div>
+                <div class="flex gap-4">
+                    <button class="report-download-btn">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                        Download Certified Report
+                    </button>
+                    <button onclick="document.getElementById('modal').classList.add('hidden')" class="bg-gray-100 text-gray-800 px-6 py-3 rounded-lg text-[11px] font-bold uppercase tracking-widest hover:bg-gray-200 transition-all">Close Document</button>
+                </div>
             </div>
         </div>
     </div>
@@ -466,21 +490,27 @@
 
                 document.getElementById('modal-content').innerHTML = `
                     <div class="report-grid-header">
-                        <div><p class="text-gray-400 mb-1 uppercase font-bold text-[10px]">Facility Environment:</p><p class="text-black font-bold uppercase">${type}</p></div>
-                        <div><p class="text-gray-400 mb-1 uppercase font-bold text-[10px]">Calculated Coverage:</p><p class="text-black font-bold uppercase">${sqft} Sq Ft</p></div>
-                        <div><p class="text-gray-400 mb-1 uppercase font-bold text-[10px]">Analyzed Substrate:</p><p class="text-black font-bold uppercase">${sub}</p></div>
-                        <div><p class="text-gray-400 mb-1 uppercase font-bold text-[10px]">Environmental Risk:</p><p class="text-black font-bold uppercase">${h ? "HVAC Impacted" : "Localized Assessment"}</p></div>
+                        <div><p class="text-xs uppercase font-bold text-gray-500 mb-1">Facility Environment:</p><p class="text-black font-bold uppercase text-base">${type}</p></div>
+                        <div><p class="text-xs uppercase font-bold text-gray-500 mb-1">Calculated Coverage:</p><p class="text-black font-bold uppercase text-base">${sqft} Sq Ft</p></div>
+                        <div><p class="text-xs uppercase font-bold text-gray-500 mb-1">Analyzed Substrate:</p><p class="text-black font-bold uppercase text-base">${sub}</p></div>
+                        <div><p class="text-xs uppercase font-bold text-gray-500 mb-1">Environmental Risk:</p><p class="text-black font-bold uppercase text-base">${h ? "HVAC Impacted" : "Localized Assessment"}</p></div>
                     </div>
-                    <p class="font-bold text-xl uppercase border-l-8 border-black pl-6 italic">Subject: Certified Recovery Strategy and Liability Mitigation</p>
-                    <p>Based on the calculated environmental load for this <strong>${type}</strong> environment, traditional mechanical removal is insufficient. The following Goldmorr protocols are strictly mandated to achieve IICRC air quality standards:</p>
-                    <ul class="list-disc pl-10 space-y-8 font-bold text-gray-800 italic text-lg leading-snug">
-                        <li><strong>Recovery Penetration:</strong> Saturate application of GM6000 penetrating modifiers to all affected building materials.</li>
-                        ${h ? "<li><strong>System Sterilization:</strong> Confirmed HVAC handler involvement requires forced air sterilization protocol via GM2000.</li>" : ""}
-                        ${w ? "<li><strong>Pathogen Load Reduction:</strong> Category 3 source ingress detected. Biological load reduction modifiers mandatory.</li>" : ""}
-                        <li><strong>Final Particle Clearance:</strong> Whole-structure non-mechanical air scrubbing via proprietary GM2000 fogging protocol.</li>
-                    </ul>
+                    
+                    <div class="px-2">
+                        <p class="font-bold text-lg uppercase border-l-8 border-black pl-5 mb-8 italic">SUBJECT: CERTIFIED RECOVERY STRATEGY AND LIABILITY MITIGATION</p>
+                        
+                        <p class="text-sm text-gray-700 mb-8">Based on the calculated environmental load for this <strong>${type}</strong> environment, traditional mechanical removal is insufficient. The following Goldmorr protocols are strictly mandated to achieve IICRC air quality standards:</p>
+                        
+                        <ul class="list-disc pl-8 space-y-6 text-base font-medium text-gray-800">
+                            <li><span class="font-bold italic">Structural Recovery:</span> Saturate application of GM6000 penetrating modifiers to all affected Building Materials including ${sub}.</li>
+                            ${h ? "<li><span class=\"font-bold italic\">System Decontamination:</span> HVAC handler involvement requires proprietary forced air sterilization via GM2000.</li>" : ""}
+                            ${w ? "<li><span class=\"font-bold italic\">Bio-Pathogen Reduction:</span> Category 3 source ingress detected. specialized biological load reduction modifiers mandatory.</li>" : ""}
+                            <li><span class=\"font-bold italic\">Air Particle Clearance:</span> Whole-structure non-mechanical air scrubbing via proprietary GM2000 fogging protocol for particle neutralization.</li>
+                        </ul>
+                    </div>
                 `;
-                document.getElementById('report-conclusion-box').innerText = "Conclusion: Implementation of the Goldmorr System provides the only pathway to air quality clearance without structural demolition.";
+                
+                document.getElementById('report-conclusion-box').innerHTML = "CONCLUSION: IMPLEMENTATION OF THE GOLDMORR SYSTEM PROVIDES THE ONLY PATHWAY TO OCCUPANCY WITHOUT STRUCTURAL DEMOLITION.";
                 document.getElementById('modal').classList.remove('hidden');
             }, 2000);
         }
