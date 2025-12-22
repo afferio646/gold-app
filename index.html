@@ -14,7 +14,6 @@
             --g-slate: #8892b0; 
         }
         
-        /* GLOBAL SCALING FOR SCREEN COMFORT */
         body { 
             background-color: var(--g-navy); 
             color: white; 
@@ -40,7 +39,6 @@
         
         .hidden { display: none !important; }
         
-        /* EXPLICIT STYLING FOR INPUTS AND SELECTS */
         select, input { 
             background-color: #112240 !important; 
             color: white !important; 
@@ -71,7 +69,6 @@
             box-shadow: 0 0 10px rgba(0, 207, 222, 0.4); 
         }
         
-        /* THE WOW FACTOR: SCANNING LOADER */
         .scanning-loader { 
             width: 100%; 
             height: 4px; 
@@ -96,11 +93,10 @@
             100% { left: 100%; } 
         }
         
-        /* FANTASTIC REPORT OUTPUT DESIGN - CLEANED UP */
         .report-paper { 
             background: white; 
             color: #1a1a1a; 
-            padding: 50px; 
+            padding: 60px; 
             font-family: 'Inter', sans-serif; 
             box-shadow: 0 0 50px rgba(0,0,0,0.6); 
             position: relative; 
@@ -273,17 +269,34 @@
 
         <div id="m-p" class="hidden glass p-12 rounded-[60px] shadow-xl text-center">
             <h3 class="tech-font text-xl mb-12 text-[var(--g-cyan)] uppercase tracking-[0.3em]">Profitability Guard</h3>
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center max-w-4xl mx-auto">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start max-w-4xl mx-auto">
                 <div class="p-8 bg-navy-900/70 rounded-[40px] border border-gray-800 text-left">
                     <p class="text-[9px] text-gray-500 mb-6 uppercase font-black tracking-widest border-b border-gray-800 pb-3">Direct Project COGS</p>
                     <div class="flex justify-between text-base py-4 border-b border-gray-800/50 font-light"><span>Product Investment</span><span id="p-prod" class="font-bold text-[var(--g-cyan)]">$0.00</span></div>
                     <div class="flex justify-between text-base py-4 border-b border-gray-800/50 font-light"><span>Technician Labor Load (@$45/hr)</span><span id="p-lab" class="font-bold text-[var(--g-cyan)]">$0.00</span></div>
-                    <div class="flex justify-between font-black text-white text-xl pt-8"><span>Total Calculated COGS</span><span id="p-total">$0.00</span></div>
+                    <div class="flex justify-between font-black text-white text-xl pt-6 border-b-2 border-gray-800 pb-4"><span>Total Calculated COGS</span><span id="p-total">$0.00</span></div>
+                    
+                    <div class="mt-8">
+                        <label class="block text-[9px] uppercase text-gray-500 mb-2 font-black tracking-widest">Select Profit Margin (%)</label>
+                        <select id="p-markup-select" onchange="toggleCustomMarkup(); recalculateBid();" class="w-full mb-4">
+                            <option value="0.70">30% Gross Margin</option>
+                            <option value="0.60">40% Gross Margin</option>
+                            <option value="0.50">50% Gross Margin</option>
+                            <option value="0.40">60% Gross Margin</option>
+                            <option value="0.311" selected>68.9% (Standard Goldmorr)</option>
+                            <option value="0.30">70% Gross Margin</option>
+                            <option value="custom">Add Custom Percentage</option>
+                        </select>
+                        <div id="custom-markup-container" class="hidden">
+                            <label class="block text-[9px] uppercase text-gray-500 mb-2 font-black tracking-widest">Enter Custom Margin (%)</label>
+                            <input type="number" id="p-custom-val" placeholder="e.g. 55" oninput="recalculateBid()" class="w-full">
+                        </div>
+                    </div>
                 </div>
-                <div class="flex flex-col items-center justify-center p-14 bg-green-900/10 border-2 border-dashed border-green-500/30 rounded-[60px]">
+                <div class="flex flex-col items-center justify-center p-14 bg-green-900/10 border-2 border-dashed border-green-500/30 rounded-[60px] h-full min-h-[300px]">
                     <p class="text-[11px] uppercase font-black text-green-400 mb-4 tracking-[0.3em]">Suggested Retail Bid</p>
                     <p id="p-bid" class="text-7xl font-black text-green-400 mb-6 tracking-tighter">$0.00</p>
-                    <p class="text-[11px] text-gray-400 font-light uppercase font-bold italic tracking-widest italic">"Guarding 68.9% Certified Member Margin"</p>
+                    <p id="p-margin-label" class="text-[11px] text-gray-400 font-light uppercase font-bold italic tracking-widest italic">"Guarding 68.9% Certified Member Margin"</p>
                 </div>
             </div>
         </div>
@@ -379,11 +392,9 @@
                 <div class="text-right text-[10px] font-bold uppercase tracking-widest text-black italic">Innovation Hub v9.0</div>
             </div>
             
-            <div id="modal-content" class="text-[14px] leading-relaxed space-y-10 text-slate-800">
-                </div>
+            <div id="modal-content" class="text-[14px] leading-relaxed space-y-10 text-slate-800"></div>
             
-            <div class="report-conclusion-box" id="report-conclusion-box">
-                </div>
+            <div class="report-conclusion-box" id="report-conclusion-box"></div>
             
             <div class="flex flex-col items-center gap-4 mt-12 border-t-2 border-gray-100 pt-10">
                 <div class="text-[10px] text-gray-400 text-center font-bold uppercase tracking-[0.3em]">
@@ -401,6 +412,8 @@
     </div>
 
     <script>
+        let currentTotalCogs = 0; // Global to allow markup re-calc
+
         function openApp(type) {
             document.getElementById('hub-view').classList.add('hidden');
             document.getElementById(type + '-app').classList.remove('hidden');
@@ -441,11 +454,14 @@
                 document.getElementById('res-gm6').innerText = gm6.toFixed(1) + ' Gal';
                 document.getElementById('res-labor').innerText = labor.toFixed(1) + ' Hrs';
 
-                let costP = gm6 * 120, costL = labor * 45, total = costP + costL + 45;
+                let costP = gm6 * 120, costL = labor * 45;
+                currentTotalCogs = costP + costL + 45; // Base materials + labor + incidental
+                
                 document.getElementById('p-prod').innerText = '$' + costP.toFixed(2);
                 document.getElementById('p-lab').innerText = '$' + costL.toFixed(2);
-                document.getElementById('p-total').innerText = '$' + total.toFixed(2);
-                document.getElementById('p-bid').innerText = '$' + (total/0.31).toFixed(2);
+                document.getElementById('p-total').innerText = '$' + currentTotalCogs.toFixed(2);
+                
+                recalculateBid();
 
                 document.getElementById('member-analysis-text').innerHTML = `
                     <p>• <strong>Diagnostic Protocol:</strong> Precise dosage engineered for ${s} Sq Ft environmental load.</p>
@@ -453,6 +469,43 @@
                     <p>• <strong>Sterilization Compliance:</strong> Mandatory whole-structure fogging via GM2000 protocol.</p>
                 `;
             }, 1800);
+        }
+
+        function toggleCustomMarkup() {
+            const select = document.getElementById('p-markup-select');
+            const container = document.getElementById('custom-markup-container');
+            if(select.value === 'custom') {
+                container.classList.remove('hidden');
+            } else {
+                container.classList.add('hidden');
+            }
+        }
+
+        function recalculateBid() {
+            if(currentTotalCogs === 0) return;
+            
+            const select = document.getElementById('p-markup-select');
+            let divisor;
+            let labelText;
+
+            if(select.value === 'custom') {
+                const customPct = parseFloat(document.getElementById('p-custom-val').value) || 0;
+                divisor = (100 - customPct) / 100;
+                labelText = `Custom ${customPct}% Gross Margin Applied`;
+            } else {
+                divisor = parseFloat(select.value);
+                // Inverse for label display (e.g. 0.311 divisor is a 68.9% margin)
+                const displayPct = Math.round((1 - divisor) * 100);
+                labelText = `Guarding ${displayPct}% Project Gross Margin`;
+                if(divisor === 0.311) labelText = `Guarding 68.9% Certified Member Margin`;
+            }
+
+            // Prevent division by zero if someone enters 100% margin
+            if(divisor <= 0) divisor = 0.01;
+
+            const bid = currentTotalCogs / divisor;
+            document.getElementById('p-bid').innerText = '$' + bid.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            document.getElementById('p-margin-label').innerText = `"${labelText}"`;
         }
 
         function runAuditProcess() {
