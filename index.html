@@ -14,6 +14,7 @@
             --g-slate: #8892b0; 
         }
         
+        /* GLOBAL SCALING FOR SCREEN COMFORT */
         body { 
             background-color: var(--g-navy); 
             color: white; 
@@ -39,6 +40,7 @@
         
         .hidden { display: none !important; }
         
+        /* EXPLICIT STYLING FOR INPUTS AND SELECTS */
         select, input { 
             background-color: #112240 !important; 
             color: white !important; 
@@ -69,6 +71,7 @@
             box-shadow: 0 0 10px rgba(0, 207, 222, 0.4); 
         }
         
+        /* THE WOW FACTOR: SCANNING LOADER */
         .scanning-loader { 
             width: 100%; 
             height: 4px; 
@@ -93,10 +96,11 @@
             100% { left: 100%; } 
         }
         
+        /* FANTASTIC REPORT OUTPUT DESIGN - CLEANED UP */
         .report-paper { 
             background: white; 
             color: #1a1a1a; 
-            padding: 60px; 
+            padding: 50px; 
             font-family: 'Inter', sans-serif; 
             box-shadow: 0 0 50px rgba(0,0,0,0.6); 
             position: relative; 
@@ -162,7 +166,7 @@
             </div>
         </div>
         <div class="flex gap-4">
-            <button onclick="document.getElementById('guide-modal').classList.remove('hidden')" class="text-[9px] border border-[var(--g-cyan)] text-[var(--g-cyan)] px-4 py-1.5 rounded hover:bg-[var(--g-cyan)] hover:text-navy-900 transition-all uppercase tracking-widest font-black">How to Use</button>
+            <button id="guide-trigger" onclick="document.getElementById('guide-modal').classList.remove('hidden')" class="hidden text-[9px] border border-[var(--g-cyan)] text-[var(--g-cyan)] px-4 py-1.5 rounded hover:bg-[var(--g-cyan)] hover:text-navy-900 transition-all uppercase tracking-widest font-black">How to Use</button>
             <button onclick="location.reload()" class="text-[9px] border border-gray-700 px-4 py-1.5 rounded hover:bg-gray-800 transition-all uppercase tracking-widest font-black">System Reset</button>
         </div>
     </header>
@@ -443,6 +447,15 @@
         function openApp(type) {
             document.getElementById('hub-view').classList.add('hidden');
             document.getElementById(type + '-app').classList.remove('hidden');
+            
+            // CONTEXTUAL NAVIGATION: Show button ONLY for members
+            const guideBtn = document.getElementById('guide-trigger');
+            if (type === 'member') {
+                guideBtn.classList.remove('hidden');
+            } else {
+                guideBtn.classList.add('hidden');
+            }
+            
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
@@ -573,12 +586,14 @@
                     
                     <div class="px-2">
                         <p class="font-bold text-lg uppercase border-l-8 border-black pl-5 mb-8 italic">SUBJECT: CERTIFIED RECOVERY STRATEGY AND LIABILITY MITIGATION</p>
-                        <p class="text-sm text-gray-700 mb-8">Traditional mechanical removal is insufficient. The following Goldmorr protocols are strictly mandated to achieve IICRC air quality standards:</p>
+                        
+                        <p class="text-sm text-gray-700 mb-8">Based on the calculated environmental load for this <strong>${type}</strong> environment, traditional mechanical removal is insufficient. The following Goldmorr protocols are strictly mandated to achieve IICRC air quality standards:</p>
+                        
                         <ul class="list-disc pl-8 space-y-6 text-base font-medium text-gray-800">
-                            <li><span class="font-bold italic">Structural Recovery:</span> Saturate application of GM6000 modifiers to Building Materials including ${sub}.</li>
-                            ${h ? "<li><span class=\"font-bold italic\">System Decontamination:</span> HVAC handler involvement requires proprietary forced air sterilization.</li>" : ""}
-                            ${w ? "<li><span class=\"font-bold italic\">Bio-Pathogen Reduction:</span> Category 3 source detected. Biological modifiers mandatory.</li>" : ""}
-                            <li><span class=\"font-bold italic\">Air Particle Clearance:</span> Whole-structure non-mechanical air scrubbing via proprietary GM2000.</li>
+                            <li><span class="font-bold italic">Structural Recovery:</span> Saturate application of GM6000 penetrating modifiers to all affected Building Materials including ${sub}.</li>
+                            ${h ? "<li><span class=\"font-bold italic\">System Decontamination:</span> HVAC handler involvement requires proprietary forced air sterilization via GM2000.</li>" : ""}
+                            ${w ? "<li><span class=\"font-bold italic\">Bio-Pathogen Reduction:</span> Category 3 source ingress detected. specialized biological load reduction modifiers mandatory.</li>" : ""}
+                            <li><span class=\"font-bold italic\">Air Particle Clearance:</span> Whole-structure non-mechanical air scrubbing via proprietary GM2000 fogging protocol for particle neutralization.</li>
                         </ul>
                     </div>
                 `;
