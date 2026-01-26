@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Facility Goldmorr Guard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/style.css">
+    <script src="assets/api.js"></script>
+    <script src="assets/script.js"></script>
+</head>
+<body class="min-h-screen pb-20">
+
+    <!-- SETTINGS MODAL (First Run) -->
+    <div id="settings-modal" class="fixed inset-0 bg-black/95 z-[3000] hidden flex justify-center items-center p-6">
+        <div class="glass p-10 rounded-2xl w-full max-w-md border border-[var(--g-cyan)]">
+            <h2 class="tech-font text-xl text-[var(--g-cyan)] mb-6 uppercase tracking-widest text-center">Facility Registration</h2>
+            <p class="text-gray-400 text-xs mb-8 text-center">Please enter your details to initialize the suite.</p>
+
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-[9px] uppercase text-gray-500 mb-1 font-black tracking-widest">Your Name</label>
+                    <input type="text" id="set-name" class="w-full bg-navy-900 border border-gray-700 p-3 rounded text-white" placeholder="Jane Smith">
+                </div>
+                <div>
+                    <label class="block text-[9px] uppercase text-gray-500 mb-1 font-black tracking-widest">Company / Facility Name</label>
+                    <input type="text" id="set-company" class="w-full bg-navy-900 border border-gray-700 p-3 rounded text-white" placeholder="General Hospital">
+                </div>
+                <div>
+                    <label class="block text-[9px] uppercase text-gray-500 mb-1 font-black tracking-widest">Email Address</label>
+                    <input type="email" id="set-email" class="w-full bg-navy-900 border border-gray-700 p-3 rounded text-white" placeholder="jane@hospital.com">
+                </div>
+                <button onclick="saveUserSettings()" class="w-full bg-[var(--g-cyan)] text-navy-900 font-black py-4 rounded-xl tech-font text-[10px] uppercase tracking-widest shadow-lg mt-4">Initialize App</button>
+            </div>
+        </div>
+    </div>
+
+    <header class="p-4 border-b border-cyan-900/50 flex justify-between items-center glass sticky top-0 z-50">
+        <div class="flex items-center gap-3">
+            <a href="index.html" class="w-10 h-10 bg-white rounded flex items-center justify-center font-bold text-navy-900 shadow-lg tech-font text-lg">G</a>
+            <div class="tech-font text-[12px] tracking-[0.4em] uppercase font-bold hidden md:block">
+                <span style="color: white">Facility</span> Goldmorr Guard
+            </div>
+        </div>
+        <div class="flex gap-4">
+             <button onclick="openSettings()" class="text-[9px] border border-gray-700 px-4 py-1.5 rounded hover:bg-gray-800 transition-all uppercase tracking-widest font-black text-gray-400">Settings</button>
+        </div>
+    </header>
+
+    <div class="max-w-6xl mx-auto py-8 px-4">
+
+        <!-- PROJECT INFO CARD -->
+        <div class="glass p-8 rounded-[30px] mb-8 border border-gray-800">
+             <h3 class="tech-font text-[12px] mb-6 text-white uppercase tracking-widest font-bold border-b border-gray-800 pb-2">Assessment Context</h3>
+             <div>
+                <label class="block text-[9px] uppercase text-gray-500 mb-2 font-black tracking-widest">Project / Location Name</label>
+                <input type="text" id="p-name" placeholder="e.g. Wing B, Room 204" class="w-full">
+            </div>
+        </div>
+
+        <div id="f-view" class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+
+            <!-- INPUTS -->
+            <div class="glass p-10 rounded-[45px] border-l-4 border-red-600 shadow-2xl">
+                <h3 class="tech-font text-[11px] mb-10 text-red-500 uppercase tracking-widest font-black">Environmental Risk Audit</h3>
+                <div class="space-y-5">
+
+                    <div class="grid grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-[9px] uppercase text-gray-500 mb-2 font-black">Facility Type</label>
+                            <select id="f-type" class="w-full">
+                                <option>Commercial Office</option>
+                                <option>Healthcare Facility</option>
+                                <option>Educational Campus</option>
+                                <option>Industrial Complex</option>
+                                <option>Residential</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[9px] uppercase text-gray-400 mb-2 font-black">Water Event Source</label>
+                            <select id="f-source" class="w-full">
+                                <option>Surface Water</option>
+                                <option>Atmospheric / Humidity</option>
+                                <option>Water Intrusion (Rain/Leak)</option>
+                                <option>Pipe Burst</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-6">
+                         <div>
+                            <label class="block text-[9px] uppercase text-gray-500 mb-2 font-black">Substrate</label>
+                            <select id="f-substrate" class="w-full">
+                                <option>Porous (Drywall/Wood)</option>
+                                <option>Semi-Porous (Brick)</option>
+                                <option>Non-Porous (Concrete/Metal)</option>
+                            </select>
+                        </div>
+                         <div>
+                            <label class="block text-[9px] uppercase text-gray-500 mb-2 font-black">Visible Mold</label>
+                            <select id="f-mold-vis" class="w-full">
+                                <option>Light / Spotted</option>
+                                <option>Medium / Patches</option>
+                                <option>Heavy / Confluent</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-[9px] uppercase text-gray-400 mb-2 font-black">RH %</label>
+                            <input type="number" id="f-rh" placeholder="e.g. 65" class="w-full">
+                        </div>
+                        <div>
+                            <label class="block text-[9px] uppercase text-gray-400 mb-2 font-black">Temp (°F)</label>
+                            <input type="number" id="f-temp" placeholder="e.g. 72" class="w-full">
+                        </div>
+                        <div>
+                            <label class="block text-[9px] uppercase text-gray-400 mb-2 font-black">Substrate H20 %</label>
+                            <input type="number" id="f-sub-h20" placeholder="e.g. 18" class="w-full">
+                        </div>
+                    </div>
+
+                    <div class="p-4 border border-red-900/50 rounded-xl bg-red-900/10">
+                        <p class="text-[9px] text-red-400 font-bold uppercase mb-2">Category 3 Warning</p>
+                        <p class="text-[10px] text-gray-400 leading-relaxed">
+                            <span class="font-bold text-white">Disclaimer:</span> If "Black Water" (Sewage/River Flood) is present, standard Category 3 IICRC protocols must be followed BEFORE any mold remediation begins. This tool assumes Category 1/2 water sources only.
+                        </p>
+                    </div>
+
+                    <button onclick="runAuditProcess()" class="w-full bg-red-600 text-white font-black py-5 rounded-xl tech-font text-[10px] tracking-[0.2em] shadow-2xl mt-4 hover:bg-red-700 transition-colors">
+                        FUNGAL RISK ASSESSMENT
+                    </button>
+                </div>
+            </div>
+
+            <!-- RESULTS -->
+            <div id="f-res" class="hidden glass p-10 rounded-[50px] border-2 border-red-500/50 text-center shadow-2xl">
+                <div class="flex flex-col items-center">
+                    <div class="w-32 h-32 rounded-full border-[10px] border-red-600 flex items-center justify-center mb-8 shadow-lg animate-pulse">
+                        <span id="f-status" class="text-xl font-black text-red-600 uppercase">Critical</span>
+                    </div>
+                    <h4 class="text-red-500 font-black mb-8 tech-font text-[13px] uppercase tracking-widest font-bold">Executive Analysis Summary</h4>
+
+                    <div id="f-analysis-text" class="text-[13px] text-gray-300 space-y-6 text-left border-t border-gray-800 pt-10 px-6 font-light leading-relaxed"></div>
+
+                    <button onclick="uploadReport()" class="mt-12 bg-[var(--g-cyan)] text-navy-900 font-black px-12 py-4 rounded-xl text-[10px] uppercase tracking-widest shadow-xl hover:bg-white transition-colors">
+                        Upload Assessment to Dashboard
+                    </button>
+                     <p class="text-xs text-gray-500 mt-4 text-center max-w-xs">Sends full environmental data to Goldmorr HQ for review.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- INITIALIZATION ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const user = API.getSettings();
+            if(!user) {
+                toggleModal('settings-modal', true);
+            }
+        });
+
+        function saveUserSettings() {
+            const name = document.getElementById('set-name').value;
+            const company = document.getElementById('set-company').value;
+            const email = document.getElementById('set-email').value;
+
+            if(!name || !company || !email) {
+                alert("All fields are required.");
+                return;
+            }
+
+            API.saveSettings({ name, company, email });
+            toggleModal('settings-modal', false);
+        }
+
+        function openSettings() {
+             const user = API.getSettings();
+             if(user) {
+                 document.getElementById('set-name').value = user.name;
+                 document.getElementById('set-company').value = user.company;
+                 document.getElementById('set-email').value = user.email;
+             }
+             toggleModal('settings-modal', true);
+        }
+
+        function runAuditProcess() {
+            const rh = parseFloat(document.getElementById('f-rh').value) || 0;
+            const subH20 = parseFloat(document.getElementById('f-sub-h20').value) || 0;
+            const mold = document.getElementById('f-mold-vis').value;
+
+            // Logic: High RH (>60) or High Substrate Moisture (>15) or Visible Mold = Critical
+            let isCritical = false;
+            if(rh > 60 || subH20 > 15 || mold.includes('Heavy') || mold.includes('Medium')) {
+                isCritical = true;
+            }
+
+            const statusText = isCritical ? 'CRITICAL RISK' : 'MODERATE RISK';
+            const statusColor = isCritical ? 'text-red-600' : 'text-yellow-500';
+
+            // Update UI
+            const statusEl = document.getElementById('f-status');
+            statusEl.innerText = statusText;
+            statusEl.className = `text-xl font-black uppercase ${statusColor}`;
+
+            document.getElementById('f-analysis-text').innerHTML = `
+                <p>• <strong>Environmental Load:</strong> RH at ${rh}% and Substrate Moisture at ${subH20}% indicates ${isCritical ? 'active' : 'potential'} microbial amplification.</p>
+                <p>• <strong>Visual Assessment:</strong> ${mold} growth observed. Source identified as ${document.getElementById('f-source').value}.</p>
+                <p>• <strong>Recommendation:</strong> Professional remediation via Goldmorr Certified Partner is ${isCritical ? 'URGENTLY' : 'highly'} recommended.</p>
+            `;
+
+            document.getElementById('f-res').classList.remove('hidden');
+        }
+
+        function uploadReport() {
+            const user = API.getSettings();
+            if(!user) { alert("Please complete registration in settings."); return; }
+
+            // Gather data
+            const reportData = {
+                user: user,
+                project: {
+                    name: document.getElementById('p-name').value
+                },
+                audit: {
+                    facilityType: document.getElementById('f-type').value,
+                    source: document.getElementById('f-source').value,
+                    rh: document.getElementById('f-rh').value,
+                    mold: document.getElementById('f-mold-vis').value,
+                    riskLevel: document.getElementById('f-status').innerText
+                },
+                appType: 'Facility Guard'
+            };
+
+            // Save
+            API.saveReport(reportData);
+
+            alert(`Assessment for "${reportData.project.name}" uploaded successfully!`);
+        }
+    </script>
+</body>
+</html>
