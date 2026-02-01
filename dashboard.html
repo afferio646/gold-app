@@ -209,6 +209,11 @@
             <input type="text" id="pushURL" placeholder="https://yourcompany.com/offer">
         </div>
 
+        <div class="input-group">
+            <label for="pushAttachment">Upload Information (PDF/Doc/Image)</label>
+            <input type="file" id="pushAttachment" style="width: 100%; padding: 0.6rem; background: #4b5563; border: 1px solid var(--border); border-radius: 4px; color: var(--text-primary);">
+        </div>
+
         <button class="btn-primary" id="sendPushBtn" onclick="sendPushNotification()">Send Notification Now</button>
     </div>
     </div>
@@ -390,6 +395,8 @@ async function sendPushNotification() {
     const targetUrl = document.getElementById('pushURL').value.trim();
     // *** NEW: Read the Audience Filter ***
     const targetFilter = document.getElementById('targetFilter').value;
+    // Get attachment
+    const attachment = document.getElementById('pushAttachment').files[0];
 
     // Safety checks
     if (!title || !body) {
@@ -430,7 +437,8 @@ async function sendPushNotification() {
 
         const mockSubscribers = MOCK_MULTI_CLIENT_DATA[authenticatedExhId].aggregates.activeSubscribers;
 
-        alert(`SUCCESS! Notification request sent. Filter Used: ${targetFilter}. (Message will appear on subscribed devices.)`);
+        const attachMsg = attachment ? `\nAttachment: ${attachment.name}` : "";
+        alert(`SUCCESS! Notification request sent. Filter Used: ${targetFilter}.${attachMsg} (Message will appear on subscribed devices.)`);
 
     } catch (e) {
         console.error("Push API Failure:", e);
