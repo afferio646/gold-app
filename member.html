@@ -71,6 +71,18 @@
                     <input type="tel" id="p-phone" placeholder="(555) 123-4567" class="w-full">
                 </div>
             </div>
+
+            <div class="mt-6 border-t border-gray-800 pt-4">
+                 <label class="block text-[9px] uppercase text-[var(--g-cyan)] mb-2 font-black tracking-widest">Project Photos</label>
+                 <div class="flex items-center gap-4">
+                    <label for="p-photos" class="cursor-pointer bg-navy-900 border border-gray-600 hover:border-[var(--g-cyan)] text-white px-4 py-2 rounded-lg text-xs flex items-center gap-2 transition-all">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                        Upload Photos
+                    </label>
+                    <input type="file" id="p-photos" multiple accept="image/*" class="hidden" onchange="updatePhotoCount('p-photos', 'p-photo-count')">
+                    <span id="p-photo-count" class="text-[10px] text-gray-500 italic">No photos selected</span>
+                 </div>
+            </div>
         </div>
 
         <div class="flex gap-4 border-b border-gray-800 mb-8 overflow-x-auto">
@@ -264,14 +276,44 @@
                     </div>
 
                     <!-- UPLOAD BUTTON -->
-                    <button onclick="uploadReport()" class="w-full bg-[var(--g-cyan)] text-white font-black py-5 rounded-2xl tech-font text-[12px] uppercase tracking-[0.2em] shadow-2xl transition-colors">
-                        Upload Certified Report
+                    <button onclick="openMemberReportModal()" class="w-full bg-[var(--g-cyan)] text-white font-black py-5 rounded-2xl tech-font text-[12px] uppercase tracking-[0.2em] shadow-2xl transition-colors">
+                        Review Certified Report
                     </button>
-                    <p class="text-xs text-gray-500 mt-4 text-center max-w-xs">The PDF report has been sent to the registered email address.</p>
+                    <!-- Note removed as requested -->
                 </div>
             </div>
         </div>
+    </div>
 
+    <!-- MEMBER REPORT MODAL -->
+    <div id="report-modal" class="fixed inset-0 bg-black/98 z-[2000] hidden overflow-y-auto p-4 lg:p-12 flex justify-center items-start">
+        <div class="max-w-4xl w-full bg-white text-gray-900 p-8 lg:p-12 relative animate-in zoom-in duration-300 shadow-2xl">
+            <div class="absolute top-8 right-8 text-[9px] text-gray-400 tech-font">REF ID: GM-MEMBER-SUITE</div>
+
+            <div class="border-b-4 border-black pb-6 mb-8 flex justify-between items-end">
+                <div>
+                    <h2 class="text-3xl font-black uppercase tracking-tighter mb-1 italic">GOLDMORR SYSTEM</h2>
+                    <p class="text-[10px] font-bold text-gray-500 uppercase tracking-[0.4em] tracking-widest">Certified Remediation Protocol</p>
+                </div>
+                <div class="text-right text-[10px] font-bold uppercase tracking-widest text-black italic">Member Suite v2.0</div>
+            </div>
+
+            <div id="modal-content" class="text-[14px] leading-relaxed space-y-8">
+                <!-- Content injected via JS -->
+            </div>
+
+            <div class="bg-black text-white p-6 rounded mt-8 text-center uppercase font-bold text-xs tracking-widest">
+                Compliance: Verified in accordance with Goldmorr Standard Operating Procedures.
+            </div>
+
+            <div class="flex flex-col items-center gap-4 mt-12 border-t-2 border-gray-100 pt-10">
+                <button onclick="uploadReport()" class="bg-[var(--g-cyan)] text-navy-900 px-8 py-3 rounded-lg text-[11px] font-black uppercase tracking-widest hover:brightness-110 transition-all shadow-lg flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                    Export PDF Report
+                </button>
+                <button onclick="document.getElementById('report-modal').classList.add('hidden')" class="text-gray-400 text-[10px] uppercase font-bold hover:text-black">Close Review</button>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -411,6 +453,68 @@
             document.getElementById('p-margin-label').innerText = labelText;
         }
 
+        function openMemberReportModal() {
+            const user = API.getSettings();
+            if(!user) { toggleModal('settings-modal', true); return; }
+
+            const pName = document.getElementById('p-name').value || "N/A";
+            const contact = document.getElementById('p-contact').value || "N/A";
+            const facilityType = document.getElementById('m-type').value;
+            const jobTypes = Array.from(document.getElementById('m-jobtype').selectedOptions).map(o => o.value).join(", ");
+            const moldSq = document.getElementById('m-mold-sqft').value || "0";
+            const cubic = document.getElementById('m-cubic').value || "0";
+            const agent = document.getElementById('m-agent').value;
+
+            const bid = document.getElementById('p-bid').innerText;
+            const cogs = document.getElementById('p-total-cogs').innerText;
+
+            const gm6 = document.getElementById('res-gm6').innerText;
+            const fog = document.getElementById('res-fog').innerText;
+
+            const photoInput = document.getElementById('p-photos');
+            const photoCount = photoInput.files.length;
+            const photoText = photoCount > 0 ? `${photoCount} Photos Attached` : "No Photos Attached";
+
+            document.getElementById('modal-content').innerHTML = `
+                <div class="grid grid-cols-2 gap-x-8 gap-y-4 bg-gray-50 p-6 border border-gray-200 rounded mb-8">
+                    <div><p class="text-[10px] uppercase font-bold text-gray-400">Project Name</p><p class="font-bold text-lg">${pName}</p></div>
+                    <div><p class="text-[10px] uppercase font-bold text-gray-400">Contact</p><p class="font-bold">${contact}</p></div>
+                    <div><p class="text-[10px] uppercase font-bold text-gray-400">Facility Type</p><p class="font-bold">${facilityType}</p></div>
+                    <div><p class="text-[10px] uppercase font-bold text-gray-400">Job Scope</p><p class="font-bold">${jobTypes}</p></div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                    <div>
+                        <p class="font-bold text-lg uppercase border-b-2 border-[var(--g-cyan)] pb-2 mb-4">Diagnostics</p>
+                        <ul class="text-sm space-y-3">
+                            <li class="flex justify-between border-b border-gray-100 pb-2"><span>Visible Mold Load:</span> <span class="font-bold">${moldSq} Sq Ft</span></li>
+                            <li class="flex justify-between border-b border-gray-100 pb-2"><span>Treatment Volume:</span> <span class="font-bold">${cubic} Cu Ft</span></li>
+                            <li class="flex justify-between border-b border-gray-100 pb-2"><span>GM6000 Dosage:</span> <span class="font-bold text-[var(--g-cyan)]">${gm6}</span></li>
+                            <li class="flex justify-between border-b border-gray-100 pb-2"><span>Fogging Agent:</span> <span class="font-bold text-[var(--g-cyan)]">${fog} (${agent})</span></li>
+                        </ul>
+                    </div>
+                    <div>
+                         <p class="font-bold text-lg uppercase border-b-2 border-black pb-2 mb-4">Financials</p>
+                         <ul class="text-sm space-y-3">
+                            <li class="flex justify-between border-b border-gray-100 pb-2"><span>Total Project COGS:</span> <span class="font-bold">${cogs}</span></li>
+                            <li class="flex justify-between border-b border-gray-100 pb-2 items-center">
+                                <span>Suggested Retail Bid:</span>
+                                <span class="font-black text-2xl text-green-600">${bid}</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="bg-gray-100 p-4 rounded text-center">
+                    <p class="text-[10px] uppercase font-bold text-gray-500 mb-2">Attached Documentation</p>
+                    <p class="font-bold text-sm">${photoText}</p>
+                    ${photoCount > 0 ? '<p class="text-[10px] text-gray-400 italic mt-1">(Photos will be appended to final PDF)</p>' : ''}
+                </div>
+            `;
+
+            document.getElementById('report-modal').classList.remove('hidden');
+        }
+
         function uploadReport() {
             const user = API.getSettings();
             if(!user) { alert("Please complete registration in settings."); return; }
@@ -434,13 +538,18 @@
                     cogs: document.getElementById('p-total-cogs').innerText,
                     bid: document.getElementById('p-bid').innerText
                 },
-                appType: 'Member Suite'
+                appType: 'Member Suite',
+                hasPhotos: document.getElementById('p-photos').files.length > 0
             };
 
             // Save via API
             API.saveReport(reportData);
 
-            alert(`Report for "${reportData.project.name}" uploaded successfully! \nA copy has been sent to ${user.email}.`);
+            // Close modal
+            document.getElementById('report-modal').classList.add('hidden');
+
+            // Show Success Alert (since text was removed from screen)
+            alert(`Report for "${reportData.project.name}" uploaded successfully! \nThe PDF report has been sent to ${user.email}.`);
         }
     </script>
 </body>

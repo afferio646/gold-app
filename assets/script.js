@@ -8,3 +8,17 @@ function toggleModal(modalId, show = true) {
     if(show) modal.classList.remove('hidden');
     else modal.classList.add('hidden');
 }
+
+function updatePhotoCount(inputId, countId) {
+    const input = document.getElementById(inputId);
+    const countSpan = document.getElementById(countId);
+    if(input.files.length > 0) {
+        countSpan.innerText = `${input.files.length} Photo(s) Attached`;
+        countSpan.classList.add('text-[var(--g-cyan)]');
+        countSpan.classList.remove('text-gray-500');
+    } else {
+        countSpan.innerText = 'No photos selected';
+        countSpan.classList.remove('text-[var(--g-cyan)]');
+        countSpan.classList.add('text-gray-500');
+    }
+}
