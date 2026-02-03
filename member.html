@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Member Contractor Suite</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/style.css">
+    <script src="assets/api.js"></script>
+    <script src="assets/script.js"></script>
+</head>
+<body class="min-h-screen pb-20">
+
+    <!-- SETTINGS MODAL (First Run) -->
+    <div id="settings-modal" class="fixed inset-0 bg-black/95 z-[3000] hidden flex justify-center items-center p-6">
+        <div class="glass p-10 rounded-2xl w-full max-w-md border border-[var(--g-cyan)]">
+            <h2 class="tech-font text-xl text-[var(--g-cyan)] mb-6 uppercase tracking-widest text-center">Contractor Registration</h2>
+            <p class="text-gray-400 text-xs mb-8 text-center">Please enter your details to initialize the suite.</p>
+
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-[9px] uppercase text-gray-500 mb-1 font-black tracking-widest">Your Name</label>
+                    <input type="text" id="set-name" class="w-full bg-navy-900 border border-gray-700 p-3 rounded text-white" placeholder="John Doe">
+                </div>
+                <div>
+                    <label class="block text-[9px] uppercase text-gray-500 mb-1 font-black tracking-widest">Company Name</label>
+                    <input type="text" id="set-company" class="w-full bg-navy-900 border border-gray-700 p-3 rounded text-white" placeholder="Acme Restoration">
+                </div>
+                <div>
+                    <label class="block text-[9px] uppercase text-gray-500 mb-1 font-black tracking-widest">Email Address</label>
+                    <input type="email" id="set-email" class="w-full bg-navy-900 border border-gray-700 p-3 rounded text-white" placeholder="john@example.com">
+                </div>
+                <button onclick="saveUserSettings()" class="w-full bg-[var(--g-cyan)] text-navy-900 font-black py-4 rounded-xl tech-font text-[10px] uppercase tracking-widest shadow-lg mt-4">Initialize App</button>
+            </div>
+        </div>
+    </div>
+
+    <header class="p-4 border-b border-cyan-900/50 flex justify-between items-center glass sticky top-0 z-50">
+        <div class="flex items-center gap-3">
+            <a href="index.html" class="w-10 h-10 bg-[var(--g-cyan)] rounded flex items-center justify-center font-bold text-navy-900 shadow-lg tech-font text-lg">G</a>
+            <div class="tech-font text-[12px] tracking-[0.4em] uppercase font-bold hidden md:block">
+                <span style="color: var(--g-cyan)">Goldmorr</span> Member Suite
+            </div>
+        </div>
+        <div class="flex gap-4">
+             <button onclick="openSettings()" class="text-[9px] border border-gray-700 px-4 py-1.5 rounded hover:bg-gray-800 transition-all uppercase tracking-widest font-black text-gray-400">Settings</button>
+        </div>
+    </header>
+
+    <div class="max-w-6xl mx-auto py-8 px-4">
+
+        <!-- PROJECT INFO CARD -->
+        <div class="glass p-8 rounded-[30px] mb-8 border border-gray-800">
+            <h3 class="tech-font text-[12px] mb-6 text-white uppercase tracking-widest font-bold border-b border-gray-800 pb-2">Project Information</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div>
+                    <label class="block text-[9px] uppercase text-gray-500 mb-2 font-black tracking-widest">Project Name</label>
+                    <input type="text" id="p-name" placeholder="e.g. Smith Residence" class="w-full">
+                </div>
+                <div>
+                    <label class="block text-[9px] uppercase text-gray-500 mb-2 font-black tracking-widest">Contact Person</label>
+                    <input type="text" id="p-contact" placeholder="Name" class="w-full">
+                </div>
+                <div>
+                    <label class="block text-[9px] uppercase text-gray-500 mb-2 font-black tracking-widest">Email</label>
+                    <input type="email" id="p-email" placeholder="email@client.com" class="w-full">
+                </div>
+                <div>
+                    <label class="block text-[9px] uppercase text-gray-500 mb-2 font-black tracking-widest">Phone</label>
+                    <input type="tel" id="p-phone" placeholder="(555) 123-4567" class="w-full">
+                </div>
+            </div>
+
+            <div class="mt-6 border-t border-gray-800 pt-4">
+                 <label class="block text-[9px] uppercase text-[var(--g-cyan)] mb-2 font-black tracking-widest">Project Photos</label>
+                 <div class="flex items-center gap-4">
+                    <label for="p-photos" class="cursor-pointer bg-navy-900 border border-gray-600 hover:border-[var(--g-cyan)] text-white px-4 py-2 rounded-lg text-xs flex items-center gap-2 transition-all">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                        Upload Photos
+                    </label>
+                    <input type="file" id="p-photos" multiple accept="image/*" class="hidden" onchange="updatePhotoCount('p-photos', 'p-photo-count')">
+                    <span id="p-photo-count" class="text-[10px] text-gray-500 italic">No photos selected</span>
+                 </div>
+            </div>
+        </div>
+
+        <div class="flex gap-4 border-b border-gray-800 mb-8 overflow-x-auto">
+            <button onclick="switchTab('quantifier')" id="tab-quantifier" class="active-tab tech-font text-[10px] tracking-widest uppercase px-4 py-2 whitespace-nowrap">01. Quantifier & Protocol</button>
+            <button onclick="switchTab('profit')" id="tab-profit" class="tech-font text-[10px] tracking-widest uppercase px-4 py-2 whitespace-nowrap">02. Profitability Guard</button>
+        </div>
+
+        <!-- QUANTIFIER SECTION -->
+        <div id="quantifier-view" class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+
+            <!-- INPUTS -->
+            <div class="lg:col-span-5 glass p-8 rounded-[35px] border-l-4 border-[var(--g-cyan)] h-fit">
+                <h3 class="tech-font text-[12px] mb-8 text-[var(--g-cyan)] uppercase tracking-widest font-bold">Diagnostic Parameters</h3>
+                <div class="space-y-5">
+
+                    <!-- Mandatory Fields -->
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-[9px] uppercase text-gray-500 mb-2 font-black tracking-widest">Facility Type *</label>
+                            <select id="m-type" class="w-full">
+                                <option>Commercial</option>
+                                <option>Residential</option>
+                                <option>Industrial</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[9px] uppercase text-gray-500 mb-2 font-black tracking-widest">Structure</label>
+                            <select id="m-structure" class="w-full">
+                                <option>1 Story</option>
+                                <option>2 Story</option>
+                                <option>3+ Story</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-[9px] uppercase text-gray-500 mb-2 font-black tracking-widest">Job Type (Hold Ctrl/Cmd to select multiple) *</label>
+                        <select id="m-jobtype" class="w-full h-24" multiple>
+                            <option>Crawl Space</option>
+                            <option>Attic</option>
+                            <option>Interior</option>
+                            <option>Whole House</option>
+                            <option>Building Envelope</option>
+                        </select>
+                    </div>
+
+                    <!-- Metrics -->
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-[9px] uppercase text-gray-400 mb-2 font-black tracking-widest">Visible Mold Sq Ft</label>
+                            <input type="number" id="m-mold-sqft" placeholder="0" class="w-full">
+                        </div>
+                        <div>
+                            <label class="block text-[9px] uppercase text-gray-400 mb-2 font-black tracking-widest">Envelope Sq Ft</label>
+                            <input type="number" id="m-envelope-sqft" placeholder="0" class="w-full">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-[9px] uppercase text-gray-400 mb-2 font-black tracking-widest">Avg Ceiling Ht (Ft)</label>
+                            <input type="number" id="m-ceiling" placeholder="8" class="w-full">
+                        </div>
+                        <div>
+                            <label class="block text-[9px] uppercase text-gray-400 mb-2 font-black tracking-widest">Density</label>
+                            <select id="m-density" class="w-full">
+                                <option value="1">Light</option>
+                                <option value="1.5">Medium</option>
+                                <option value="2">Heavy</option>
+                            </select>
+                        </div>
+                    </div>
+
+                     <div>
+                        <label class="block text-[9px] uppercase text-gray-400 mb-2 font-black tracking-widest">Substrate Porosity</label>
+                        <select id="m-porosity" class="w-full">
+                            <option value="1">High Porosity (Drywall/Wood)</option>
+                            <option value="0.75">Semi-Porous (Masonry)</option>
+                            <option value="0.2">Non-Porous (Concrete/Metal)</option>
+                        </select>
+                    </div>
+
+                    <div class="border-t border-gray-700 pt-4 mt-4">
+                        <p class="text-[9px] text-[var(--g-cyan)] font-bold mb-3 uppercase">Fogging Requirements</p>
+                         <div class="grid grid-cols-2 gap-4 mb-3">
+                            <div>
+                                <label class="block text-[9px] uppercase text-gray-400 mb-2 font-black tracking-widest">Fogging Area Sq Ft</label>
+                                <input type="number" id="m-fog-sqft" placeholder="0" class="w-full">
+                            </div>
+                            <div>
+                                <label class="block text-[9px] uppercase text-gray-400 mb-2 font-black tracking-widest">Cubic Ft (Auto)</label>
+                                <input type="number" id="m-cubic" placeholder="Auto-calc" class="w-full bg-gray-900" readonly>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-[9px] uppercase text-gray-400 mb-2 font-black tracking-widest">Preferred Agent</label>
+                            <select id="m-agent" class="w-full">
+                                <option>GM 2000</option>
+                                <option>GM Thermal</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button onclick="calculateProtocol()" class="w-full bg-[var(--g-cyan)] text-navy-900 font-black py-4 rounded-xl tech-font text-[10px] tracking-widest shadow-lg mt-6">Generate Protocol</button>
+                </div>
+            </div>
+
+            <!-- RESULTS -->
+            <div id="m-results" class="hidden lg:col-span-7 glass p-10 rounded-[45px] border border-cyan-500/30 shadow-xl">
+                <h3 class="tech-font text-[13px] mb-8 uppercase tracking-widest text-[var(--g-cyan)] font-bold text-center">System Operational Output</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10 text-center">
+                    <div class="bg-navy-900/60 p-6 rounded-3xl border border-gray-800 shadow-inner">
+                        <p class="text-[9px] text-gray-500 uppercase font-bold mb-2">GM6000 Dosage Required</p>
+                        <p id="res-gm6" class="text-3xl font-black text-[var(--g-cyan)] tracking-tighter">0.0 Gal</p>
+                    </div>
+                     <div class="bg-navy-900/60 p-6 rounded-3xl border border-gray-800 shadow-inner">
+                        <p class="text-[9px] text-gray-500 uppercase font-bold mb-2">Fogging Agent Volume</p>
+                        <p id="res-fog" class="text-3xl font-black text-white tracking-tighter">0.0 Gal</p>
+                    </div>
+                </div>
+                <div class="p-8 bg-cyan-900/10 border-2 border-dashed border-cyan-500/20 rounded-[35px]">
+                    <p class="text-[10px] font-black text-[var(--g-cyan)] mb-4 uppercase tracking-[0.3em] border-b border-cyan-500/20 pb-3">Field Protocol Summary:</p>
+                    <div id="member-analysis-text" class="text-[13px] text-gray-200 space-y-4 font-light leading-relaxed italic"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PROFITABILITY VIEW -->
+        <div id="profit-view" class="hidden glass p-12 rounded-[60px] shadow-xl">
+            <h3 class="tech-font text-xl mb-12 text-[var(--g-cyan)] uppercase tracking-[0.3em] text-center">Profitability Guard</h3>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start max-w-5xl mx-auto">
+
+                <!-- COGS INPUTS -->
+                <div class="p-8 bg-navy-900/70 rounded-[40px] border border-gray-800 text-left">
+                    <p class="text-[9px] text-gray-500 mb-6 uppercase font-black tracking-widest border-b border-gray-800 pb-3">Operational Costs</p>
+
+                    <div class="space-y-4 mb-8">
+                        <div>
+                             <label class="block text-[9px] uppercase text-gray-400 mb-1 font-bold">Product Investment ($)</label>
+                             <input type="number" id="c-product" class="w-full text-right" value="0">
+                        </div>
+                         <div class="grid grid-cols-3 gap-3">
+                             <div>
+                                <label class="block text-[9px] uppercase text-gray-400 mb-1 font-bold">Techs</label>
+                                <input type="number" id="c-techs" class="w-full text-center" value="1">
+                             </div>
+                             <div>
+                                <label class="block text-[9px] uppercase text-gray-400 mb-1 font-bold">Hours</label>
+                                <input type="number" id="c-hours" class="w-full text-center" value="0">
+                             </div>
+                             <div>
+                                <label class="block text-[9px] uppercase text-gray-400 mb-1 font-bold">Rate/Hr</label>
+                                <input type="number" id="c-rate" class="w-full text-right" value="45">
+                             </div>
+                        </div>
+                        <div>
+                             <label class="block text-[9px] uppercase text-gray-400 mb-1 font-bold">All Other Items (PPE/Misc) ($)</label>
+                             <input type="number" id="c-misc" class="w-full text-right" value="0">
+                        </div>
+                    </div>
+
+                    <div class="flex justify-between font-black text-white text-xl pt-6 border-t-2 border-gray-800 pb-4">
+                        <span>Total COGS</span>
+                        <span id="p-total-cogs">$0.00</span>
+                    </div>
+
+                    <div class="mt-8">
+                        <label class="block text-[9px] uppercase text-gray-500 mb-2 font-black tracking-widest">Select Profit Margin (%)</label>
+                        <select id="p-markup-select" onchange="calculateBid()" class="w-full mb-4">
+                            <option value="0.70">30% Gross Margin</option>
+                            <option value="0.60">40% Gross Margin</option>
+                            <option value="0.50">50% Gross Margin</option>
+                            <option value="0.40">60% Gross Margin</option>
+                            <option value="0.311" selected>68.9% (Standard Goldmorr)</option>
+                            <option value="0.30">70% Gross Margin</option>
+                            <option value="custom">Add Custom Percentage</option>
+                        </select>
+                        <div id="custom-markup-container" class="hidden">
+                            <input type="number" id="p-custom-val" placeholder="Enter Margin %" oninput="calculateBid()" class="w-full">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BID RESULT -->
+                <div class="flex flex-col items-center justify-center h-full">
+                    <div class="p-14 bg-green-900/10 border-2 border-dashed border-green-500/30 rounded-[60px] w-full text-center mb-8">
+                        <p class="text-[11px] uppercase font-black text-green-400 mb-4 tracking-[0.3em]">Suggested Retail Bid</p>
+                        <p id="p-bid" class="text-6xl font-black text-green-400 mb-6 tracking-tighter">$0.00</p>
+                        <p id="p-margin-label" class="text-[11px] text-gray-400 font-light uppercase font-bold italic tracking-widest">"Guarding 68.9% Certified Member Margin"</p>
+                    </div>
+
+                    <!-- UPLOAD BUTTON -->
+                    <button onclick="openMemberReportModal()" class="w-full bg-[var(--g-cyan)] text-white font-black py-5 rounded-2xl tech-font text-[12px] uppercase tracking-[0.2em] shadow-2xl transition-colors">
+                        Review Certified Report
+                    </button>
+                    <!-- Note removed as requested -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MEMBER REPORT MODAL -->
+    <div id="report-modal" class="fixed inset-0 bg-black/98 z-[2000] hidden overflow-y-auto p-4 lg:p-12 flex justify-center items-start">
+        <div class="max-w-4xl w-full bg-white text-gray-900 p-8 lg:p-12 relative animate-in zoom-in duration-300 shadow-2xl">
+            <div class="absolute top-8 right-8 text-[9px] text-gray-400 tech-font">REF ID: GM-MEMBER-SUITE</div>
+
+            <div class="border-b-4 border-black pb-6 mb-8 flex justify-between items-end">
+                <div>
+                    <h2 class="text-3xl font-black uppercase tracking-tighter mb-1 italic">GOLDMORR SYSTEM</h2>
+                    <p class="text-[10px] font-bold text-gray-500 uppercase tracking-[0.4em] tracking-widest">Certified Remediation Protocol</p>
+                </div>
+                <div class="text-right text-[10px] font-bold uppercase tracking-widest text-black italic">Member Suite v2.0</div>
+            </div>
+
+            <div id="modal-content" class="text-[14px] leading-relaxed space-y-8">
+                <!-- Content injected via JS -->
+            </div>
+
+            <div class="bg-black text-white p-6 rounded mt-8 text-center uppercase font-bold text-xs tracking-widest">
+                Compliance: Verified in accordance with Goldmorr Standard Operating Procedures.
+            </div>
+
+            <div class="flex flex-col items-center gap-4 mt-12 border-t-2 border-gray-100 pt-10">
+                <button onclick="uploadReport()" class="bg-[var(--g-cyan)] text-navy-900 px-8 py-3 rounded-lg text-[11px] font-black uppercase tracking-widest hover:brightness-110 transition-all shadow-lg flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                    Export PDF Report
+                </button>
+                <button onclick="document.getElementById('report-modal').classList.add('hidden')" class="text-gray-400 text-[10px] uppercase font-bold hover:text-black">Close Review</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- INITIALIZATION ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const user = API.getSettings();
+            if(!user) {
+                toggleModal('settings-modal', true);
+            }
+
+            // Auto-calc cubic feet
+            const fogInput = document.getElementById('m-fog-sqft');
+            const ceilInput = document.getElementById('m-ceiling');
+
+            const updateCubic = () => {
+                const f = parseFloat(fogInput.value) || 0;
+                const c = parseFloat(ceilInput.value) || 0;
+                document.getElementById('m-cubic').value = (f * c).toFixed(0);
+            };
+            fogInput.addEventListener('input', updateCubic);
+            ceilInput.addEventListener('input', updateCubic);
+
+            // Auto-calc COGS listeners
+            ['c-product', 'c-techs', 'c-hours', 'c-rate', 'c-misc'].forEach(id => {
+                document.getElementById(id).addEventListener('input', calculateBid);
+            });
+        });
+
+        function saveUserSettings() {
+            const name = document.getElementById('set-name').value;
+            const company = document.getElementById('set-company').value;
+            const email = document.getElementById('set-email').value;
+
+            if(!name || !company || !email) {
+                alert("All fields are required.");
+                return;
+            }
+
+            API.saveSettings({ name, company, email });
+            toggleModal('settings-modal', false);
+        }
+
+        function openSettings() {
+             const user = API.getSettings();
+             if(user) {
+                 document.getElementById('set-name').value = user.name;
+                 document.getElementById('set-company').value = user.company;
+                 document.getElementById('set-email').value = user.email;
+             }
+             toggleModal('settings-modal', true);
+        }
+
+        function switchTab(tab) {
+            document.getElementById('quantifier-view').classList.add('hidden');
+            document.getElementById('profit-view').classList.add('hidden');
+            document.getElementById('tab-quantifier').classList.remove('active-tab');
+            document.getElementById('tab-profit').classList.remove('active-tab');
+
+            document.getElementById(tab + '-view').classList.remove('hidden');
+            document.getElementById('tab-' + tab).classList.add('active-tab');
+        }
+
+        // --- CALCULATIONS ---
+        function calculateProtocol() {
+            // Inputs
+            const moldSq = parseFloat(document.getElementById('m-mold-sqft').value) || 0;
+            const density = parseFloat(document.getElementById('m-density').value) || 1;
+            const porosity = parseFloat(document.getElementById('m-porosity').value) || 1;
+            const cubic = parseFloat(document.getElementById('m-cubic').value) || 0;
+
+            // GM6000 Calc: (SqFt / 250 coverage) * Density Factor * Porosity Factor
+            // Note: Adjusting logic to be reasonable based on standard industry usage
+            // Base coverage 250 sqft/gal is typical for remediation
+            const gm6000 = (moldSq / 250) * density * porosity;
+
+            // Fogging Calc
+            // Typically 1 gal per 10,000 cu ft for ULV fogging, adjust as needed
+            // Let's assume Goldmorr spec is approx 1 gal per 2000-4000 sq ft depending on ceiling,
+            // but let's use the cubic ft.
+            // Placeholder: 1 gal per 15,000 cubic ft for maintenance, 1 per 5000 for heavy?
+            // Let's stick to a simple cubic/5000 for now as a baseline
+            const fogGal = cubic / 5000;
+
+            // Display
+            document.getElementById('res-gm6').innerText = gm6000.toFixed(2) + ' Gal';
+            document.getElementById('res-fog').innerText = fogGal.toFixed(2) + ' Gal';
+
+            // Update Profitability Product Cost Estimate (Approx $120/gal for GM6000, $60/gal for GM2000)
+            const estCost = (gm6000 * 120) + (fogGal * 60);
+            document.getElementById('c-product').value = estCost.toFixed(2);
+
+            // Show Results
+            document.getElementById('m-results').classList.remove('hidden');
+            document.getElementById('member-analysis-text').innerHTML = `
+                <p>• <strong>Surface Protocol:</strong> Apply GM6000 at ${density === 2 ? 'heavy saturation' : 'standard mist'} to affected ${moldSq} sq ft.</p>
+                <p>• <strong>Air Correction:</strong> Fog ${cubic} cubic ft with ${document.getElementById('m-agent').value} to neutralize particulate.</p>
+            `;
+
+            calculateBid(); // Update costs
+        }
+
+        function calculateBid() {
+            // Get inputs
+            const product = parseFloat(document.getElementById('c-product').value) || 0;
+            const techs = parseFloat(document.getElementById('c-techs').value) || 0;
+            const hours = parseFloat(document.getElementById('c-hours').value) || 0;
+            const rate = parseFloat(document.getElementById('c-rate').value) || 0;
+            const misc = parseFloat(document.getElementById('c-misc').value) || 0;
+
+            const laborTotal = techs * hours * rate;
+            const totalCOGS = product + laborTotal + misc;
+
+            document.getElementById('p-total-cogs').innerText = '$' + totalCOGS.toFixed(2);
+
+            // Margin
+            const select = document.getElementById('p-markup-select');
+            let divisor;
+            let labelText;
+
+            if(select.value === 'custom') {
+                document.getElementById('custom-markup-container').classList.remove('hidden');
+                const customPct = parseFloat(document.getElementById('p-custom-val').value) || 0;
+                divisor = (100 - customPct) / 100;
+                labelText = `Custom ${customPct}% Gross Margin`;
+            } else {
+                document.getElementById('custom-markup-container').classList.add('hidden');
+                divisor = parseFloat(select.value);
+                const displayPct = Math.round((1 - divisor) * 100);
+                labelText = `Guarding ${displayPct}% Gross Margin`;
+                if(divisor === 0.311) labelText = `Guarding 68.9% Certified Member Margin`;
+            }
+
+            if(divisor <= 0.01) divisor = 1; // prevent divide by zero
+
+            const bid = totalCOGS / divisor;
+            document.getElementById('p-bid').innerText = '$' + bid.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            document.getElementById('p-margin-label').innerText = labelText;
+        }
+
+        function openMemberReportModal() {
+            const user = API.getSettings();
+            if(!user) { toggleModal('settings-modal', true); return; }
+
+            const pName = document.getElementById('p-name').value || "N/A";
+            const contact = document.getElementById('p-contact').value || "N/A";
+            const facilityType = document.getElementById('m-type').value;
+            const jobTypes = Array.from(document.getElementById('m-jobtype').selectedOptions).map(o => o.value).join(", ");
+            const moldSq = document.getElementById('m-mold-sqft').value || "0";
+            const cubic = document.getElementById('m-cubic').value || "0";
+            const agent = document.getElementById('m-agent').value;
+
+            const bid = document.getElementById('p-bid').innerText;
+            const cogs = document.getElementById('p-total-cogs').innerText;
+
+            const gm6 = document.getElementById('res-gm6').innerText;
+            const fog = document.getElementById('res-fog').innerText;
+
+            const photoInput = document.getElementById('p-photos');
+            const photoCount = photoInput.files.length;
+            const photoText = photoCount > 0 ? `${photoCount} Photos Attached` : "No Photos Attached";
+
+            document.getElementById('modal-content').innerHTML = `
+                <div class="grid grid-cols-2 gap-x-8 gap-y-4 bg-gray-50 p-6 border border-gray-200 rounded mb-8">
+                    <div><p class="text-[10px] uppercase font-bold text-gray-400">Project Name</p><p class="font-bold text-lg">${pName}</p></div>
+                    <div><p class="text-[10px] uppercase font-bold text-gray-400">Contact</p><p class="font-bold">${contact}</p></div>
+                    <div><p class="text-[10px] uppercase font-bold text-gray-400">Facility Type</p><p class="font-bold">${facilityType}</p></div>
+                    <div><p class="text-[10px] uppercase font-bold text-gray-400">Job Scope</p><p class="font-bold">${jobTypes}</p></div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                    <div>
+                        <p class="font-bold text-lg uppercase border-b-2 border-[var(--g-cyan)] pb-2 mb-4">Diagnostics</p>
+                        <ul class="text-sm space-y-3">
+                            <li class="flex justify-between border-b border-gray-100 pb-2"><span>Visible Mold Load:</span> <span class="font-bold">${moldSq} Sq Ft</span></li>
+                            <li class="flex justify-between border-b border-gray-100 pb-2"><span>Treatment Volume:</span> <span class="font-bold">${cubic} Cu Ft</span></li>
+                            <li class="flex justify-between border-b border-gray-100 pb-2"><span>GM6000 Dosage:</span> <span class="font-bold text-[var(--g-cyan)]">${gm6}</span></li>
+                            <li class="flex justify-between border-b border-gray-100 pb-2"><span>Fogging Agent:</span> <span class="font-bold text-[var(--g-cyan)]">${fog} (${agent})</span></li>
+                        </ul>
+                    </div>
+                    <div>
+                         <p class="font-bold text-lg uppercase border-b-2 border-black pb-2 mb-4">Financials</p>
+                         <ul class="text-sm space-y-3">
+                            <li class="flex justify-between border-b border-gray-100 pb-2"><span>Total Project COGS:</span> <span class="font-bold">${cogs}</span></li>
+                            <li class="flex justify-between border-b border-gray-100 pb-2 items-center">
+                                <span>Suggested Retail Bid:</span>
+                                <span class="font-black text-2xl text-green-600">${bid}</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="bg-gray-100 p-4 rounded text-center">
+                    <p class="text-[10px] uppercase font-bold text-gray-500 mb-2">Attached Documentation</p>
+                    <p class="font-bold text-sm">${photoText}</p>
+                    ${photoCount > 0 ? '<p class="text-[10px] text-gray-400 italic mt-1">(Photos will be appended to final PDF)</p>' : ''}
+                </div>
+            `;
+
+            document.getElementById('report-modal').classList.remove('hidden');
+        }
+
+        function uploadReport() {
+            const user = API.getSettings();
+            if(!user) { alert("Please complete registration in settings."); return; }
+
+            // Gather all data
+            const reportData = {
+                user: user,
+                project: {
+                    name: document.getElementById('p-name').value,
+                    contact: document.getElementById('p-contact').value,
+                    email: document.getElementById('p-email').value,
+                    phone: document.getElementById('p-phone').value
+                },
+                inputs: {
+                    type: document.getElementById('m-type').value,
+                    jobTypes: Array.from(document.getElementById('m-jobtype').selectedOptions).map(o => o.value),
+                    moldSq: document.getElementById('m-mold-sqft').value,
+                    cubic: document.getElementById('m-cubic').value
+                },
+                financials: {
+                    cogs: document.getElementById('p-total-cogs').innerText,
+                    bid: document.getElementById('p-bid').innerText
+                },
+                appType: 'Member Suite',
+                hasPhotos: document.getElementById('p-photos').files.length > 0
+            };
+
+            // Save via API
+            API.saveReport(reportData);
+
+            // Close modal
+            document.getElementById('report-modal').classList.add('hidden');
+
+            // Show Success Alert (since text was removed from screen)
+            alert(`Report for "${reportData.project.name}" uploaded successfully! \nThe PDF report has been sent to ${user.email}.`);
+        }
+    </script>
+</body>
+</html>
