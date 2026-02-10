@@ -8,6 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/style.css">
     <script src="assets/api.js"></script>
+    <script src="assets/script.js"></script>
     <script src="assets/facility.js"></script>
 </head>
 <body class="min-h-screen pb-20">
@@ -115,27 +116,27 @@
                             <div>
                                 <label class="block text-[9px] uppercase text-gray-500 mb-1 font-black">Surface / Structural RH (%)</label>
                                 <input type="number" id="f-rh" placeholder="0-100" class="w-full bg-navy-900 border-gray-700 rounded text-white p-2">
-                                <p class="text-[9px] text-gray-500 mt-1 italic leading-tight"><=75=0; 75-80=10; 80-85=20; 85-90=28; >90=35</p>
+                                <p class="text-[9px] text-gray-500 mt-1 italic leading-tight"></p>
                             </div>
                              <div>
                                 <label class="block text-[9px] uppercase text-gray-500 mb-1 font-black">Surface RH Time Pattern</label>
                                 <select id="f-rh-pattern" class="w-full bg-navy-900 border-gray-700 rounded text-white p-2">
-                                    <option value="0">None / brief spikes</option>
-                                    <option value="20">30-day avg >= 80%</option>
-                                    <option value="10">7-day >= 98%</option>
-                                    <option value="15">24h near-saturation</option>
+                                    <option value="0">None/brief spikes</option>
+                                    <option value="20">30-day avg surface RH >= 80%</option>
+                                    <option value="10">7-day avg surface RH >= 98%</option>
+                                    <option value="15">24-hour near-saturation event</option>
                                 </select>
                                 <p class="text-[9px] text-gray-500 mt-1 italic leading-tight">Long-term moisture trends significantly increase risk.</p>
                             </div>
                             <div>
                                 <label class="block text-[9px] uppercase text-gray-500 mb-1 font-black">Temp in Growth Range (°F)</label>
                                 <input type="number" id="f-temp" placeholder="e.g. 72" class="w-full bg-navy-900 border-gray-700 rounded text-white p-2">
-                                <p class="text-[9px] text-gray-500 mt-1 italic leading-tight">41-104°F=10pts; Edge ranges=5pts; Else=0</p>
+                                <p class="text-[9px] text-gray-500 mt-1 italic leading-tight"></p>
                             </div>
                             <div>
                                 <label class="block text-[9px] uppercase text-gray-500 mb-1 font-black">Wood MC % (Optional)</label>
                                 <input type="number" id="f-wood-mc" placeholder="%" class="w-full bg-navy-900 border-gray-700 rounded text-white p-2">
-                                <p class="text-[9px] text-gray-500 mt-1 italic leading-tight"><16=0; 16-19=6; 19-22=12; >22=15</p>
+                                <p class="text-[9px] text-gray-500 mt-1 italic leading-tight"></p>
                             </div>
                         </div>
                     </div>
@@ -150,14 +151,16 @@
                             <div>
                                 <label class="block text-[9px] uppercase text-gray-500 mb-1 font-black">Material Sensitivity</label>
                                 <select id="f-material" class="w-full bg-navy-900 border-gray-700 rounded text-white p-2">
-                                    <option value="0">Non-porous (Glass/Metal)</option>
-                                    <option value="2">Concrete</option>
-                                    <option value="5">Wood (Solid)</option>
-                                    <option value="6">OSB / Plywood</option>
-                                    <option value="7">Insulation</option>
-                                    <option value="8">Drywall / Carpet / Ceiling</option>
+                                    <option value="8">Drywall / paper-faced</option>
+                                    <option value="5">Wood / framing</option>
+                                    <option value="6">Composite / OSB</option>
+                                    <option value="8">Carpet / padding</option>
+                                    <option value="7">Insulation (fiberglass)</option>
+                                    <option value="8">Ceiling tile</option>
+                                    <option value="2">Concrete / masonry</option>
+                                    <option value="0">Metal / non-porous</option>
                                 </select>
-                                <p class="text-[9px] text-gray-500 mt-1 italic leading-tight">Non-porous=0; Concrete=2; Wood=5; OSB=6; Insulation=7; Drywall=8</p>
+                                <p class="text-[9px] text-gray-500 mt-1 italic leading-tight"></p>
                             </div>
                             <div>
                                 <label class="block text-[9px] uppercase text-gray-500 mb-1 font-black">Time Since Wetting</label>
@@ -184,11 +187,11 @@
                                 <label class="block text-[9px] uppercase text-gray-500 mb-1 font-black">Indoor RH Persistence</label>
                                 <select id="f-rh-persist" class="w-full bg-navy-900 border-gray-700 rounded text-white p-2">
                                     <option value="0">Mostly < 60%</option>
-                                    <option value="5">60 - 65%</option>
-                                    <option value="9">65 - 70%</option>
-                                    <option value="15">> 70%</option>
+                                    <option value="5">Often 60-65%</option>
+                                    <option value="9">Often 65-70%</option>
+                                    <option value="15">Often > 70%</option>
                                 </select>
-                                <p class="text-[9px] text-gray-500 mt-1 italic leading-tight"><60=0; 60-65=5; 65-70=9; >70=15</p>
+                                <p class="text-[9px] text-gray-500 mt-1 italic leading-tight"></p>
                             </div>
                         </div>
                     </div>
@@ -207,7 +210,7 @@
                                     <option value="6" data-key="local">Localized (< 10 sqft)</option>
                                     <option value="10" data-key="wide">Widespread (> 10 sqft)</option>
                                 </select>
-                                <p class="text-[9px] text-gray-500 mt-1 italic leading-tight">None=0; Localized=6(20 AQ); Widespread=10(35 AQ)</p>
+                                <p class="text-[9px] text-gray-500 mt-1 italic leading-tight"></p>
                             </div>
                              <div>
                                 <label class="block text-[9px] uppercase text-gray-500 mb-1 font-black">Condensation / Wetness</label>
@@ -217,7 +220,7 @@
                                     <option value="7">Frequent</option>
                                     <option value="10">Persistent</option>
                                 </select>
-                                <p class="text-[9px] text-gray-500 mt-1 italic leading-tight">None=0; Occasional=3; Frequent=7; Persistent=10</p>
+                                <p class="text-[9px] text-gray-500 mt-1 italic leading-tight"></p>
                             </div>
                             <div>
                                 <label class="block text-[9px] uppercase text-gray-500 mb-1 font-black">Musty Odor</label>
@@ -271,7 +274,7 @@
 
                         <div class="relative w-40 h-40 mb-6 flex items-center justify-center">
                              <div class="absolute inset-0 rounded-full border-[12px] border-gray-800"></div>
-                             <div class="absolute inset-0 rounded-full border-[12px] border-[var(--g-cyan)] border-t-transparent animate-spin-slow"></div>
+                             <div id="score-spinner" class="absolute inset-0 rounded-full border-[12px] border-[var(--g-cyan)] border-t-transparent animate-spin-slow"></div>
                              <div class="flex flex-col items-center">
                                  <span id="f-status" class="text-2xl font-black text-[var(--g-cyan)] uppercase">--</span>
                                  <span class="text-[9px] text-gray-500 uppercase font-bold tracking-widest mt-1">Risk Band</span>

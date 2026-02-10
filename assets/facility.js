@@ -169,6 +169,28 @@ function getText(id) {
 
 // --- MAIN PROCESS ---
 
+function generateAnalysisPoints(inputs) {
+    const points = [];
+
+    // Core Environmental
+    if (inputs.rh > 75) points.push(`<strong>High Humidity:</strong> Surface RH at ${inputs.rh}% indicates potential for microbial amplification.`);
+    if (inputs.rhPattern && parseInt(inputs.rhPattern) > 0) points.push(`<strong>Moisture Persistence:</strong> Long-term moisture patterns detected.`);
+    if (inputs.temp >= 41 && inputs.temp <= 104) points.push(`<strong>Growth Temperature:</strong> Current temperature (${inputs.temp}°F) supports fungal growth.`);
+
+    // Moisture History
+    if (inputs.waterEvent && parseInt(inputs.waterEvent) > 0) points.push(`<strong>Water Event:</strong> Recent significant water intrusion event noted.`);
+    if (inputs.timeWetKey && ['3-7d', '8-30d', '>30d'].includes(inputs.timeWetKey)) points.push(`<strong>Saturation Duration:</strong> Materials have been wet for an extended period.`);
+
+    // Observations
+    if (inputs.moldVisKey && inputs.moldVisKey !== 'none') points.push(`<strong>Visible Growth:</strong> ${inputs.moldVisKey === 'wide' ? 'Widespread' : 'Localized'} fungal growth observed.`);
+    if (inputs.odor && parseInt(inputs.odor) > 0) points.push(`<strong>Olfactory Signs:</strong> Musty odor detected, indicating active MVOCs.`);
+    if (inputs.hvac && parseInt(inputs.hvac) > 8) points.push(`<strong>HVAC Risk:</strong> High potential for distribution via air handling systems.`);
+
+    if (points.length === 0) points.push("No critical high-risk factors identified based on current inputs.");
+
+    return points;
+}
+
 function runAuditProcess() {
     // 1. Gather Project Info
     const projectInfo = {
@@ -217,7 +239,16 @@ function runAuditProcess() {
     }
 
     // 5. Update UI
-    document.getElementById('legacy-text').innerHTML = legacyText;
+    const analysisPoints = generateAnalysisPoints(inputs);
+    const bulletList = `<ul class="list-disc pl-5 space-y-2 mt-4 text-gray-300 text-[12px] font-light leading-relaxed">
+        ${analysisPoints.map(p => `<li>${p}</li>`).join('')}
+    </ul>`;
+
+    document.getElementById('legacy-text').innerHTML = legacyText + bulletList;
+
+    // Stop Spinner
+    const spinner = document.getElementById('score-spinner');
+    if(spinner) spinner.classList.remove('animate-spin-slow');
 
     const statusEl = document.getElementById('f-status');
     statusEl.innerText = struct.score;
@@ -231,16 +262,20 @@ function runAuditProcess() {
     document.getElementById('f-res').classList.remove('hidden');
 
     // Store data for report
-    window.currentReportData = { struct, aq, structBand, aqBand, inputs, projectInfo, legacyText };
+    window.currentReportData = { struct, aq, structBand, aqBand, inputs, projectInfo, legacyText, analysisPoints };
 }
 
 function openReportModal() {
     const data = window.currentReportData;
     if (!data) { runAuditProcess(); if (!window.currentReportData) return; }
 
-    const { struct, aq, structBand, aqBand, projectInfo, legacyText } = window.currentReportData;
+    const { struct, aq, structBand, aqBand, projectInfo, legacyText, analysisPoints } = window.currentReportData;
     const pName = document.getElementById('p-name').value || "N/A";
     const photoCount = document.getElementById('f-photos').files.length;
+
+    const reportBullets = `<ul class="list-disc pl-5 space-y-2 mt-4 text-sm text-gray-800 leading-relaxed">
+        ${analysisPoints ? analysisPoints.map(p => `<li>${p}</li>`).join('') : ''}
+    </ul>`;
 
     // Generate Tables
     const rowBuilder = (d) => `
@@ -267,6 +302,7 @@ function openReportModal() {
             <p class="font-bold text-lg uppercase border-l-4 border-[var(--g-cyan)] pl-4 mb-4 italic">SUBJECT: PROJECT ANALYSIS STRATEGY</p>
             <div class="text-sm text-gray-800 leading-relaxed space-y-2">
                 ${legacyText}
+                ${reportBullets}
             </div>
              <p class="text-[11px] text-gray-500 italic mt-4">Attached Evidence: ${photoCount} Photo(s) (See Appendix)</p>
         </div>
