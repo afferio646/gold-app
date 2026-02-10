@@ -191,6 +191,28 @@ function generateAnalysisPoints(inputs) {
     return points;
 }
 
+function generateRecoveryStrategy(inputs, projectInfo) {
+    const isPorous = ['Drywall / paper-faced', 'Wood / framing', 'Composite / OSB', 'Carpet / padding', 'Insulation (fiberglass)', 'Ceiling tile'].includes(inputs.materialName);
+    const materialAction = isPorous
+        ? `Microbial colonization detected on Porous (${inputs.materialName}). Saturate application of GM6000 penetrating modifiers required.`
+        : `Surface contamination on Non-Porous (${inputs.materialName}). Standard GM6000 surface treatment protocols apply.`;
+
+    const strategy = `
+        <div class="mt-8 mb-8 border-t border-gray-200 pt-8">
+            <h4 class="font-bold text-lg uppercase border-l-4 border-[var(--g-cyan)] pl-4 mb-4 italic">SUBJECT: CERTIFIED RECOVERY STRATEGY</h4>
+            <p class="text-sm text-gray-800 leading-relaxed mb-4">
+                Based on the calculated environmental load for this <strong>${projectInfo.type}</strong> environment, traditional mechanical removal is insufficient. The following Goldmorr protocols are strictly mandated to achieve IICRC air quality standards:
+            </p>
+            <ul class="list-disc pl-5 space-y-3 text-sm text-gray-800 leading-relaxed">
+                <li><strong>Environmental Factors:</strong> Relative Humidity of ${inputs.rh}% and water source identified as ${projectInfo.source} has compromised the building envelope.</li>
+                <li><strong>Substrate Impact:</strong> ${materialAction}</li>
+                <li><strong>Air Particle Clearance:</strong> Whole-structure non-mechanical air scrubbing via proprietary GM2000 fogging protocol is mandatory for particle neutralization.</li>
+            </ul>
+        </div>
+    `;
+    return strategy;
+}
+
 function runAuditProcess() {
     // 1. Gather Project Info
     const projectInfo = {
@@ -199,12 +221,14 @@ function runAuditProcess() {
     };
 
     // 2. Gather Risk Inputs
+    const materialSelect = document.getElementById('f-material');
     const inputs = {
         rh: parseFloat(document.getElementById('f-rh').value) || 0,
         rhPattern: document.getElementById('f-rh-pattern').value,
         temp: parseFloat(document.getElementById('f-temp').value) || 0,
         woodMc: document.getElementById('f-wood-mc').value ? parseFloat(document.getElementById('f-wood-mc').value) : null,
-        material: document.getElementById('f-material').value,
+        material: materialSelect.value,
+        materialName: materialSelect.options[materialSelect.selectedIndex].text,
         timeWet: document.getElementById('f-time-wet').value,
         timeWetKey: document.getElementById('f-time-wet').selectedOptions[0].getAttribute('data-key'),
         waterEvent: document.getElementById('f-water-event').value,
@@ -269,13 +293,15 @@ function openReportModal() {
     const data = window.currentReportData;
     if (!data) { runAuditProcess(); if (!window.currentReportData) return; }
 
-    const { struct, aq, structBand, aqBand, projectInfo, legacyText, analysisPoints } = window.currentReportData;
+    const { struct, aq, structBand, aqBand, projectInfo, legacyText, analysisPoints, inputs } = window.currentReportData;
     const pName = document.getElementById('p-name').value || "N/A";
     const photoCount = document.getElementById('f-photos').files.length;
 
     const reportBullets = `<ul class="list-disc pl-5 space-y-2 mt-4 text-sm text-gray-800 leading-relaxed">
         ${analysisPoints ? analysisPoints.map(p => `<li>${p}</li>`).join('') : ''}
     </ul>`;
+
+    const recoveryStrategy = generateRecoveryStrategy(inputs, projectInfo);
 
     // Generate Tables
     const rowBuilder = (d) => `
@@ -306,6 +332,9 @@ function openReportModal() {
             </div>
              <p class="text-[11px] text-gray-500 italic mt-4">Attached Evidence: ${photoCount} Photo(s) (See Appendix)</p>
         </div>
+
+        <!-- Certified Recovery Strategy -->
+        ${recoveryStrategy}
 
         <!-- Scores Summary -->
         <div class="grid grid-cols-2 gap-8 mb-8">
