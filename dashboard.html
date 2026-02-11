@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AfferioIQ Client Dashboard</title>
+
+    <!-- PWA Manifest & Icons -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#111827">
+    <link rel="apple-touch-icon" href="icon-512.png">
+
     <style>
         /* --- THEME VARIABLES (Consistent with PWA) --- */
         :root {
@@ -457,6 +463,13 @@ async function sendPushNotification() {
             // Optional: Auto-populate the username for quick testing
             // document.getElementById('username').value = "SCHUTTE-T25";
             // document.getElementById('password').value = "password";
+
+            // Service Worker Registration
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(reg => console.log('SW registered!', reg.scope))
+                    .catch(err => console.log('SW failed!', err));
+            }
         });
     </script>
 </body>
