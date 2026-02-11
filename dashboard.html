@@ -463,14 +463,8 @@ async function sendPushNotification() {
             // Optional: Auto-populate the username for quick testing
             // document.getElementById('username').value = "SCHUTTE-T25";
             // document.getElementById('password').value = "password";
-
-            // Service Worker Registration
-            if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('/sw.js')
-                    .then(reg => console.log('SW registered!', reg.scope))
-                    .catch(err => console.log('SW failed!', err));
-            }
         });
     </script>
+    <script src="assets/pwa.js"></script>
 </body>
 </html>

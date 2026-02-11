@@ -390,7 +390,31 @@ function openReportModal() {
 function uploadReport() {
     const user = API.getSettings();
     if(!user) { alert("Please complete registration in settings."); return; }
-    alert("Report exported successfully!");
+
+    // Gather minimal report data from the DOM
+    // (Note: Ideally we'd pass the full `window.currentReportData` object,
+    // but the API expects a simplified structure for the dashboard list)
+    const pName = document.getElementById('p-name').value || "N/A";
+    const type = document.getElementById('f-type').value;
+    const score = document.getElementById('f-status').innerText;
+
+    const reportData = {
+        user: user,
+        project: {
+            name: pName,
+            type: type
+        },
+        appType: 'Facility Guard', // Identifier for Dashboard
+        score: score,
+        timestamp: new Date().toLocaleString(),
+        // Optional: include full data if needed for backend
+        details: window.currentReportData
+    };
+
+    // Save to Mock DB (Dashboard will read this)
+    API.saveReport(reportData);
+
+    alert(`Report for "${pName}" exported successfully! \n(Saved to Dashboard)`);
     document.getElementById('report-modal').classList.add('hidden');
 }
 
