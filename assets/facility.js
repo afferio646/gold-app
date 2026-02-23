@@ -162,19 +162,19 @@ function runAuditProcess() {
 
     // Update Structural Score
     document.getElementById('score-struct-val').innerText = struct.score;
-    document.getElementById('score-struct-val').className = `text-5xl font-black mb-2 ${structBand.color}`;
+    document.getElementById('score-struct-val').className = `text-3xl font-black mb-1 ${structBand.color}`;
 
     const sText = document.getElementById('struct-text');
     sText.innerText = structBand.name;
-    sText.className = `text-[9px] uppercase tracking-widest font-bold text-center ${structBand.color}`;
+    sText.className = `text-[8px] uppercase tracking-widest font-bold text-center ${structBand.color}`;
 
     // Update AQ Score
     document.getElementById('score-aq-val').innerText = aq.score;
-    document.getElementById('score-aq-val').className = `text-5xl font-black mb-2 ${aqBand.color}`;
+    document.getElementById('score-aq-val').className = `text-3xl font-black mb-1 ${aqBand.color}`;
 
     const aqText = document.getElementById('aq-text');
     aqText.innerText = aqBand.name;
-    aqText.className = `text-[9px] uppercase tracking-widest font-bold text-center ${aqBand.color}`;
+    aqText.className = `text-[8px] uppercase tracking-widest font-bold text-center ${aqBand.color}`;
 
     // Show Results
     document.getElementById('f-res').classList.remove('hidden');
