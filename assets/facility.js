@@ -155,38 +155,26 @@ function runAuditProcess() {
         ${analysisPoints.map(p => `<li>${p}</li>`).join('')}
     </ul>` : `<ul class="list-disc pl-5 space-y-2 mt-4 text-gray-400 text-[11px] font-light leading-relaxed"><li>No critical high-risk factors identified based on current inputs.</li></ul>`;
 
-    // 4. Update Result Card (Gauge & Text)
+    // 4. Update Result Card (Dual Scores)
     // Update Text Sections
     document.getElementById('legacy-text').innerHTML = legacyText;
     document.getElementById('analysis-bullets').innerHTML = bulletList;
 
-    // Update Gauge Visuals
-    // Max rotation is 135deg (full). 0 = -135deg.
-    // Score 0-100 mapped to -135 to 135? No, css is -135 start.
-    // Wait, CSS says: transform: rotate(-135deg). This is 0 position.
-    // 100% would be rotate(45deg). Total range = 180deg.
-    // So rotation = -135 + (score/100 * 180).
-    const rotation = -135 + ((struct.score / 100) * 180);
-    const gauge = document.getElementById('gauge-fill');
-    gauge.style.transform = `rotate(${rotation}deg)`;
-    gauge.style.borderColor = structBand.barColor; // Top/Right colors set in CSS, but let's override logic if needed.
-    // Actually border-top-color and right-color need setting.
-    gauge.style.borderTopColor = structBand.barColor;
-    gauge.style.borderRightColor = structBand.barColor;
+    // Update Structural Score
+    document.getElementById('score-struct-val').innerText = struct.score;
+    document.getElementById('score-struct-val').className = `text-5xl font-black mb-2 ${structBand.color}`;
 
-    // Update Gauge Text
-    document.getElementById('score-main').innerText = struct.score;
-    document.querySelector('.gauge-label').innerText = structBand.name;
-    document.querySelector('.gauge-label').className = `gauge-label ${structBand.color}`; // Apply text color
-
-    // Update Dual Text Below
     const sText = document.getElementById('struct-text');
-    sText.innerText = `${structBand.name} Structural Risk`;
-    sText.className = structBand.color;
+    sText.innerText = structBand.name;
+    sText.className = `text-[9px] uppercase tracking-widest font-bold text-center ${structBand.color}`;
+
+    // Update AQ Score
+    document.getElementById('score-aq-val').innerText = aq.score;
+    document.getElementById('score-aq-val').className = `text-5xl font-black mb-2 ${aqBand.color}`;
 
     const aqText = document.getElementById('aq-text');
     aqText.innerText = aqBand.name;
-    aqText.className = aqBand.color;
+    aqText.className = `text-[9px] uppercase tracking-widest font-bold text-center ${aqBand.color}`;
 
     // Show Results
     document.getElementById('f-res').classList.remove('hidden');
@@ -339,7 +327,7 @@ function uploadReport() {
 
     // Minimal Data for Dashboard
     const pName = document.getElementById('p-name').value || "N/A";
-    const scoreText = `${document.getElementById('score-main').innerText}`;
+    const scoreText = `S:${document.getElementById('score-struct-val').innerText} / AQ:${document.getElementById('score-aq-val').innerText}`;
 
     const reportData = {
         user: user,
