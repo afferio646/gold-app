@@ -14,67 +14,43 @@ function getStructuralScore(inputs) {
     let score = 0;
     const details = [];
 
-    // 1. Surface / structural RH (%)
+    // 1. Visible Mold Growth (0-50 pts)
     let p1 = 0;
-    const rh = inputs.rh;
-    if (rh <= 75) p1 = 0;
-    else if (rh <= 80) p1 = 10;
-    else if (rh <= 85) p1 = 20;
-    else if (rh <= 90) p1 = 28;
-    else p1 = 35;
+    const mold = parseInt(inputs.mold); // 0=None, 1=Light, 2=Moderate, 3=Heavy
+    if(mold === 1) p1 = 15;
+    else if(mold === 2) p1 = 30;
+    else if(mold === 3) p1 = 50;
     score += p1;
-    details.push({ factor: "Surface / structural RH (%)", input: rh + "%", points: p1 });
+    details.push({ factor: "Visible Mold Growth", input: getText('f-mold-growth'), points: p1 });
 
-    // 2. Surface RH time pattern
-    let p2 = parseInt(inputs.rhPattern) || 0;
+    // 2. Surface Type (0-10 pts)
+    let p2 = 0;
+    const surface = parseInt(inputs.surface); // 2=Drywall(High), 1=Wood/Mixed, 0=Masonry
+    if(surface === 2) p2 = 10;
+    else if(surface === 1) p2 = 5;
+    else p2 = 2;
     score += p2;
-    details.push({ factor: "Surface RH time pattern", input: getText('f-rh-pattern'), points: p2 });
+    details.push({ factor: "Surface Type", input: getText('f-surface-type'), points: p2 });
 
-    // 3. Temperature
+    // 3. Moisture History (0-30 pts)
     let p3 = 0;
-    const t = inputs.temp;
-    if (t >= 41 && t <= 104) p3 = 10;
-    else if ((t >= 32 && t < 41) || (t > 104 && t <= 113)) p3 = 5;
-    else p3 = 0;
+    const moisture = parseInt(inputs.moisture); // 2=Recent, 1=Past/Unknown, 3=Ongoing
+    if(moisture === 3) p3 = 30; // Ongoing
+    else if(moisture === 2) p3 = 20; // Recent
+    else if(moisture === 1) p3 = 10; // Past/Unknown
     score += p3;
-    details.push({ factor: "Temperature in growth range (°F)", input: t, points: p3 });
+    details.push({ factor: "Moisture History", input: getText('f-moisture-hist'), points: p3 });
 
-    // 4. Wood moisture content MC%
+    // 4. RH Factor (Optional) (0-20 pts)
     let p4 = 0;
-    const mc = inputs.woodMc;
-    if (!mc && mc !== 0) p4 = 0;
-    else if (mc < 16) p4 = 0;
-    else if (mc <= 19) p4 = 6;
-    else if (mc <= 22) p4 = 12;
-    else p4 = 15;
+    if(inputs.rh) {
+        if(inputs.rh > 80) p4 = 20;
+        else if(inputs.rh > 60) p4 = 10;
+    }
     score += p4;
-    details.push({ factor: "Wood moisture content MC% (optional)", input: mc ? mc + "%" : "N/A", points: p4 });
+    details.push({ factor: "Current RH > 60%", input: inputs.rh ? inputs.rh + '%' : "N/A", points: p4 });
 
-    // 5. Material type sensitivity
-    let p5 = parseInt(inputs.material) || 0;
-    score += p5;
-    details.push({ factor: "Material type sensitivity", input: getText('f-material'), points: p5 });
-
-    // 6. Time since wetting
-    let p6 = parseInt(inputs.timeWet) || 0;
-    score += p6;
-    details.push({ factor: "Time since wetting / intrusion", input: getText('f-time-wet'), points: p6 });
-
-    // 7. Recent water event
-    let p9 = parseInt(inputs.waterEvent) || 0;
-    score += p9;
-    details.push({ factor: "Recent water event (30 days)", input: getText('f-water-event'), points: p9 });
-
-    // 8. Condensation / wetness (Moved to Observations in UI but part of Structural Score)
-    let p7 = parseInt(inputs.condense) || 0;
-    score += p7;
-    details.push({ factor: "Condensation / wetness", input: getText('f-condense'), points: p7 });
-
-    // 9. Visible mold present (Structural Score)
-    let p8 = parseInt(inputs.moldVis) || 0;
-    score += p8;
-    details.push({ factor: "Visible mold present", input: getText('f-mold-vis'), points: p8 });
-
+    // Cap at 100
     if (score > 100) score = 100;
     return { score, details };
 }
@@ -83,79 +59,50 @@ function getAirQualityScore(inputs, structuralScore) {
     let score = 0;
     const details = [];
 
-    // 1. Visible mold extent (AQ Points)
+    // 1. Visible Mold Impact (0-50 pts) - Same as structural base
     let p1 = 0;
-    const moldVal = inputs.moldVisKey;
-    if (moldVal === 'local') p1 = 20;
-    else if (moldVal === 'wide') p1 = 35;
-    else p1 = 0;
+    const mold = parseInt(inputs.mold);
+    if(mold === 1) p1 = 10;
+    else if(mold === 2) p1 = 30;
+    else if(mold === 3) p1 = 50;
     score += p1;
-    details.push({ factor: "Visible mold extent", input: getText('f-mold-vis'), points: p1 });
+    details.push({ factor: "Visible Mold Impact", input: getText('f-mold-growth'), points: p1 });
 
-    // 2. Musty odor
-    let p2 = parseInt(inputs.odor) || 0;
+    // 2. Sensory Indicators (0-25 pts)
+    let p2 = 0;
+    const sensory = parseInt(inputs.sensory); // 2=Musty, 1=Condense/HighHum, 0=None
+    if(sensory === 2) p2 = 25;
+    else if(sensory === 1) p2 = 15;
     score += p2;
-    details.push({ factor: "Musty odor", input: getText('f-odor'), points: p2 });
+    details.push({ factor: "Sensory Indicators", input: getText('f-sensory'), points: p2 });
 
-    // 3. HVAC distribution potential
-    let p3 = parseInt(inputs.hvac) || 0;
+    // 3. HVAC Risk (0-25 pts)
+    let p3 = 0;
+    const hvac = parseInt(inputs.hvac); // 2=Yes, 1=Unsure, 0=No
+    if(hvac === 2) p3 = 25;
+    else if(hvac === 1) p3 = 10;
     score += p3;
-    details.push({ factor: "HVAC distribution potential", input: getText('f-hvac'), points: p3 });
+    details.push({ factor: "HVAC Distribution Risk", input: getText('f-hvac-risk'), points: p3 });
 
-    // 4. Disturbance / aerosolization
-    let p4 = parseInt(inputs.disturb) || 0;
-    score += p4;
-    details.push({ factor: "Disturbance / aerosolization", input: getText('f-disturb'), points: p4 });
-
-    // 5. Indoor RH persistence pattern (AQ Factor)
-    // In UI, this is in "Moisture History"
-    let p5 = parseInt(inputs.rhPersist) || 0;
-    score += p5;
-    details.push({ factor: "Indoor RH persistence pattern", input: getText('f-rh-persist'), points: p5 });
-
-    // 6. Time since wetting (AQ Points map)
-    let p6 = 0;
-    const timeKey = inputs.timeWetKey;
-    switch(timeKey) {
-        case 'none': p6 = 0; break;
-        case '24h': p6 = 1; break;
-        case '1-2d': p6 = 2; break;
-        case '3-7d': p6 = 3; break;
-        case '8-30d': p6 = 4; break;
-        case '>30d': p6 = 5; break;
-        case 'unk': p6 = 3; break;
-        default: p6 = 0;
-    }
-    score += p6;
-    details.push({ factor: "Time since wetting / intrusion", input: getText('f-time-wet'), points: p6 });
-
-    // 7. Surface conditions supportive (Derived from Structural Score)
-    let p7 = 0;
-    if (structuralScore < 20) p7 = 0;
-    else if (structuralScore <= 39) p7 = 3;
-    else if (structuralScore <= 59) p7 = 6;
-    else p7 = 10; // >= 60
-    score += p7;
-    details.push({ factor: "Surface conditions supportive", input: `Struct Score: ${structuralScore}`, points: p7 });
-
+    // Cap at 100
     if (score > 100) score = 100;
     return { score, details };
 }
 
 function getStructuralBand(score) {
-    if (score < 20) return { name: "Low", color: "text-green-500" };
-    if (score < 40) return { name: "Guarded", color: "text-blue-500" };
-    if (score < 60) return { name: "Elevated", color: "text-yellow-500" };
-    if (score < 80) return { name: "High", color: "text-orange-500" };
-    return { name: "Severe", color: "text-red-600" };
+    if (score <= 15) return { name: "Minimal", color: "text-green-500" };
+    if (score <= 30) return { name: "Guarded", color: "text-yellow-500" }; // Yellowish
+    if (score <= 50) return { name: "Elevated", color: "text-orange-500" };
+    if (score <= 75) return { name: "High", color: "text-red-500" };
+    return { name: "Severe", color: "text-red-700" };
 }
 
 function getAQBand(score) {
-    if (score < 20) return { name: "Normal", color: "text-green-500" };
-    if (score < 40) return { name: "Mild", color: "text-blue-500" };
-    if (score < 60) return { name: "Moderate", color: "text-yellow-500" };
-    if (score < 80) return { name: "High", color: "text-orange-500" };
-    return { name: "Very High", color: "text-red-600" };
+    if (score <= 20) return { name: "Clean", color: "text-green-500" };
+    if (score <= 40) return { name: "Mild Impact", color: "text-blue-500" };
+    if (score <= 60) return { name: "Moderate Impact", color: "text-yellow-500" };
+    if (score <= 80) return { name: "High Impact", color: "text-orange-500" };
+    return { name: "Severe", color: "text-red-700" };
 }
 
 function getText(id) {
@@ -169,219 +116,89 @@ function getText(id) {
 
 // --- MAIN PROCESS ---
 
-function generateAnalysisPoints(inputs) {
-    const points = [];
-
-    // Core Environmental
-    if (inputs.rh > 75) points.push(`<strong>High Humidity:</strong> Surface RH at ${inputs.rh}% indicates potential for microbial amplification.`);
-    if (inputs.rhPattern && parseInt(inputs.rhPattern) > 0) points.push(`<strong>Moisture Persistence:</strong> Long-term moisture patterns detected.`);
-    if (inputs.temp >= 41 && inputs.temp <= 104) points.push(`<strong>Growth Temperature:</strong> Current temperature (${inputs.temp}°F) supports fungal growth.`);
-
-    // Moisture History
-    if (inputs.waterEvent && parseInt(inputs.waterEvent) > 0) points.push(`<strong>Water Event:</strong> Recent significant water intrusion event noted.`);
-    if (inputs.timeWetKey && ['3-7d', '8-30d', '>30d'].includes(inputs.timeWetKey)) points.push(`<strong>Saturation Duration:</strong> Materials have been wet for an extended period.`);
-
-    // Observations
-    if (inputs.moldVisKey && inputs.moldVisKey !== 'none') points.push(`<strong>Visible Growth:</strong> ${inputs.moldVisKey === 'wide' ? 'Widespread' : 'Localized'} fungal growth observed.`);
-    if (inputs.odor && parseInt(inputs.odor) > 0) points.push(`<strong>Olfactory Signs:</strong> Musty odor detected, indicating active MVOCs.`);
-    if (inputs.hvac && parseInt(inputs.hvac) > 8) points.push(`<strong>HVAC Risk:</strong> High potential for distribution via air handling systems.`);
-
-    if (points.length === 0) points.push("No critical high-risk factors identified based on current inputs.");
-
-    return points;
-}
-
-function generateRecoveryStrategy(inputs, projectInfo) {
-    const isPorous = ['Drywall / paper-faced', 'Wood / framing', 'Composite / OSB', 'Carpet / padding', 'Insulation (fiberglass)', 'Ceiling tile'].includes(inputs.materialName);
-    const materialAction = isPorous
-        ? `Microbial colonization detected on Porous (${inputs.materialName}). Saturate application of GM6000 penetrating modifiers required.`
-        : `Surface contamination on Non-Porous (${inputs.materialName}). Standard GM6000 surface treatment protocols apply.`;
-
-    const strategy = `
-        <div class="mt-8 mb-8 border-t border-gray-200 pt-8">
-            <h4 class="font-bold text-lg uppercase border-l-4 border-[var(--g-cyan)] pl-4 mb-4 italic">SUBJECT: CERTIFIED RECOVERY STRATEGY</h4>
-            <p class="text-sm text-gray-800 leading-relaxed mb-4">
-                Based on the calculated environmental load for this <strong>${projectInfo.type}</strong> environment, traditional mechanical removal is insufficient. The following Goldmorr protocols are strictly mandated to achieve IICRC air quality standards:
-            </p>
-            <ul class="list-disc pl-5 space-y-3 text-sm text-gray-800 leading-relaxed">
-                <li><strong>Environmental Factors:</strong> Relative Humidity of ${inputs.rh}% and water source identified as ${projectInfo.source} has compromised the building envelope.</li>
-                <li><strong>Substrate Impact:</strong> ${materialAction}</li>
-                <li><strong>Air Particle Clearance:</strong> Whole-structure non-mechanical air scrubbing via proprietary GM2000 fogging protocol is mandatory for particle neutralization.</li>
-            </ul>
-        </div>
-    `;
-    return strategy;
-}
-
 function runAuditProcess() {
-    // 1. Gather Project Info
-    const projectInfo = {
-        type: document.getElementById('f-type').value,
-        source: document.getElementById('f-source').value
-    };
-
-    // 2. Gather Risk Inputs
-    const materialSelect = document.getElementById('f-material');
+    // 1. Gather Inputs
     const inputs = {
-        rh: parseFloat(document.getElementById('f-rh').value) || 0,
-        rhPattern: document.getElementById('f-rh-pattern').value,
-        temp: parseFloat(document.getElementById('f-temp').value) || 0,
-        woodMc: document.getElementById('f-wood-mc').value ? parseFloat(document.getElementById('f-wood-mc').value) : null,
-        material: materialSelect.value,
-        materialName: materialSelect.options[materialSelect.selectedIndex].text,
-        timeWet: document.getElementById('f-time-wet').value,
-        timeWetKey: document.getElementById('f-time-wet').selectedOptions[0].getAttribute('data-key'),
-        waterEvent: document.getElementById('f-water-event').value,
-        rhPersist: document.getElementById('f-rh-persist').value,
-        moldVis: document.getElementById('f-mold-vis').value,
-        moldVisKey: document.getElementById('f-mold-vis').selectedOptions[0].getAttribute('data-key'),
-        condense: document.getElementById('f-condense').value,
-        odor: document.getElementById('f-odor').value,
-        hvac: document.getElementById('f-hvac').value,
-        disturb: document.getElementById('f-disturb').value
+        mold: document.getElementById('f-mold-growth').value,
+        surface: document.getElementById('f-surface-type').value,
+        moisture: document.getElementById('f-moisture-hist').value,
+        sensory: document.getElementById('f-sensory').value,
+        hvac: document.getElementById('f-hvac-risk').value,
+        rh: document.getElementById('f-rh').value ? parseFloat(document.getElementById('f-rh').value) : null,
+        temp: document.getElementById('f-temp').value ? parseFloat(document.getElementById('f-temp').value) : null
     };
 
-    // 3. Calculate Scores
+    // 2. Calculate Scores
     const struct = getStructuralScore(inputs);
     const aq = getAirQualityScore(inputs, struct.score);
+
     const structBand = getStructuralBand(struct.score);
     const aqBand = getAQBand(aq.score);
 
-    // 4. Generate Legacy Project Analysis Text
-    let legacyText = "";
-    if(projectInfo.source.includes("Water Intrusion") || projectInfo.source.includes("Pipe Burst")) {
-        legacyText = `<strong>Immediate Action Required:</strong> The identified water source (${projectInfo.source}) indicates a high saturation event. For this <strong>${projectInfo.type}</strong> facility, standard dehumidification may not be sufficient without substrate treatment.`;
-    } else if (projectInfo.source.includes("Atmospheric")) {
-        legacyText = `<strong>Environmental Control Alert:</strong> The primary source is Atmospheric / Humidity. This suggests a systemic building envelope or HVAC failure rather than a localized leak. Remediation must focus on air quality and long-term humidity control.`;
-    } else {
-        legacyText = `<strong>Assessment Note:</strong> Based on the facility type (${projectInfo.type}) and water source (${projectInfo.source}), follow standard Goldmorr protocols for surface neutralization.`;
-    }
+    // 3. Update Result Card
+    document.getElementById('score-struct').innerText = struct.score;
+    document.getElementById('band-struct').innerText = structBand.name;
+    document.getElementById('band-struct').className = `text-[10px] font-bold uppercase mt-1 ${structBand.color}`;
 
-    // Add critical warning if scores are high
-    if (struct.score >= 60 || aq.score >= 60) {
-        legacyText += `<br><br><span class="text-red-400 font-bold">CRITICAL RISK:</span> The calculated risk scores indicate a severe fungal amplification potential. Occupant safety protocols should be reviewed immediately.`;
-    }
+    document.getElementById('score-aq').innerText = aq.score;
+    document.getElementById('band-aq').innerText = aqBand.name;
+    document.getElementById('band-aq').className = `text-[10px] font-bold uppercase mt-1 ${aqBand.color}`;
 
-    // 5. Update UI
-    const analysisPoints = generateAnalysisPoints(inputs);
-    const bulletList = `<ul class="list-disc pl-5 space-y-2 mt-4 text-gray-300 text-[12px] font-light leading-relaxed">
-        ${analysisPoints.map(p => `<li>${p}</li>`).join('')}
-    </ul>`;
-
-    document.getElementById('legacy-text').innerHTML = legacyText + bulletList;
-
-    // Stop Spinner
-    const spinner = document.getElementById('score-spinner');
-    if(spinner) spinner.classList.remove('animate-spin-slow');
-
-    const statusEl = document.getElementById('f-status');
-    statusEl.innerText = struct.score;
-    statusEl.className = `text-4xl font-black uppercase ${structBand.color}`;
-
-    document.getElementById('f-analysis-text').innerHTML = `
-        <span class="${structBand.color} font-bold">${structBand.name} Structural Risk</span> <span class="text-gray-600 px-2">|</span>
-        <span class="${aqBand.color} font-bold">${aqBand.name} Air Quality Impact</span>
-    `;
-
+    // Show Results
     document.getElementById('f-res').classList.remove('hidden');
 
     // Store data for report
-    window.currentReportData = { struct, aq, structBand, aqBand, inputs, projectInfo, legacyText, analysisPoints };
+    window.currentReportData = { struct, aq, structBand, aqBand, inputs };
 }
 
 function openReportModal() {
     const data = window.currentReportData;
     if (!data) { runAuditProcess(); if (!window.currentReportData) return; }
 
-    const { struct, aq, structBand, aqBand, projectInfo, legacyText, analysisPoints, inputs } = window.currentReportData;
+    const { struct, aq, structBand, aqBand, inputs } = window.currentReportData;
     const pName = document.getElementById('p-name').value || "N/A";
     const photoCount = document.getElementById('f-photos').files.length;
 
-    const reportBullets = `<ul class="list-disc pl-5 space-y-2 mt-4 text-sm text-gray-800 leading-relaxed">
-        ${analysisPoints ? analysisPoints.map(p => `<li>${p}</li>`).join('') : ''}
-    </ul>`;
-
-    const recoveryStrategy = generateRecoveryStrategy(inputs, projectInfo);
-
-    // Generate Tables
-    const rowBuilder = (d) => `
-        <tr class="border-b border-gray-200 text-xs">
-            <td class="py-2 font-medium text-gray-700 w-1/2">${d.factor}</td>
-            <td class="py-2 text-gray-600">${d.input}</td>
-            <td class="py-2 text-right font-bold text-gray-900">${d.points}</td>
-        </tr>
-    `;
-    const structRows = struct.details.map(rowBuilder).join('');
-    const aqRows = aq.details.map(rowBuilder).join('');
+    // Conditional Missing Info Text
+    let missingInfoText = "";
+    if (inputs.rh === null || inputs.temp === null) {
+        missingInfoText = `<p class="text-xs text-gray-500 italic mt-4 border-t border-gray-100 pt-2">
+            The relative humidity and current temperature information were not available, and therefore that information is not included in the report.
+        </p>`;
+    }
 
     document.getElementById('modal-content').innerHTML = `
         <!-- Project Context -->
         <div class="grid grid-cols-2 gap-x-8 gap-y-4 bg-gray-50 p-6 border border-gray-200 rounded mb-8">
             <div><p class="text-[10px] uppercase font-bold text-gray-400">Project / Facility</p><p class="font-bold text-lg">${pName}</p></div>
-            <div><p class="text-[10px] uppercase font-bold text-gray-400">Facility Type</p><p class="font-bold">${projectInfo.type}</p></div>
-            <div><p class="text-[10px] uppercase font-bold text-gray-400">Water Source</p><p class="font-bold">${projectInfo.source}</p></div>
             <div><p class="text-[10px] uppercase font-bold text-gray-400">Date</p><p class="font-bold">${new Date().toLocaleDateString()}</p></div>
         </div>
 
-        <!-- Analysis Text -->
-        <div class="px-2 mb-8">
-            <p class="font-bold text-lg uppercase border-l-4 border-[var(--g-cyan)] pl-4 mb-4 italic">SUBJECT: PROJECT ANALYSIS STRATEGY</p>
-            <div class="text-sm text-gray-800 leading-relaxed space-y-2">
-                ${legacyText}
-                ${reportBullets}
-            </div>
-             <p class="text-[11px] text-gray-500 italic mt-4">Attached Evidence: ${photoCount} Photo(s) (See Appendix)</p>
-        </div>
-
-        <!-- Certified Recovery Strategy -->
-        ${recoveryStrategy}
-
         <!-- Scores Summary -->
         <div class="grid grid-cols-2 gap-8 mb-8">
-            <div class="bg-blue-50 p-4 rounded border border-blue-100">
-                <h4 class="font-bold text-sm uppercase text-blue-800 mb-2">Structural Risk Score</h4>
-                <div class="flex justify-between items-end">
-                    <span class="text-3xl font-black ${structBand.color}">${struct.score}</span>
-                    <span class="text-sm font-bold uppercase ${structBand.color}">${structBand.name}</span>
-                </div>
+            <div class="bg-blue-50 p-4 rounded border border-blue-100 text-center">
+                <h4 class="font-bold text-sm uppercase text-blue-800 mb-2">Structural Risk</h4>
+                <div class="text-4xl font-black ${structBand.color}">${struct.score}</div>
+                <div class="text-sm font-bold uppercase ${structBand.color}">${structBand.name}</div>
             </div>
-            <div class="bg-blue-50 p-4 rounded border border-blue-100">
-                <h4 class="font-bold text-sm uppercase text-blue-800 mb-2">Air Quality Impact Score</h4>
-                <div class="flex justify-between items-end">
-                    <span class="text-3xl font-black ${aqBand.color}">${aq.score}</span>
-                    <span class="text-sm font-bold uppercase ${aqBand.color}">${aqBand.name}</span>
-                </div>
+            <div class="bg-blue-50 p-4 rounded border border-blue-100 text-center">
+                <h4 class="font-bold text-sm uppercase text-blue-800 mb-2">Air Quality Impact</h4>
+                <div class="text-4xl font-black ${aqBand.color}">${aq.score}</div>
+                <div class="text-sm font-bold uppercase ${aqBand.color}">${aqBand.name}</div>
             </div>
         </div>
 
-        <!-- Detailed Tables -->
-        <div class="mb-8">
-            <h3 class="font-bold text-sm uppercase bg-gray-100 p-2 mb-2 text-gray-700">Structural Risk Factors</h3>
-            <table class="w-full text-left">
-                <thead>
-                    <tr class="text-[10px] uppercase text-gray-400 border-b border-gray-300">
-                        <th class="pb-2">Factor</th>
-                        <th class="pb-2">Input</th>
-                        <th class="pb-2 text-right">Points</th>
-                    </tr>
-                </thead>
-                <tbody>${structRows}</tbody>
-            </table>
+        <!-- Detailed Factors -->
+        <div class="mb-6">
+            <h3 class="font-bold text-sm uppercase bg-gray-100 p-2 mb-2 text-gray-700">Assessment Factors</h3>
+            <ul class="text-sm space-y-2">
+                ${struct.details.map(d => `<li class="flex justify-between border-b border-gray-100 pb-1"><span>${d.factor}:</span> <span class="font-bold">${d.input}</span></li>`).join('')}
+                ${aq.details.filter(d => !struct.details.find(sd => sd.factor === d.factor)).map(d => `<li class="flex justify-between border-b border-gray-100 pb-1"><span>${d.factor}:</span> <span class="font-bold">${d.input}</span></li>`).join('')}
+            </ul>
+            ${missingInfoText}
         </div>
 
-        <div>
-            <h3 class="font-bold text-sm uppercase bg-gray-100 p-2 mb-2 text-gray-700">Air Quality Impact Factors</h3>
-            <table class="w-full text-left">
-                <thead>
-                    <tr class="text-[10px] uppercase text-gray-400 border-b border-gray-300">
-                        <th class="pb-2">Factor</th>
-                        <th class="pb-2">Input</th>
-                        <th class="pb-2 text-right">Points</th>
-                    </tr>
-                </thead>
-                <tbody>${aqRows}</tbody>
-            </table>
-        </div>
+        <p class="text-[11px] text-gray-500 italic">Attached Evidence: ${photoCount} Photo(s) (See Appendix)</p>
     `;
 
     document.getElementById('report-modal').classList.remove('hidden');
@@ -391,27 +208,23 @@ function uploadReport() {
     const user = API.getSettings();
     if(!user) { alert("Please complete registration in settings."); return; }
 
-    // Gather minimal report data from the DOM
-    // (Note: Ideally we'd pass the full `window.currentReportData` object,
-    // but the API expects a simplified structure for the dashboard list)
+    // Minimal Data for Dashboard
     const pName = document.getElementById('p-name').value || "N/A";
-    const type = document.getElementById('f-type').value;
-    const score = document.getElementById('f-status').innerText;
+    const scoreText = `${document.getElementById('score-struct').innerText} / ${document.getElementById('score-aq').innerText}`;
 
     const reportData = {
         user: user,
         project: {
             name: pName,
-            type: type
+            type: "Facility Audit"
         },
-        appType: 'Facility Guard', // Identifier for Dashboard
-        score: score,
+        appType: 'Facility Guard',
+        score: scoreText,
         timestamp: new Date().toLocaleString(),
-        // Optional: include full data if needed for backend
         details: window.currentReportData
     };
 
-    // Save to Mock DB (Dashboard will read this)
+    // Save
     API.saveReport(reportData);
 
     alert(`Report for "${pName}" exported successfully! \n(Saved to Dashboard)`);
