@@ -293,7 +293,7 @@ function openReportModal() {
                 `).join('')}
             </div>
         </div>
-        <div>
+        <div class="mb-8">
             <h3 class="font-bold text-sm uppercase bg-gray-100 p-2 mb-2 text-gray-700">Air Quality Factors</h3>
             <div class="border-t border-gray-200">
                 ${aq.details.filter(d => !struct.details.find(sd => sd.factor === d.factor)).map(d => `
@@ -308,6 +308,62 @@ function openReportModal() {
             </div>
             ${missingInfoText}
         </div>
+
+    `;
+
+    // New Detailed Legend
+    const legendBlock = `
+        <div class="mt-8 pt-6 border-t border-gray-200 break-inside-avoid">
+            <h3 class="text-lg font-bold text-gray-900 mb-1">Goldmorr Environmental Risk Classification™</h3>
+            <p class="text-xs text-gray-500 mb-4">Fungal Risk Assessment – Legend & Interpretation Guide</p>
+
+            <!-- Color Bar -->
+            <div class="grid grid-cols-5 text-center text-[10px] font-bold text-white mb-6 uppercase tracking-wider">
+                <div class="bg-green-600 py-2">Minimal</div>
+                <div class="bg-yellow-400 py-2 text-black">Guarded</div>
+                <div class="bg-orange-500 py-2">Elevated</div>
+                <div class="bg-red-600 py-2">High</div>
+                <div class="bg-red-900 py-2">Severe</div>
+            </div>
+
+            <!-- Structural Risk Table -->
+            <h4 class="text-sm font-bold text-gray-900 mb-2 uppercase tracking-wide">Structural Risk Score Legend</h4>
+            <table class="w-full text-xs text-left text-gray-600 mb-6 border border-gray-300">
+                <thead class="text-[10px] text-gray-700 uppercase bg-gray-100 font-bold">
+                    <tr>
+                        <th class="px-3 py-2 border border-gray-300 w-1/6">Score Range</th>
+                        <th class="px-3 py-2 border border-gray-300 w-1/6">Rating</th>
+                        <th class="px-3 py-2 border border-gray-300">Interpretation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="border-b border-gray-200"><td class="px-3 py-2 border-r border-gray-200 font-bold">0–15</td><td class="px-3 py-2 border-r border-gray-200 font-bold text-green-600">Minimal</td><td class="px-3 py-2">No significant structural fungal risk detected</td></tr>
+                    <tr class="border-b border-gray-200"><td class="px-3 py-2 border-r border-gray-200 font-bold">16–30</td><td class="px-3 py-2 border-r border-gray-200 font-bold text-yellow-600">Guarded</td><td class="px-3 py-2">Early fungal activity or favorable growth conditions possible</td></tr>
+                    <tr class="border-b border-gray-200"><td class="px-3 py-2 border-r border-gray-200 font-bold">31–50</td><td class="px-3 py-2 border-r border-gray-200 font-bold text-orange-600">Elevated</td><td class="px-3 py-2">Active fungal growth likely present</td></tr>
+                    <tr class="border-b border-gray-200"><td class="px-3 py-2 border-r border-gray-200 font-bold">51–75</td><td class="px-3 py-2 border-r border-gray-200 font-bold text-red-600">High</td><td class="px-3 py-2">Significant structural fungal contamination present</td></tr>
+                    <tr class="border-b border-gray-200"><td class="px-3 py-2 border-r border-gray-200 font-bold">76–100</td><td class="px-3 py-2 border-r border-gray-200 font-bold text-red-900">Severe</td><td class="px-3 py-2">Extensive fungal amplification present</td></tr>
+                </tbody>
+            </table>
+
+            <!-- Air Quality Table -->
+            <h4 class="text-sm font-bold text-gray-900 mb-2 uppercase tracking-wide">Air Quality Impact Score Legend</h4>
+            <table class="w-full text-xs text-left text-gray-600 mb-2 border border-gray-300">
+                <thead class="text-[10px] text-gray-700 uppercase bg-gray-100 font-bold">
+                    <tr>
+                        <th class="px-3 py-2 border border-gray-300 w-1/6">Score Range</th>
+                        <th class="px-3 py-2 border border-gray-300 w-1/6">Rating</th>
+                        <th class="px-3 py-2 border border-gray-300">Interpretation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="border-b border-gray-200"><td class="px-3 py-2 border-r border-gray-200 font-bold">0–20</td><td class="px-3 py-2 border-r border-gray-200 font-bold text-green-600">Clean</td><td class="px-3 py-2">Air quality within normal environmental range</td></tr>
+                    <tr class="border-b border-gray-200"><td class="px-3 py-2 border-r border-gray-200 font-bold">21–40</td><td class="px-3 py-2 border-r border-gray-200 font-bold text-blue-500">Mild Impact</td><td class="px-3 py-2">Slight airborne fungal elevation possible</td></tr>
+                    <tr class="border-b border-gray-200"><td class="px-3 py-2 border-r border-gray-200 font-bold">41–60</td><td class="px-3 py-2 border-r border-gray-200 font-bold text-yellow-600">Moderate Impact</td><td class="px-3 py-2">Elevated airborne fungal presence likely</td></tr>
+                    <tr class="border-b border-gray-200"><td class="px-3 py-2 border-r border-gray-200 font-bold">61–80</td><td class="px-3 py-2 border-r border-gray-200 font-bold text-orange-600">High Impact</td><td class="px-3 py-2">Significant airborne contamination present</td></tr>
+                    <tr class="border-b border-gray-200"><td class="px-3 py-2 border-r border-gray-200 font-bold">81–100</td><td class="px-3 py-2 border-r border-gray-200 font-bold text-red-900">Severe</td><td class="px-3 py-2">Extensive airborne fungal amplification present</td></tr>
+                </tbody>
+            </table>
+        </div>
     `;
 
     document.getElementById('modal-content').innerHTML = `
@@ -316,6 +372,7 @@ function openReportModal() {
         ${recoveryBlock}
         ${scoreBlock}
         ${tablesBlock}
+        ${legendBlock}
     `;
 
     document.getElementById('report-modal').classList.remove('hidden');
