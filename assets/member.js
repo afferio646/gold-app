@@ -2,6 +2,12 @@
 // --- MEMBER SUITE SPECIFIC LOGIC ---
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Shared initialization
+    const user = API.getSettings();
+    if(!user && document.getElementById('settings-modal')) {
+        toggleModal('settings-modal', true);
+    }
+
     // Only run on member page
     if (!document.getElementById('m-jobtype')) return;
 
@@ -26,6 +32,30 @@ document.addEventListener('DOMContentLoaded', () => {
         if(el) el.addEventListener('input', calculateBid);
     });
 });
+
+function saveUserSettings() {
+    const name = document.getElementById('set-name').value;
+    const company = document.getElementById('set-company').value;
+    const email = document.getElementById('set-email').value;
+
+    if(!name || !company || !email) {
+        alert("All fields are required.");
+        return;
+    }
+
+    API.saveSettings({ name, company, email });
+    toggleModal('settings-modal', false);
+}
+
+function openSettings() {
+     const user = API.getSettings();
+     if(user) {
+         document.getElementById('set-name').value = user.name;
+         document.getElementById('set-company').value = user.company;
+         document.getElementById('set-email').value = user.email;
+     }
+     toggleModal('settings-modal', true);
+}
 
 function toggleAtticDropdown() {
     const jobTypeSelect = document.getElementById('m-jobtype');
