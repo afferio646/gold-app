@@ -382,6 +382,10 @@ function uploadReport() {
     const user = API.getSettings();
     if(!user) { alert("Please complete registration in settings."); return; }
 
+    // Check for Source Param
+    const urlParams = new URLSearchParams(window.location.search);
+    const source = urlParams.get('source') || 'General';
+
     // Minimal Data for Dashboard
     const pName = document.getElementById('p-name').value || "N/A";
     const scoreText = `S:${document.getElementById('score-struct-val').innerText} / AQ:${document.getElementById('score-aq-val').innerText}`;
@@ -394,6 +398,7 @@ function uploadReport() {
         },
         appType: 'Facility Guard',
         score: scoreText,
+        source: source,
         timestamp: new Date().toLocaleString(),
         details: window.currentReportData
     };

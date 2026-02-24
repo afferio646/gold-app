@@ -160,6 +160,7 @@
                     <thead>
                         <tr>
                             <th>Lead ID</th>
+                            <th>Source</th>
                             <th>Subscribed</th>
                             <th>Scans Used</th>
                             <th>Last Active</th>
@@ -167,7 +168,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr><td colspan="5" style="text-align: center;">Full Lead List loads here once connected to the backend.</td></tr>
+                        <tr><td colspan="6" style="text-align: center;">Full Lead List loads here once connected to the backend.</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -376,8 +377,10 @@
                  document.getElementById('archiveTotal').innerText = realLeads.length;
                  realLeads.forEach(lead => {
                     const r = archiveBody.insertRow();
+                    const src = lead.source || 'General';
                     r.innerHTML = `
                         <td>${lead.id} <br> <span style="font-size:0.7em; color:gray">${lead.user.name}</span></td>
+                        <td><span style="font-weight:bold; color:var(--primary-light)">${src}</span></td>
                         <td>Yes</td>
                         <td>1</td>
                         <td>${lead.timestamp}</td>
@@ -385,7 +388,7 @@
                     `;
                  });
             } else {
-                archiveBody.innerHTML = `<tr><td colspan="5" style="text-align: center;">No live data uploaded yet. Open the apps and submit a report!</td></tr>`;
+                archiveBody.innerHTML = `<tr><td colspan="6" style="text-align: center;">No live data uploaded yet. Open the apps and submit a report!</td></tr>`;
             }
         }
 
@@ -425,7 +428,7 @@ async function sendPushNotification() {
         message: {
             title: title,
             body: body,
-            link: targetUrl || 'https://structuralscan-app.vercel.app/'
+            link: targetUrl || 'https://gold-app-two.vercel.app/'
         }
     };
 
