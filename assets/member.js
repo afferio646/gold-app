@@ -262,10 +262,80 @@ function openMemberReportModal() {
             </div>
         </div>
 
-        <div class="bg-gray-100 p-4 rounded text-center">
+        <div class="bg-gray-100 p-4 rounded text-center mb-10">
             <p class="text-[10px] uppercase font-bold text-gray-500 mb-2">Attached Documentation</p>
             <p class="font-bold text-sm">${photoText}</p>
             ${photoCount > 0 ? '<p class="text-[10px] text-gray-400 italic mt-1">(Photos will be appended to final PDF)</p>' : ''}
+        </div>
+
+        <!-- Project Protocols Summary -->
+        <div class="border-t-4 border-gray-200 pt-8 break-inside-avoid">
+            <h3 class="text-xl font-black uppercase text-gray-800 mb-6 tracking-widest text-center">Project Protocols Summary</h3>
+
+            <div class="space-y-6 text-sm text-gray-700 leading-relaxed">
+
+                <div>
+                    <h4 class="font-bold text-[var(--g-cyan)] uppercase mb-2 text-xs tracking-wider">1. Pre-Application Preparation</h4>
+                    <ul class="list-disc pl-5 space-y-1 text-gray-600">
+                        <li>Identify and document visible mold growth areas.</li>
+                        <li>Perform necessary containment measures as appropriate to project scope.</li>
+                        <li>Remove loose debris and physically address heavily contaminated materials where required.</li>
+                        <li>Ensure all HVAC systems are evaluated prior to treatment.</li>
+                        <li>Seal open drains, plumbing traps, and fireplace openings prior to fogging application.</li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="font-bold text-[var(--g-cyan)] uppercase mb-2 text-xs tracking-wider">2. Surface Treatment – GM6000 Application</h4>
+                    <ul class="list-disc pl-5 space-y-1 text-gray-600">
+                        <li>Apply GM6000 evenly to affected surfaces based on calculated coverage rate.</li>
+                        <li>Ensure full surface contact without excessive runoff.</li>
+                        <li>Adjust technique based on substrate type and surface texture.</li>
+                        <li>Allow appropriate dwell time per training guidelines.</li>
+                        <li>Perform light agitation or wipe-down when required by material condition.</li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="font-bold text-[var(--g-cyan)] uppercase mb-2 text-xs tracking-wider">3. Air Volume Treatment – Fogging Application</h4>
+                    <ul class="list-disc pl-5 space-y-1 text-gray-600">
+                        <li>Confirm cubic footage of treatment area.</li>
+                        <li>Utilize selected fogging equipment (ULV for GM2000 or Thermal Electric Fogger for GM Thermo).</li>
+                        <li>Apply calculated volume of fogging agent evenly throughout space.</li>
+                        <li>Maintain closed environment during and immediately after application.</li>
+                        <li>Avoid active air movement during initial dispersion phase.</li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="font-bold text-[var(--g-cyan)] uppercase mb-2 text-xs tracking-wider">4. Post-Application Procedure</h4>
+                    <ul class="list-disc pl-5 space-y-1 text-gray-600">
+                        <li>Allow minimum 24 hours prior to post-remediation testing.</li>
+                        <li>Do not disturb treated surfaces prematurely.</li>
+                        <li>Conduct IAQ verification testing where required.</li>
+                        <li>Confirm acceptable particulate and environmental readings prior to re-occupancy.</li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="font-bold text-[var(--g-cyan)] uppercase mb-2 text-xs tracking-wider">5. Documentation & Verification</h4>
+                    <ul class="list-disc pl-5 space-y-1 text-gray-600">
+                        <li>Record total chemistry used.</li>
+                        <li>Document growth severity, substrate conditions, and environmental factors.</li>
+                        <li>Maintain job file documentation consistent with Goldmorr protocol standards.</li>
+                    </ul>
+                </div>
+
+                <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mt-6">
+                    <h4 class="font-bold text-blue-800 uppercase mb-1 text-xs tracking-wider">Field Advisory</h4>
+                    <ul class="list-disc pl-5 space-y-1 text-blue-700 text-xs italic">
+                        <li>The estimating tool provides standardized projections based on Goldmorr coverage testing and field averages.</li>
+                        <li>Actual product usage may vary depending on technician technique, equipment calibration, surface porosity, and environmental conditions.</li>
+                        <li>Buffer selection allows adjustment for field variability.</li>
+                    </ul>
+                </div>
+
+            </div>
         </div>
     `;
 
