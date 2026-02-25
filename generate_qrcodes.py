@@ -2,7 +2,7 @@
 import qrcode
 import os
 
-# URLs for Randy and Brett
+# URLs for Randy and Brett (Facility Only)
 urls = {
     "Randy": "https://gold-app-two.vercel.app/facility.html?source=Randy",
     "Brett": "https://gold-app-two.vercel.app/facility.html?source=Brett"
