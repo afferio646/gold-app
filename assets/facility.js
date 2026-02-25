@@ -427,6 +427,47 @@ function saveUserSettings() {
 
     // Show Certification Complete Step
     document.getElementById('cert-step-1').classList.add('hidden');
+
+    // Detect Device for Instructions
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    const isAndroid = /Android/.test(navigator.userAgent);
+
+    let instructions = "";
+    let arrowClass = "hidden"; // Default hidden
+
+    if (isIOS) {
+        instructions = `
+            <p class="text-[11px] text-gray-300 leading-relaxed mb-2"><strong>iOS / iPhone:</strong></p>
+            <ol class="list-decimal pl-5 text-[10px] text-gray-400 space-y-1 text-left">
+                <li>Tap the <strong class="text-white">Share</strong> icon <span class="inline-block bg-gray-700 p-0.5 rounded"><svg class="w-3 h-3 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg></span> at the bottom.</li>
+                <li>Scroll down and select <strong class="text-white">'Add to Home Screen'</strong> <span class="inline-block bg-gray-700 p-0.5 rounded"><svg class="w-3 h-3 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg></span>.</li>
+            </ol>
+        `;
+        arrowClass = "mt-4 flex justify-center animate-bounce text-[var(--g-cyan)]"; // Bottom arrow
+    } else if (isAndroid) {
+        instructions = `
+            <p class="text-[11px] text-gray-300 leading-relaxed mb-2"><strong>Android / Chrome:</strong></p>
+            <ol class="list-decimal pl-5 text-[10px] text-gray-400 space-y-1 text-left">
+                <li>Tap the <strong class="text-white">Menu</strong> icon (3 dots) at the top right.</li>
+                <li>Select <strong class="text-white">'Install App'</strong> or <strong class="text-white">'Add to Home Screen'</strong>.</li>
+            </ol>
+        `;
+        // No bottom arrow for Android usually, top right is hard to point to globally
+    } else {
+        instructions = `<p class="text-[11px] text-gray-300">Select <strong>"Install"</strong> or <strong>"Add to Home Screen"</strong> from your browser menu.</p>`;
+    }
+
+    const container = document.getElementById('install-instructions');
+    if(container) {
+        container.innerHTML = instructions;
+        if(isIOS) {
+             const arrow = document.createElement('div');
+             arrow.className = arrowClass;
+             arrow.innerHTML = `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>`;
+             container.appendChild(arrow);
+        }
+    }
+
     document.getElementById('cert-step-2').classList.remove('hidden');
 }
 
