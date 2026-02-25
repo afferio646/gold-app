@@ -424,6 +424,13 @@ function saveUserSettings() {
     const email = document.getElementById('set-email').value;
     if(!name || !company || !email) { alert("All fields required."); return; }
     API.saveSettings({ name, company, email });
+
+    // Show Certification Complete Step
+    document.getElementById('cert-step-1').classList.add('hidden');
+    document.getElementById('cert-step-2').classList.remove('hidden');
+}
+
+function closeCertification() {
     toggleModal('settings-modal', false);
 }
 
