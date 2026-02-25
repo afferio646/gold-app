@@ -12,14 +12,14 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!document.getElementById('m-jobtype')) return;
 
     // Auto-calc cubic feet
-    const moldInput = document.getElementById('m-mold-sqft');
+    const envelopeInput = document.getElementById('m-envelope-sqft'); // "Square Ft. (Footprint)"
     const fogInput = document.getElementById('m-fog-sqft');
     const ceilInput = document.getElementById('m-ceiling');
 
     // Sync Footprint to Fogging Area
-    if(moldInput && fogInput) {
-        moldInput.addEventListener('input', () => {
-            fogInput.value = moldInput.value;
+    if(envelopeInput && fogInput) {
+        envelopeInput.addEventListener('input', () => {
+            fogInput.value = envelopeInput.value;
             updateCubic();
         });
     }
