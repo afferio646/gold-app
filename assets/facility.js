@@ -366,6 +366,13 @@ function openReportModal() {
         </div>
     `;
 
+    // New Footer Sources Block
+    const footerBlock = `
+        <div class="mt-8 pt-4 border-t border-gray-200">
+             <p class="text-[9px] text-gray-500"><strong>Sources (for internal documentation):</strong> EPA mold guidance (RH control); ASHRAE 160 (surface RH/time criteria); wood moisture content guidance (~20% boundary).</p>
+        </div>
+    `;
+
     document.getElementById('modal-content').innerHTML = `
         ${contextBlock}
         ${analysisBlock}
@@ -373,6 +380,7 @@ function openReportModal() {
         ${scoreBlock}
         ${tablesBlock}
         ${legendBlock}
+        ${footerBlock}
     `;
 
     document.getElementById('report-modal').classList.remove('hidden');

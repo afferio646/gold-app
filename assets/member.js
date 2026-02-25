@@ -12,8 +12,17 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!document.getElementById('m-jobtype')) return;
 
     // Auto-calc cubic feet
+    const moldInput = document.getElementById('m-mold-sqft');
     const fogInput = document.getElementById('m-fog-sqft');
     const ceilInput = document.getElementById('m-ceiling');
+
+    // Sync Footprint to Fogging Area
+    if(moldInput && fogInput) {
+        moldInput.addEventListener('input', () => {
+            fogInput.value = moldInput.value;
+            updateCubic();
+        });
+    }
 
     const updateCubic = () => {
         const f = parseFloat(fogInput.value) || 0;
@@ -87,17 +96,14 @@ function calculateProtocol() {
         atticMult = parseFloat(document.getElementById('m-attic-type').value) || 1.0;
     }
 
-    // Surface Condition (Hardcoded to Smooth=1.0 per instructions unless added later, assuming standard 1.0 for now as no dropdown exists)
-    // "Tradeshow Mode Defaults: Surface Condition = Smooth" -> 1.0
-    const surfaceMult = 1.0;
+    // New Surface Condition: Smooth(1.0), Rough(1.2)
+    const surfaceMult = parseFloat(document.getElementById('m-surface-cond').value) || 1.0;
 
-    // Buffer (Hardcoded to 5% per "Tradeshow Mode Defaults")
-    const buffer = 1.05;
+    // New Buffer: 0%(1.0), 5%(1.05), 10%(1.10)
+    const buffer = parseFloat(document.getElementById('m-waste-buffer').value) || 1.0;
 
     // --- GM6000 CALCULATION ---
     // Formula: (Area / Coverage) * Substrate * Attic * Surface * Buffer
-    // Note: Attic multiplier logic wasn't explicitly defined in formula but said "multiplier for attic selection".
-    // Applying it to the chemical usage makes the most sense (harder to access/apply = more waste/usage).
 
     let baseGal = moldSq / coverageRate;
     let adjustedGal = baseGal * substrateMult * atticMult * surfaceMult;
@@ -124,29 +130,41 @@ function calculateProtocol() {
     let gm6Text = `${estUse} Gal`;
     if (estUse < 1.0) {
         const oz = (estUse * 128).toFixed(1);
-        gm6Text = `${estUse} Gal (${oz} oz)`;
-    } else {
-        // Optional oz in parens for >= 1
-        // gm6Text = `${estUse} Gal`; // Keeping simple per primary rule
+        gm6Text = `${estUse} Gal<br>(${oz} oz)`;
     }
 
     // Fogging
     let fogText = `${fogFinal.toFixed(2)} Gal`;
     if (fogFinal < 1.0) {
          const fOz = (fogFinal * 128).toFixed(1);
-         fogText = `${fOz} oz (${fogFinal.toFixed(2)} Gal)`;
+         fogText = `${fOz} oz<br>(${fogFinal.toFixed(2)} Gal)`;
     }
 
     // Update DOM
-    document.getElementById('res-gm6').innerText = gm6Text;
-    document.getElementById('res-fog').innerText = fogText;
+    document.getElementById('res-gm6').innerHTML = gm6Text;
+    document.getElementById('res-fog').innerHTML = fogText;
 
     // Update Profitability Product Cost Estimate
-    // Prices (Configurable, using placeholders): GM6000=$120, GM2000=$60, Thermo=$80
-    let fogPrice = 60;
-    if(agentType === 'GM Thermal') fogPrice = 80;
+    // New Pricing Logic (Feb 25)
+    // GM6000: $58.70/gal (Includes Hypochlorite)
+    const gm6000Price = 58.70;
+    const gm6Cost = finalGal * gm6000Price; // Using EXACT usage for cost, not stock rounding (unless client implies otherwise, usually COGS is exact usage)
+    // Note: Re-reading instructions "stock use" vs "calculated use".
+    // Usually COGS is based on what you consume.
+    // "gm6000_cost = rtu_gallons_required * 58.70" -> This implies exact gallons.
 
-    const estCost = (stockUse * 120) + (fogFinal * fogPrice);
+    // Fogging Pricing
+    // GM2000: $0.00343 per cu ft
+    // GM Thermo: $0.00336 per cu ft
+    // Formula: cubic_ft * Rate (Note: Formula uses cubic_ft input, not gallons)
+    let fogCost = 0;
+    if (agentType === 'GM Thermal') {
+        fogCost = cubic * 0.00336;
+    } else {
+        fogCost = cubic * 0.00343;
+    }
+
+    const estCost = gm6Cost + fogCost;
     document.getElementById('c-product').value = estCost.toFixed(2);
 
     // Show Results
@@ -154,10 +172,13 @@ function calculateProtocol() {
 
     const densityText = document.getElementById('m-density').options[document.getElementById('m-density').selectedIndex].text;
 
+    // Disclaimer about Buffer
+    const bufferPct = (buffer - 1) * 100;
+
     document.getElementById('member-analysis-text').innerHTML = `
         <p>• <strong>Surface Protocol:</strong> Apply GM6000 (stock ${stockUse} gal) for ${densityText} growth on ${moldSq} sq ft.</p>
         <p>• <strong>Air Correction:</strong> Fog ${cubic} cubic ft with ${agentType} to neutralize particulate.</p>
-        <p class="text-[10px] text-gray-500 mt-2">*Calculations include substrate porosity (${substrateMult}x) and attic (${atticMult}x) factors with 5% buffer.</p>
+        <p class="text-[10px] text-gray-500 mt-2">*Calculations include porosity (${substrateMult}x), surface (${surfaceMult}x) and buffer (${Math.round(bufferPct)}%) factors.</p>
     `;
 
     calculateBid(); // Update costs
@@ -266,6 +287,10 @@ function openMemberReportModal() {
             <p class="text-[10px] uppercase font-bold text-gray-500 mb-2">Attached Documentation</p>
             <p class="font-bold text-sm">${photoText}</p>
             ${photoCount > 0 ? '<p class="text-[10px] text-gray-400 italic mt-1">(Photos will be appended to final PDF)</p>' : ''}
+        </div>
+
+        <div class="text-[10px] text-gray-500 mb-4 border-t border-gray-200 pt-4">
+            <strong>Sources (for internal documentation):</strong> EPA mold guidance (RH control); ASHRAE 160 (surface RH/time criteria); wood moisture content guidance (~20% boundary).
         </div>
 
         <!-- Project Protocols Summary -->

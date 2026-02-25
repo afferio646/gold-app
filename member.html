@@ -126,6 +126,25 @@
                         </div>
                     </div>
 
+        <!-- NEW: Surface Condition & Waste Buffer -->
+        <div class="grid grid-cols-2 gap-4 mt-4">
+            <div>
+                <label class="block text-xs uppercase font-bold text-gray-400 mb-1">Surface Condition</label>
+                <select id="m-surface-cond" class="w-full p-3 bg-slate-900 border border-gray-700 rounded text-white focus:border-[var(--g-cyan)] outline-none">
+                    <option value="1.0" selected>Smooth</option>
+                    <option value="1.2">Rough / Unfinished</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-xs uppercase font-bold text-gray-400 mb-1">Waste / Buffer</label>
+                <select id="m-waste-buffer" class="w-full p-3 bg-slate-900 border border-gray-700 rounded text-white focus:border-[var(--g-cyan)] outline-none">
+                    <option value="1.0" selected>0% (None)</option>
+                    <option value="1.05">5%</option>
+                    <option value="1.10">10%</option>
+                </select>
+            </div>
+        </div>
+
                     <div>
                         <label class="block text-[9px] uppercase text-gray-500 mb-2 font-black tracking-widest">Job Type (Hold Ctrl/Cmd to select multiple) *</label>
                         <select id="m-jobtype" class="w-full h-24 bg-slate-900 border border-gray-700 p-3 rounded text-white" multiple onchange="toggleAtticDropdown()">
@@ -150,7 +169,7 @@
                     <!-- Metrics -->
                     <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-[9px] uppercase text-gray-400 mb-2 font-black tracking-widest">Visible Mold Sq Ft</label>
+                <label class="block text-xs uppercase font-bold text-gray-400 mb-1">Mold Sq Ft (Footprint)</label>
                             <input type="number" id="m-mold-sqft" placeholder="0" class="w-full bg-slate-900 border border-gray-700 p-3 rounded text-white placeholder-gray-600">
                         </div>
                         <div>
@@ -303,6 +322,7 @@
                         <p class="text-[11px] uppercase font-black text-green-400 mb-4 tracking-[0.3em]">Suggested Retail Bid</p>
                         <p id="p-bid" class="text-6xl font-black text-green-400 mb-6 tracking-tighter">$0.00</p>
                         <p id="p-margin-label" class="text-[11px] text-gray-400 font-light uppercase font-bold italic tracking-widest">"Guarding 68.9% Certified Member Margin"</p>
+                        <p class="text-[9px] text-gray-500 italic mt-4 max-w-xs mx-auto text-center leading-relaxed">*Bulk Rate pricing is used for all calculations. Adjust your quote accordingly if you are not purchasing on a bulk rate basis from Goldmorr.</p>
                     </div>
 
                     <!-- UPLOAD BUTTON -->
@@ -333,7 +353,8 @@
             </div>
 
             <div class="bg-black text-white p-6 rounded mt-8 text-center uppercase font-bold text-xs tracking-widest">
-                Compliance: Verified in accordance with Goldmorr Standard Operating Procedures.
+                Compliance: Verified in accordance with Goldmorr Standard Operating Procedures.<br>
+                <span class="text-[9px] normal-case text-gray-400 mt-2 block font-medium">Does not replace professional judgement. This sheet is a practical scoring aid. It is not a laboratory diagnosis and does not replace professional judgment.</span>
             </div>
 
             <div class="flex flex-col items-center gap-4 mt-12 border-t-2 border-gray-100 pt-10">
