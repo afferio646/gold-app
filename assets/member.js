@@ -59,23 +59,37 @@ function saveUserSettings() {
     document.getElementById('cert-step-1').classList.add('hidden');
     document.getElementById('cert-step-2').classList.remove('hidden');
 
-    // Smart Highlight: Add a "Recommended" border to the detected device
+    // Smart Highlight: Add a "Recommended" border to the detected device AND Hide irrelevant one
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
     const isAndroid = /Android/.test(navigator.userAgent);
 
-    if (isIOS) {
-        const el = document.getElementById('ios-instruct');
-        if(el) {
-            el.classList.remove('border-gray-700');
-            el.classList.add('border-[var(--g-cyan)]', 'bg-slate-800', 'shadow-[0_0_15px_rgba(34,211,238,0.15)]');
-            el.innerHTML += `<div class="mt-2 text-[8px] uppercase font-bold text-[var(--g-cyan)] tracking-widest animate-pulse">Detected Device</div>`;
+    const iosEl = document.getElementById('ios-instruct');
+    const androidEl = document.getElementById('android-instruct');
+    const container = iosEl ? iosEl.parentElement : null;
+
+    if (isIOS && iosEl) {
+        // Highlight iOS
+        iosEl.classList.remove('border-gray-700');
+        iosEl.classList.add('border-[var(--g-cyan)]', 'bg-slate-800', 'shadow-[0_0_15px_rgba(34,211,238,0.15)]');
+        iosEl.innerHTML += `<div class="mt-2 text-[8px] uppercase font-bold text-[var(--g-cyan)] tracking-widest animate-pulse">Detected Device</div>`;
+
+        // Hide Android & Center
+        if(androidEl) androidEl.classList.add('hidden');
+        if(container) {
+            container.classList.remove('grid-cols-2');
+            container.classList.add('flex', 'justify-center');
         }
-    } else if (isAndroid) {
-        const el = document.getElementById('android-instruct');
-        if(el) {
-            el.classList.remove('border-gray-700');
-            el.classList.add('border-[var(--g-cyan)]', 'bg-slate-800', 'shadow-[0_0_15px_rgba(34,211,238,0.15)]');
-            el.innerHTML += `<div class="mt-2 text-[8px] uppercase font-bold text-[var(--g-cyan)] tracking-widest animate-pulse">Detected Device</div>`;
+    } else if (isAndroid && androidEl) {
+        // Highlight Android
+        androidEl.classList.remove('border-gray-700');
+        androidEl.classList.add('border-[var(--g-cyan)]', 'bg-slate-800', 'shadow-[0_0_15px_rgba(34,211,238,0.15)]');
+        androidEl.innerHTML += `<div class="mt-2 text-[8px] uppercase font-bold text-[var(--g-cyan)] tracking-widest animate-pulse">Detected Device</div>`;
+
+        // Hide iOS & Center
+        if(iosEl) iosEl.classList.add('hidden');
+        if(container) {
+            container.classList.remove('grid-cols-2');
+            container.classList.add('flex', 'justify-center');
         }
     }
 }
