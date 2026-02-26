@@ -52,7 +52,8 @@ function saveUserSettings() {
         return;
     }
 
-    API.saveSettings({ name, company, email });
+    // Save with userType 'member' (optional, for future use)
+    API.saveSettings({ name, company, email, userType: 'member' });
 
     // Show Certification Complete Step
     document.getElementById('cert-step-1').classList.add('hidden');
