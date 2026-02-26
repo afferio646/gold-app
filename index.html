@@ -19,28 +19,30 @@
         // SMART REDIRECT: If user is certified as "Facility Only", skip the hub and go straight to Facility Tool.
         // Runs immediately to prevent flash of content if possible
         (function() {
-            if(typeof API !== 'undefined') {
-                const user = API.getSettings();
-                // Check if user is strictly facility AND we are not forcing the hub via query param (e.g. ?hub=true)
-                if(user && user.userType === 'facility') {
-                     const urlParams = new URLSearchParams(window.location.search);
-                     if(!urlParams.get('hub')) {
-                         console.log("Facility User Detected: Redirecting...");
-                         window.location.replace('facility.html');
-                     }
-                }
+            const user = typeof API !== 'undefined' ? API.getSettings() : null;
+
+            // PWA Launch or Direct Access Check
+            const isPWA = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+
+            // Check if user is strictly facility AND we are not forcing the hub via query param (e.g. ?hub=true)
+            if(user && user.userType === 'facility') {
+                 const urlParams = new URLSearchParams(window.location.search);
+                 if(!urlParams.get('hub')) {
+                     console.log("Facility User Detected: Redirecting...");
+                     window.location.replace('facility.html');
+                 }
+            } else if (isPWA && !user) {
+                 // If launched as PWA but no user settings found (which is weird for iOS sometimes),
+                 // allow manual override button to appear prominently
+                 console.log("PWA Launch without User Settings detected.");
             }
         })();
 
         function manualFacilityCheck() {
             if(typeof API !== 'undefined') {
                 const user = API.getSettings();
-                if(user && user.userType === 'facility') {
-                    window.location.replace('facility.html');
-                } else {
-                    alert("No saved Facility settings found. Please configure the app in the Facility tool.");
-                    window.location.href = 'facility.html';
-                }
+                // If settings exist, force redirect. If not, just go there anyway so they can set it up.
+                window.location.replace('facility.html');
             } else {
                 window.location.href = 'facility.html';
             }
@@ -52,9 +54,12 @@
     <div class="text-center mb-16 px-6">
         <h1 class="tech-font text-3xl mb-3 tracking-tighter uppercase text-white font-bold tracking-widest">Goldmorr Innovation Hub</h1>
         <p class="text-[var(--g-cyan)] uppercase text-[10px] tracking-[0.5em] font-light mb-4">Select Your Utility</p>
-        <button onclick="manualFacilityCheck()" class="text-xs text-slate-500 hover:text-[var(--g-cyan)] underline transition-colors">
-            Facility User Auto-Login
+
+        <!-- Auto-Login Button for PWA Failures -->
+        <button onclick="manualFacilityCheck()" class="bg-gray-800 text-gray-300 border border-gray-600 px-4 py-2 rounded text-[10px] uppercase tracking-widest hover:border-[var(--g-cyan)] hover:text-white transition-all shadow-lg mt-2">
+            Facility Manager Auto-Login
         </button>
+        <p class="text-[8px] text-gray-600 mt-2 italic">(Use if app does not automatically redirect)</p>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-10 max-w-4xl px-6">
