@@ -166,5 +166,55 @@ const API = {
         // Legacy support wrapper
         const data = await API.getDashboardData();
         return data.leads;
+    },
+
+    // --- ADMIN TOOLS ---
+    deleteLead: async (docId) => {
+        if (!db) return false;
+        try {
+            await db.collection('leads').doc(docId).delete();
+            console.log("Lead Deleted:", docId);
+            return true;
+        } catch (e) {
+            console.error("Delete Failed:", e);
+            return false;
+        }
+    },
+
+    resetSystem: async () => {
+        if (!db) return false;
+        const confirmCode = prompt("DANGER: Type 'RESET-GOLDMORR' to wipe ALL data and reset ID counter to 1000.");
+        if (confirmCode !== 'RESET-GOLDMORR') {
+            alert("Incorrect confirmation code. Reset cancelled.");
+            return false;
+        }
+
+        try {
+            const batch = db.batch();
+
+            // 1. Delete Leads
+            const leads = await db.collection('leads').get();
+            leads.forEach(doc => batch.delete(doc.ref));
+
+            // 2. Delete Activations
+            const activations = await db.collection('activations').get();
+            activations.forEach(doc => batch.delete(doc.ref));
+
+            // 3. Delete Logs
+            const logs = await db.collection('usage_logs').get();
+            logs.forEach(doc => batch.delete(doc.ref));
+
+            // 4. Reset Counter
+            const counterRef = db.collection('counters').doc('leads');
+            batch.set(counterRef, { count: 1000 });
+
+            await batch.commit();
+            console.log("System Reset Complete");
+            return true;
+        } catch (e) {
+            console.error("Reset Failed:", e);
+            alert("Reset Failed. See console.");
+            return false;
+        }
     }
 };

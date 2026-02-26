@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AfferioIQ Client Dashboard</title>
+    <title>Goldmorr Admin Dashboard</title>
 
     <!-- PWA Manifest & Icons -->
     <link rel="manifest" href="manifest.json">
@@ -142,22 +142,28 @@
     <div>
 
         <div class="lead-archive" style="margin-bottom: 2rem;">
-            <h2>Lead Archive & Status (Total IDs: <span id="archiveTotal"></span>)</h2>
-            <p style="color: var(--text-secondary); font-size: 0.9rem;">Filter by activity or status here. (Implementation pending backend connection)</p>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <h2>Lead Archive (Total: <span id="archiveTotal">0</span>)</h2>
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn-primary" onclick="exportLeads()" style="width: auto; padding: 0.5rem 1rem; background: #10b981;">Export CSV</button>
+                    <button class="btn-primary" onclick="performSystemReset()" style="width: auto; padding: 0.5rem 1rem; background: #ef4444;">System Reset</button>
+                </div>
+            </div>
+
             <div class="lead-archive-container">
-                <table id="leadArchiveTable" style="margin-top: 1rem;">
+                <table id="leadArchiveTable">
                     <thead>
                         <tr>
                             <th>Lead ID</th>
                             <th>Source</th>
-                            <th>Subscribed</th>
-                            <th>Scans Used</th>
-                            <th>Last Active</th>
+                            <th>Contact</th>
+                            <th>Date</th>
                             <th>Status</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr><td colspan="6" style="text-align: center;">Full Lead List loads here once connected to the backend.</td></tr>
+                        <tr><td colspan="6" style="text-align: center;">Loading data...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -279,19 +285,71 @@
                     const r = archiveBody.insertRow();
                     const src = lead.source || 'General';
                     const userName = lead.user ? lead.user.name : 'Unknown';
+                    const email = lead.user ? lead.user.email : '';
 
                     r.innerHTML = `
-                        <td>${lead.leadId || lead.id} <br> <span style="font-size:0.7em; color:gray">${userName}</span></td>
+                        <td>${lead.leadId || lead.id}</td>
                         <td><span style="font-weight:bold; color:var(--primary-light)">${src}</span></td>
-                        <td>Yes</td>
-                        <td>1</td>
+                        <td>${userName}<br><span style="font-size:0.8em; color:#9ca3af">${email}</span></td>
                         <td>${new Date(lead.serverTimestamp || lead.timestamp).toLocaleDateString()}</td>
                         <td><span class="status-badge status-low">Active</span></td>
+                        <td>
+                            <button onclick="deleteRow('${lead.id}')" style="background: none; border: none; color: #ef4444; cursor: pointer;" title="Delete Lead">
+                                <svg style="width: 16px; height: 16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                            </button>
+                        </td>
                     `;
                  });
             } else {
                 archiveBody.innerHTML = `<tr><td colspan="6" style="text-align: center;">Waiting for live data... Scan the QR codes to start!</td></tr>`;
             }
+        }
+
+        async function deleteRow(docId) {
+            if(confirm("Delete this lead permanently?")) {
+                const success = await API.deleteLead(docId);
+                if(success) refreshDashboard();
+            }
+        }
+
+        async function performSystemReset() {
+            const success = await API.resetSystem();
+            if(success) refreshDashboard();
+        }
+
+        function exportLeads() {
+            // Get data from table or re-fetch
+            const rows = [];
+            rows.push(["Lead ID", "Source", "Name", "Email", "Date", "App Type"]);
+
+            // We need to access the raw data.
+            // Ideally we store 'currentLeads' globally or fetch again.
+            // For simplicity, let's fetch again or use what's in DOM if lazy.
+            // Better: use API.getLeads()
+            API.getLeads().then(leads => {
+                leads.forEach(l => {
+                    const u = l.user || {};
+                    rows.push([
+                        l.leadId || l.id,
+                        l.source || 'General',
+                        u.name || '',
+                        u.email || '',
+                        new Date(l.serverTimestamp || l.timestamp).toLocaleDateString(),
+                        l.appType || ''
+                    ]);
+                });
+
+                let csvContent = "data:text/csv;charset=utf-8,"
+                    + rows.map(e => e.join(",")).join("\n");
+
+                const encodedUri = encodeURI(csvContent);
+                const link = document.createElement("a");
+                link.setAttribute("href", encodedUri);
+                link.setAttribute("download", "goldmorr_leads.csv");
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            });
         }
 
         // =======================================================
