@@ -94,31 +94,16 @@
 </head>
 <body>
 
-    <div id="loginScreen" class="login-screen">
-        <div class="login-card">
-            <h2 style="color: var(--primary); margin-bottom: 1.5rem;">AfferioIQ Partner Login</h2>
-            <p id="loginMessage" style="color: var(--danger); margin-bottom: 1rem;"></p>
+    <!-- LOGIN SCREEN REMOVED FOR DIRECT ACCESS -->
 
-            <div class="input-group">
-                <label for="username">Exhibitor ID (SCHUTTE-T25 or AURA-JEWEL)</label>
-                <input type="text" id="username" placeholder="Enter Exhibitor ID">
-            </div>
-            <div class="input-group">
-                <label for="password">Password (Test: password)</label>
-                <input type="password" id="password" placeholder="••••••••">
-            </div>
-            <button class="btn-primary" onclick="handleLogin()" style="margin-top: 1rem;">Sign In</button>
-        </div>
-    </div>
-
-    <div id="dashboardContent" style="display: none;">
+    <div id="dashboardContent">
         <div class="header-dash">
             <div class="container flex justify-between items-center">
                 <div>
                     <h1>AfferioIQ Client Dashboard</h1>
-                    <p class="user-info">Logged in as: <span id="authenticatedExhName"></span> (<span id="authenticatedExhId"></span>)</p>
+                    <p class="user-info">Authenticated Session: <span id="authenticatedExhName">Goldmorr Admin</span> (<span id="authenticatedExhId">ADMIN</span>)</p>
                 </div>
-                <a href="index.html" class="btn-primary" style="text-decoration: none; display: inline-block; width: auto; font-size: 0.8rem; background: #374151; border: 1px solid var(--border);">
+                <a href="index.html?role=admin" class="btn-primary" style="text-decoration: none; display: inline-block; width: auto; font-size: 0.8rem; background: #374151; border: 1px solid var(--border);">
                     ← Back to Hub
                 </a>
             </div>
@@ -272,29 +257,11 @@
         // === AUTHENTICATION LOGIC (Phase 2.9) ===
         // =======================================================
 
-        // Mock Login Handler
+        // Auto-Login Handler for Admin Access
         function handleLogin() {
-            const usernameInput = document.getElementById('username').value.toUpperCase().trim();
-            const passwordInput = document.getElementById('password').value.trim();
-            const loginMessage = document.getElementById('loginMessage');
-
-            const user = MOCK_MULTI_CLIENT_DATA[usernameInput];
-
-            if (user && user.auth_password === passwordInput) {
-
-                authenticatedExhId = usernameInput;
-
-                // Hide login screen and show dashboard
-                document.getElementById('loginScreen').style.display = 'none';
-                document.getElementById('dashboardContent').style.display = 'block';
-
-                // Load the client-specific data
-                loadDashboardData(authenticatedExhId);
-
-            } else {
-                loginMessage.textContent = 'Invalid ID or Password. Please try again.';
-                document.getElementById('password').value = '';
-            }
+            // Default to first client or Admin for this show
+            authenticatedExhId = "SCHUTTE-T25";
+            loadDashboardData(authenticatedExhId);
         }
 
         // =======================================================
@@ -463,9 +430,7 @@ async function sendPushNotification() {
         // --- Initialization ---
         // =======================================================
         document.addEventListener('DOMContentLoaded', () => {
-            // Optional: Auto-populate the username for quick testing
-            // document.getElementById('username').value = "SCHUTTE-T25";
-            // document.getElementById('password').value = "password";
+            handleLogin(); // Auto-load on page visit
         });
     </script>
     <script src="assets/pwa.js"></script>
