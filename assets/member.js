@@ -447,3 +447,57 @@ function uploadReport() {
     // Show Success Alert (since text was removed from screen)
     alert(`Report for "${reportData.project.name}" uploaded successfully! \nThe PDF report has been sent to ${user.email}.`);
 }
+
+function handleHomeClick() {
+    // Check if launched from Hub/Admin (via ?hub=true)
+    const urlParams = new URLSearchParams(window.location.search);
+    const isHub = urlParams.get('hub') === 'true';
+
+    if (isHub) {
+        if(confirm("Return to Admin Hub? Any unsaved data will be lost.")) {
+            window.location.href = 'admin.html';
+        }
+    } else {
+        resetForm();
+    }
+}
+
+function resetForm() {
+    if(confirm("Start a new assessment? All current data will be cleared.")) {
+        // Clear Inputs
+        document.getElementById('p-name').value = '';
+        document.getElementById('p-contact').value = '';
+        document.getElementById('p-email').value = '';
+        document.getElementById('p-phone').value = '';
+        document.getElementById('p-photos').value = '';
+        document.getElementById('p-photo-count').innerText = 'No photos selected';
+
+        document.getElementById('m-type').selectedIndex = 0;
+        document.getElementById('m-jobtype').selectedIndex = -1; // Multi-select clear
+        document.getElementById('m-mold-sqft').value = '';
+        document.getElementById('m-density').selectedIndex = 0;
+        document.getElementById('m-porosity').selectedIndex = 0;
+        document.getElementById('m-surface-cond').selectedIndex = 0;
+        document.getElementById('m-waste-buffer').selectedIndex = 0;
+
+        document.getElementById('m-cubic').value = '';
+        document.getElementById('m-agent').selectedIndex = 0;
+
+        document.getElementById('m-rh').value = '';
+        document.getElementById('m-temp').value = '';
+
+        // Costs
+        document.getElementById('c-product').value = '';
+        document.getElementById('c-techs').value = '';
+        document.getElementById('c-hours').value = '';
+        document.getElementById('c-rate').value = '';
+        document.getElementById('c-misc').value = '';
+
+        // Hide Results
+        document.getElementById('m-results').classList.add('hidden');
+        document.getElementById('report-modal').classList.add('hidden');
+
+        // Scroll to top
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+}

@@ -480,6 +480,22 @@ function openSettings() {
     toggleModal('settings-modal', true);
 }
 
+function handleHomeClick() {
+    // Check if launched from Hub/Admin (via ?hub=true)
+    const urlParams = new URLSearchParams(window.location.search);
+    const isHub = urlParams.get('hub') === 'true';
+
+    if (isHub) {
+        if(confirm("Return to Admin Hub? Any unsaved data will be lost.")) {
+            // Go back to the dedicated Admin page
+            window.location.href = 'admin.html';
+        }
+    } else {
+        // Normal behavior: Reset Form
+        resetForm();
+    }
+}
+
 function resetForm() {
     if(confirm("Start a new assessment? All current data will be cleared.")) {
         // Clear Inputs
