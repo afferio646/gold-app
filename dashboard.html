@@ -104,7 +104,7 @@
         <div class="header-dash">
             <div class="container flex justify-between items-center">
                 <div>
-                    <h1>AfferioIQ Client Dashboard</h1>
+                    <h1>Goldmorr Client Dashboard <span style="font-size:0.5em; color:var(--success); border:1px solid var(--success); padding:2px 6px; border-radius:4px; vertical-align:middle;">v2.0 LIVE</span></h1>
                     <p class="user-info">Authenticated Session: <span id="authenticatedExhName">Goldmorr Admin</span> (<span id="authenticatedExhId">ADMIN</span>)</p>
                 </div>
                 <a href="index.html?role=admin" class="btn-primary" style="text-decoration: none; display: inline-block; width: auto; font-size: 0.8rem; background: #374151; border: 1px solid var(--border);">
@@ -422,9 +422,12 @@ async function sendPushNotification() {
         // =======================================================
         // --- Initialization ---
         // =======================================================
-        document.addEventListener('DOMContentLoaded', () => {
-            handleLogin(); // Auto-load on page visit
-        });
+        // Set global authenticated ID for push notifications
+        let authenticatedExhId = "ADMIN";
+        let authenticatedExhName = "Goldmorr Admin";
+
+        // Auto-Load Data on Page Visit
+        // (refreshDashboard is already called at top of script, removing duplicate/broken calls)
     </script>
     <script src="assets/pwa.js"></script>
 </body>
