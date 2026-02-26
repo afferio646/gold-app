@@ -72,37 +72,52 @@ const API = {
     },
 
     // --- REPORTS / LEADS ---
-    saveReport: (reportData) => {
-        // 1. Get Source ID from URL or Saved Settings
+    saveReport: async (reportData) => {
+        // 1. Get Source ID
         const urlParams = new URLSearchParams(window.location.search);
         let sourceId = urlParams.get('source');
-
-        // If not in URL, try to find it in previous settings or default
         if(!sourceId) sourceId = reportData.source || 'General';
 
-        // 2. Prepare Data for Firestore
+        let leadId = `${sourceId}-PENDING`;
+
+        // 2. Sequential ID Logic (Transaction)
+        if (db) {
+            const counterRef = db.collection('counters').doc('leads');
+
+            try {
+                await db.runTransaction(async (transaction) => {
+                    const counterDoc = await transaction.get(counterRef);
+                    let newCount = 1001; // Start at 1001
+
+                    if (counterDoc.exists) {
+                        newCount = counterDoc.data().count + 1;
+                    }
+
+                    transaction.set(counterRef, { count: newCount });
+                    leadId = `GM-${newCount}`; // Global Sequential ID
+                });
+            } catch (e) {
+                console.error("Transaction failed: ", e);
+                leadId = `${sourceId}-${Date.now().toString().slice(-4)}`; // Fallback
+            }
+        }
+
+        // 3. Prepare Final Doc
         const leadDoc = {
             ...reportData,
             source: sourceId,
-            serverTimestamp: new Date().toISOString(), // Use ISO for sorting
-            leadId: `${sourceId}-${Date.now().toString().slice(-6)}` // Generate ID
+            serverTimestamp: new Date().toISOString(),
+            leadId: leadId
         };
 
-        // 3. Send to Firebase
+        // 4. Save to Leads Collection
         if (db) {
             db.collection('leads').add(leadDoc)
-                .then((docRef) => {
-                    console.log("Report saved with ID: ", docRef.id);
-                })
-                .catch((error) => {
-                    console.error("Error adding document: ", error);
-                    alert("Offline Mode: Data saved locally (Sync pending)");
-                });
-        } else {
-            console.warn("Firebase not ready. Saving locally.");
+                .then(() => console.log("Lead Saved:", leadId))
+                .catch(e => console.error("Save Error:", e));
         }
 
-        // 4. Fallback: Save to LocalStorage (for offline history)
+        // 5. Local Backup
         let leads = JSON.parse(localStorage.getItem('goldmorr_leads') || '[]');
         leads.unshift(leadDoc);
         localStorage.setItem('goldmorr_leads', JSON.stringify(leads));
@@ -110,19 +125,46 @@ const API = {
         return leadDoc;
     },
 
-    // --- DASHBOARD: GET LEADS ---
-    getLeads: async () => {
-        if (!db) {
-            console.warn("Using Local Data (Firebase unavailable)");
-            return JSON.parse(localStorage.getItem('goldmorr_leads') || '[]');
-        }
+    // --- DASHBOARD: GET METRICS ---
+    getDashboardData: async () => {
+        if (!db) return { leads: [], stats: null };
 
         try {
-            const snapshot = await db.collection('leads').orderBy('serverTimestamp', 'desc').limit(50).get();
-            return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            // 1. Get Recent Leads
+            const leadSnap = await db.collection('leads').orderBy('serverTimestamp', 'desc').limit(50).get();
+            const leads = leadSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+            // 2. Get Distribution Count (Activations)
+            // Note: In a real high-volume app, we would use a distributed counter.
+            // For <1000 users, getting the size is acceptable or we read a stats doc.
+            const actSnap = await db.collection('activations').get();
+            const distributedCount = actSnap.size;
+
+            // 3. Get Scans Used (Total Reports)
+            // Ideally we use the 'counters/leads' doc we created
+            const counterDoc = await db.collection('counters').doc('leads').get();
+            const scansUsed = counterDoc.exists ? (counterDoc.data().count - 1000) : 0;
+
+            // 4. Active Users (Unique emails in usage_logs last 30 days - Simplified to total registrations for now)
+            const activeUsers = distributedCount;
+
+            return {
+                leads: leads,
+                stats: {
+                    distributed: distributedCount,
+                    scans: scansUsed,
+                    active: activeUsers
+                }
+            };
         } catch (e) {
-            console.error("Error fetching leads:", e);
-            return [];
+            console.error("Dashboard Fetch Error:", e);
+            return { leads: [], stats: null };
         }
+    },
+
+    getLeads: async () => {
+        // Legacy support wrapper
+        const data = await API.getDashboardData();
+        return data.leads;
     }
 };
