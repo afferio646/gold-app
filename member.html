@@ -45,20 +45,35 @@
 
         <!-- CERTIFICATION COMPLETE STEP (Hidden initially) -->
         <div id="cert-step-2" class="hidden glass p-8 rounded-2xl w-full max-w-md border border-[var(--g-cyan)] text-center animate-in zoom-in duration-300">
-            <div class="flex justify-center mb-6">
-                 <!-- Changed to Download Icon -->
-                <div class="w-16 h-16 bg-[var(--g-cyan)] rounded-full flex items-center justify-center animate-pulse">
-                    <svg class="w-8 h-8 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+            <div class="flex justify-center mb-4">
+                <div class="w-14 h-14 bg-[var(--g-cyan)] rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(34,211,238,0.3)] animate-pulse">
+                    <svg class="w-7 h-7 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
                 </div>
             </div>
-            <h2 class="tech-font text-xl text-[var(--g-cyan)] mb-2 uppercase tracking-widest">No Download Required</h2>
-            <p class="text-gray-400 text-xs mb-6">Simply add to home screen for instant access.</p>
+            <h2 class="tech-font text-lg text-white mb-1 uppercase tracking-widest font-bold">Install App for Offline Access</h2>
+            <p class="text-[var(--g-cyan)] text-[10px] uppercase tracking-wider font-bold mb-6">Enable instant updates and save your progress</p>
 
-            <div id="install-instructions" class="bg-slate-800/80 p-6 rounded-xl border border-gray-600 mb-6 text-left shadow-inner relative">
-                <!-- Dynamic Content Loaded Here via JS -->
+            <div class="grid grid-cols-2 gap-4 mb-6">
+                <!-- iOS Column -->
+                <div id="ios-instruct" class="bg-slate-800/80 p-4 rounded-xl border border-gray-700 hover:border-gray-500 transition-colors flex flex-col items-center text-center group">
+                    <div class="bg-gray-700 p-2 rounded-lg mb-2 group-hover:bg-gray-600 transition-colors">
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                    </div>
+                    <p class="text-[9px] text-gray-400 uppercase font-bold mb-1">iPhone / iOS</p>
+                    <p class="text-[9px] text-gray-300 leading-tight">Tap <strong class="text-white">Share</strong> then <strong class="text-white">'Add to Home Screen'</strong></p>
+                </div>
+
+                <!-- Android Column -->
+                <div id="android-instruct" class="bg-slate-800/80 p-4 rounded-xl border border-gray-700 hover:border-gray-500 transition-colors flex flex-col items-center text-center group">
+                    <div class="bg-gray-700 p-2 rounded-lg mb-2 group-hover:bg-gray-600 transition-colors">
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path></svg>
+                    </div>
+                    <p class="text-[9px] text-gray-400 uppercase font-bold mb-1">Android</p>
+                    <p class="text-[9px] text-gray-300 leading-tight">Tap <strong class="text-white">Menu</strong> then <strong class="text-white">'Install App'</strong></p>
+                </div>
             </div>
 
-            <button onclick="closeCertification()" class="w-full bg-gray-700 text-white font-black py-3 rounded-lg text-[10px] uppercase tracking-widest hover:bg-green-600 transition-all shadow-lg">I have added it</button>
+            <button onclick="closeCertification()" class="w-full bg-gradient-to-r from-cyan-600 to-blue-600 text-white font-black py-4 rounded-xl tech-font text-[11px] uppercase tracking-[0.2em] shadow-lg hover:brightness-110 transition-all transform active:scale-95">I Have Added It</button>
         </div>
     </div>
 
