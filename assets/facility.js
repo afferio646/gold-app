@@ -423,7 +423,9 @@ function saveUserSettings() {
     const company = document.getElementById('set-company').value;
     const email = document.getElementById('set-email').value;
     if(!name || !company || !email) { alert("All fields required."); return; }
-    API.saveSettings({ name, company, email });
+
+    // Save with userType 'facility' to enable smart redirection
+    API.saveSettings({ name, company, email, userType: 'facility' });
 
     // Show Certification Complete Step
     document.getElementById('cert-step-1').classList.add('hidden');

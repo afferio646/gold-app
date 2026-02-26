@@ -12,6 +12,25 @@
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#111827">
     <link rel="apple-touch-icon" href="icon-512.png">
+
+    <!-- Shared API for User Settings Check -->
+    <script src="assets/api.js"></script>
+    <script>
+        // SMART REDIRECT: If user is certified as "Facility Only", skip the hub and go straight to Facility Tool.
+        document.addEventListener('DOMContentLoaded', () => {
+            if(typeof API !== 'undefined') {
+                const user = API.getSettings();
+                // Check if user is strictly facility AND we are not forcing the hub via query param (e.g. ?hub=true)
+                if(user && user.userType === 'facility') {
+                     const urlParams = new URLSearchParams(window.location.search);
+                     if(!urlParams.get('hub')) {
+                         console.log("Facility User Detected: Redirecting...");
+                         window.location.replace('facility.html');
+                     }
+                }
+            }
+        });
+    </script>
 </head>
 <body class="min-h-screen flex flex-col items-center justify-center">
 
