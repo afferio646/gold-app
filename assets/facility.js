@@ -231,11 +231,11 @@ function openReportModal() {
     // 2. Project Context Block (Top of Body)
     const contextBlock = `
         <div class="bg-gray-50 p-6 border border-gray-200 rounded mb-8">
-            <div class="grid grid-cols-2 gap-8 mb-4 border-b border-gray-200 pb-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-4 border-b border-gray-200 pb-4">
                 <div><p class="text-[10px] uppercase font-bold text-gray-400">Project / Facility</p><p class="font-bold text-lg text-gray-900">${pName}</p></div>
                 <div><p class="text-[10px] uppercase font-bold text-gray-400">Facility Type</p><p class="font-bold text-gray-900">${projectInfo.type}</p></div>
             </div>
-            <div class="grid grid-cols-2 gap-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div><p class="text-[10px] uppercase font-bold text-gray-400">Water Source</p><p class="font-bold text-gray-900">${projectInfo.source}</p></div>
                 <div><p class="text-[10px] uppercase font-bold text-gray-400">Date</p><p class="font-bold text-gray-900">${new Date().toLocaleDateString()}</p></div>
             </div>
@@ -259,7 +259,7 @@ function openReportModal() {
 
     // 5. Score Summary (Colored Boxes)
     const scoreBlock = `
-        <div class="grid grid-cols-2 gap-8 mb-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8 mb-8">
             <div class="bg-blue-50 p-4 rounded border border-blue-100 flex justify-between items-center">
                 <div>
                     <h4 class="font-bold text-sm uppercase text-blue-800 mb-1">Structural Risk Score</h4>
