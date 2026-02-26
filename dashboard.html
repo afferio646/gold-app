@@ -3,12 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AfferioIQ Client Dashboard</title>
+    <title>Goldmorr Admin Dashboard</title>
 
     <!-- PWA Manifest & Icons -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#111827">
     <link rel="apple-touch-icon" href="icon-512.png">
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
     <style>
         /* --- THEME VARIABLES (Consistent with PWA) --- */
@@ -138,22 +142,28 @@
     <div>
 
         <div class="lead-archive" style="margin-bottom: 2rem;">
-            <h2>Lead Archive & Status (Total IDs: <span id="archiveTotal"></span>)</h2>
-            <p style="color: var(--text-secondary); font-size: 0.9rem;">Filter by activity or status here. (Implementation pending backend connection)</p>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <h2>Lead Archive (Total: <span id="archiveTotal">0</span>)</h2>
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn-primary" onclick="exportLeads()" style="width: auto; padding: 0.5rem 1rem; background: #10b981;">Export CSV</button>
+                    <button class="btn-primary" onclick="performSystemReset()" style="width: auto; padding: 0.5rem 1rem; background: #ef4444;">System Reset</button>
+                </div>
+            </div>
+
             <div class="lead-archive-container">
-                <table id="leadArchiveTable" style="margin-top: 1rem;">
+                <table id="leadArchiveTable">
                     <thead>
                         <tr>
                             <th>Lead ID</th>
                             <th>Source</th>
-                            <th>Subscribed</th>
-                            <th>Scans Used</th>
-                            <th>Last Active</th>
+                            <th>Contact</th>
+                            <th>Date</th>
                             <th>Status</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr><td colspan="6" style="text-align: center;">Full Lead List loads here once connected to the backend.</td></tr>
+                        <tr><td colspan="6" style="text-align: center;">Loading data...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -213,150 +223,133 @@
     <script src="assets/api.js"></script>
     <script>
         // =======================================================
-        // === CORE DATA STRUCTURE (Phase 2.6/2.10 - Mock Database) ===
-        // =======================================================
-        const MOCK_MULTI_CLIENT_DATA = {
-            "SCHUTTE-T25": {
-                exhibitorName: "Schutte Spindle Co.",
-                auth_password: "password", // Mock password
-                aggregates: {
-                    totalAppsDistributed: 500,
-                    activeSubscribers: 385,
-                    totalScansUsed: 7542,
-                    scansTargetCap: 15000,
-                    qualifiedLeads: 45
-                },
-                recentActivity: [
-                    { timestamp: "2025-11-20 10:30 AM", leadId: "8F2H5K", detail: "Structural Scan Complete", status: "High Confidence" },
-                    { timestamp: "2025-11-20 09:45 AM", leadId: "A1B3C4", detail: "Report Exported", status: "High Activity" },
-                    { timestamp: "2025-11-20 08:15 AM", leadId: "D5E6F7", detail: "First Activation", status: "New Lead" },
-                    { timestamp: "2025-11-19 04:20 PM", leadId: "J9K0L1", detail: "Push Subscribed", status: "Engaged" }
-                ]
-            },
-            "AURA-JEWEL": {
-                exhibitorName: "Aura Luxury Jewels",
-                auth_password: "password", // Mock password
-                aggregates: {
-                    totalAppsDistributed: 1200,
-                    activeSubscribers: 980,
-                    totalScansUsed: 150,
-                    scansTargetCap: 5000,
-                    qualifiedLeads: 180
-                },
-                recentActivity: [
-                    { timestamp: "2025-11-20 11:00 AM", leadId: "R1S2T3", detail: "Sizing Guide Used", status: "Low Activity" },
-                    { timestamp: "2025-11-20 10:15 AM", leadId: "V4W5X6", detail: "Budget Planner Export", status: "High Activity" },
-                    { timestamp: "2025-11-19 03:00 PM", leadId: "Y7Z8A9", detail: "First Activation", status: "New Lead" },
-                ]
-            }
-        };
-
-        let authenticatedExhId = null;
-
-        // =======================================================
-        // === AUTHENTICATION LOGIC (Phase 2.9) ===
+        // === CORE LOGIC (Real Data Mode) ===
         // =======================================================
 
-        // Auto-Login Handler for Admin Access
-        function handleLogin() {
-            // Default to first client or Admin for this show
-            authenticatedExhId = "SCHUTTE-T25";
-            loadDashboardData(authenticatedExhId);
-        }
+        const TARGET_CAP = 1000;
 
-        // =======================================================
-        // === DATA LOADING & FILTERING (Phase 2.2/2.10) ===
-        // =======================================================
+        // Auto-Load Data on Page Visit
+        document.addEventListener('DOMContentLoaded', () => {
+            refreshDashboard();
+        });
 
-        function getStatusClass(status) {
-            if (status.includes("High") || status.includes("Confidence")) {
-                return 'status-high';
-            } else if (status.includes("New")) {
-                return 'status-low';
-            }
-            return '';
-        }
-
-        function loadDashboardData(exhId) {
-            const clientData = MOCK_MULTI_CLIENT_DATA[exhId];
-            if (!clientData) {
-                document.querySelector('#dashboardContent .container').innerHTML = "<h2>Error: No lead data available for this account.</h2>";
-                return;
-            }
-
-            const aggregates = clientData.aggregates;
-
-            // Update Header
-            document.getElementById('authenticatedExhName').textContent = clientData.exhibitorName;
-            document.getElementById('authenticatedExhId').textContent = exhId;
-
-            // --- MERGE REAL DATA FROM API ---
-            // Fetch local leads that were generated by the Member/Facility apps
-            const realLeads = API.getLeads();
-            const totalRealScans = realLeads.length;
-
-            // Combine mock metrics with real usage
-            const totalScans = aggregates.totalScansUsed + totalRealScans;
+        async function refreshDashboard() {
+            // 1. Fetch Real Data + Stats from API (Firebase)
+            const data = await API.getDashboardData();
+            const leads = data.leads;
+            const stats = data.stats;
 
             // 2. Update Metrics Cards
-            document.getElementById('totalApps').textContent = aggregates.totalAppsDistributed;
-            document.getElementById('totalCapGoal').textContent = aggregates.totalAppsDistributed.toLocaleString();
-            document.getElementById('subscribers').textContent = aggregates.activeSubscribers;
-            document.getElementById('scansUsed').textContent = totalScans.toLocaleString();
+            const distributed = stats ? stats.distributed : 0;
+            const scans = stats ? stats.scans : 0;
+            const active = stats ? stats.active : 0;
 
-            const percentageUsed = ((totalScans / aggregates.scansTargetCap) * 100).toFixed(1);
-            const scansCaption = `Target Cap: ${aggregates.scansTargetCap.toLocaleString()} scans (${percentageUsed}% used)`;
-            document.getElementById('scansCaption').textContent = scansCaption;
+            document.getElementById('totalApps').textContent = distributed;
+            document.getElementById('totalCapGoal').textContent = TARGET_CAP;
 
-            document.getElementById('qualifiedLeads').textContent = aggregates.qualifiedLeads + realLeads.filter(l => l.financials && l.financials.bid).length; // Count bids as qualified
-            document.getElementById('subscriberCountText').textContent = `Target: ${aggregates.activeSubscribers} Active Subscribers`;
+            document.getElementById('subscribers').textContent = active;
+
+            document.getElementById('scansUsed').textContent = scans;
+            const percentageUsed = ((scans / TARGET_CAP) * 100).toFixed(1);
+            document.getElementById('scansCaption').textContent = `Activity vs Cap: ${percentageUsed}%`;
+
+            // Qualified = Leads with specific criteria (calc locally on recent batch)
+            const qualifiedLeads = leads.filter(l => l.appType === 'Member Suite' || (l.financials && l.financials.bid)).length;
+            document.getElementById('qualifiedLeads').textContent = qualifiedLeads;
+            document.getElementById('subscriberCountText').textContent = `${active} Active Users`;
 
             // 3. Update Recent Activity Table
             const tableBody = document.getElementById('activityTableBody');
             tableBody.innerHTML = '';
 
-            // Mix Mock Activity + Real Leads
-            // Convert real leads to activity format
-            const realActivity = realLeads.map(l => ({
-                timestamp: l.timestamp,
-                leadId: l.id,
-                detail: l.appType + ' Upload',
-                status: l.appType === 'Member Suite' ? 'High Activity' : 'New Lead'
-            }));
-
-            const combinedActivity = [...realActivity, ...clientData.recentActivity];
-
-            combinedActivity.forEach(activity => {
+            leads.slice(0, 10).forEach(lead => {
                 const row = tableBody.insertRow();
+                const status = lead.appType === 'Member Suite' ? 'High Activity' : 'New Lead';
+                const badgeClass = status === 'High Activity' ? 'status-high' : 'status-low';
+
                 row.innerHTML = `
-                    <td>${activity.timestamp}</td>
-                    <td>${activity.leadId}</td>
-                    <td>${activity.detail}</td>
-                    <td><span class="status-badge ${getStatusClass(activity.status)}">${activity.status}</span></td>
+                    <td>${new Date(lead.serverTimestamp || lead.timestamp).toLocaleString()}</td>
+                    <td>${lead.leadId || lead.id}</td>
+                    <td>${lead.appType} Submission</td>
+                    <td><span class="status-badge ${badgeClass}">${status}</span></td>
                 `;
             });
 
-            // 4. Update Lead Archive Table (New Feature)
+            // 4. Update Lead Archive Table
             const archiveBody = document.querySelector('#leadArchiveTable tbody');
             archiveBody.innerHTML = '';
+            document.getElementById('archiveTotal').innerText = leads.length;
 
-            if(realLeads.length > 0) {
-                 document.getElementById('archiveTotal').innerText = realLeads.length;
-                 realLeads.forEach(lead => {
+            if(leads.length > 0) {
+                 leads.forEach(lead => {
                     const r = archiveBody.insertRow();
                     const src = lead.source || 'General';
+                    const userName = lead.user ? lead.user.name : 'Unknown';
+                    const email = lead.user ? lead.user.email : '';
+
                     r.innerHTML = `
-                        <td>${lead.id} <br> <span style="font-size:0.7em; color:gray">${lead.user.name}</span></td>
+                        <td>${lead.leadId || lead.id}</td>
                         <td><span style="font-weight:bold; color:var(--primary-light)">${src}</span></td>
-                        <td>Yes</td>
-                        <td>1</td>
-                        <td>${lead.timestamp}</td>
+                        <td>${userName}<br><span style="font-size:0.8em; color:#9ca3af">${email}</span></td>
+                        <td>${new Date(lead.serverTimestamp || lead.timestamp).toLocaleDateString()}</td>
                         <td><span class="status-badge status-low">Active</span></td>
+                        <td>
+                            <button onclick="deleteRow('${lead.id}')" style="background: none; border: none; color: #ef4444; cursor: pointer;" title="Delete Lead">
+                                <svg style="width: 16px; height: 16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                            </button>
+                        </td>
                     `;
                  });
             } else {
-                archiveBody.innerHTML = `<tr><td colspan="6" style="text-align: center;">No live data uploaded yet. Open the apps and submit a report!</td></tr>`;
+                archiveBody.innerHTML = `<tr><td colspan="6" style="text-align: center;">Waiting for live data... Scan the QR codes to start!</td></tr>`;
             }
+        }
+
+        async function deleteRow(docId) {
+            if(confirm("Delete this lead permanently?")) {
+                const success = await API.deleteLead(docId);
+                if(success) refreshDashboard();
+            }
+        }
+
+        async function performSystemReset() {
+            const success = await API.resetSystem();
+            if(success) refreshDashboard();
+        }
+
+        function exportLeads() {
+            // Get data from table or re-fetch
+            const rows = [];
+            rows.push(["Lead ID", "Source", "Name", "Email", "Date", "App Type"]);
+
+            // We need to access the raw data.
+            // Ideally we store 'currentLeads' globally or fetch again.
+            // For simplicity, let's fetch again or use what's in DOM if lazy.
+            // Better: use API.getLeads()
+            API.getLeads().then(leads => {
+                leads.forEach(l => {
+                    const u = l.user || {};
+                    rows.push([
+                        l.leadId || l.id,
+                        l.source || 'General',
+                        u.name || '',
+                        u.email || '',
+                        new Date(l.serverTimestamp || l.timestamp).toLocaleDateString(),
+                        l.appType || ''
+                    ]);
+                });
+
+                let csvContent = "data:text/csv;charset=utf-8,"
+                    + rows.map(e => e.join(",")).join("\n");
+
+                const encodedUri = encodeURI(csvContent);
+                const link = document.createElement("a");
+                link.setAttribute("href", encodedUri);
+                link.setAttribute("download", "goldmorr_leads.csv");
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            });
         }
 
         // =======================================================

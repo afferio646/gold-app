@@ -1,14 +1,52 @@
 
 // assets/api.js
-// This file handles data persistence.
-// Currently acts as a Mock API using LocalStorage.
-// It is structured to be easily replaced with Firebase calls later.
+// Firebase Integration for Goldmorr Hub
+
+// We rely on the Firebase SDKs being loaded in the HTML via CDN
+// import { initializeApp } from "firebase/app";
+// import { getFirestore, collection, addDoc, getDocs, query, orderBy, limit } from "firebase/firestore";
+
+const firebaseConfig = {
+    apiKey: "AIzaSyBqumaIsQEllFIE7qgRSO-jptkGa7-4LWw",
+    authDomain: "goldmorr-hub.firebaseapp.com",
+    projectId: "goldmorr-hub",
+    storageBucket: "goldmorr-hub.firebasestorage.app",
+    messagingSenderId: "900594097755",
+    appId: "1:900594097755:web:750378fabd2e97135ba97e"
+};
+
+let db; // Firestore instance
+
+// Initialize Firebase if global 'firebase' object exists (from CDN)
+function initFirebase() {
+    if (typeof firebase !== 'undefined' && !db) {
+        try {
+            const app = firebase.initializeApp(firebaseConfig);
+            db = firebase.firestore();
+            console.log("Firebase Initialized Successfully");
+        } catch (e) {
+            console.error("Firebase Init Error:", e);
+        }
+    }
+}
+
+// Ensure initialization happens
+document.addEventListener('DOMContentLoaded', initFirebase);
 
 const API = {
-    // --- USER SETTINGS ---
+    // --- USER SETTINGS (Local Only for Device ID) ---
     saveSettings: (settings) => {
         localStorage.setItem('goldmorr_settings', JSON.stringify(settings));
-        console.log("Settings Saved:", settings);
+        console.log("Settings Saved Locally:", settings);
+
+        // Also log this registration to Firebase as an "Activation"
+        if(db) {
+            db.collection('activations').add({
+                ...settings,
+                timestamp: new Date().toISOString(),
+                source: new URLSearchParams(window.location.search).get('source') || 'Direct'
+            });
+        }
     },
 
     getSettings: () => {
@@ -16,49 +54,167 @@ const API = {
         return s ? JSON.parse(s) : null;
     },
 
+    // --- HEARTBEAT (Usage Tracking) ---
+    logAppOpen: () => {
+        const user = API.getSettings();
+        if(user && db) {
+            const source = new URLSearchParams(window.location.search).get('source') || 'Direct';
+            db.collection('usage_logs').add({
+                userName: user.name,
+                userEmail: user.email,
+                company: user.company,
+                source: source,
+                timestamp: new Date().toISOString(),
+                type: 'APP_OPEN'
+            }).then(() => console.log("Heartbeat sent to Firebase"))
+              .catch(e => console.error("Heartbeat failed", e));
+        }
+    },
+
     // --- REPORTS / LEADS ---
-    saveReport: (reportData) => {
-        // In Firebase, this would be addDoc(collection(db, "leads"), reportData)
-
-        // 1. Get Source ID from URL (e.g. ?source=REP1)
+    saveReport: async (reportData) => {
+        // 1. Get Source ID
         const urlParams = new URLSearchParams(window.location.search);
-        const sourceId = urlParams.get('source') || 'WEB';
+        let sourceId = urlParams.get('source');
+        if(!sourceId) sourceId = reportData.source || 'General';
 
-        // 2. Generate a Mock "Sequential" ID
-        // (In Firebase, we'd use a transaction to increment a counter)
-        const timestampSuffix = Date.now().toString().slice(-4);
-        const mockLeadId = `${sourceId}-${timestampSuffix}`;
+        let leadId = `${sourceId}-PENDING`;
 
-        // 3. Get existing leads from local storage (to simulate a DB)
-        let leads = JSON.parse(localStorage.getItem('goldmorr_leads') || '[]');
+        // 2. Sequential ID Logic (Transaction)
+        if (db) {
+            const counterRef = db.collection('counters').doc('leads');
 
-        // 4. Add metadata
-        const newLead = {
-            id: mockLeadId,
+            try {
+                await db.runTransaction(async (transaction) => {
+                    const counterDoc = await transaction.get(counterRef);
+                    let newCount = 1001; // Start at 1001
+
+                    if (counterDoc.exists) {
+                        newCount = counterDoc.data().count + 1;
+                    }
+
+                    transaction.set(counterRef, { count: newCount });
+                    leadId = `GM-${newCount}`; // Global Sequential ID
+                });
+            } catch (e) {
+                console.error("Transaction failed: ", e);
+                leadId = `${sourceId}-${Date.now().toString().slice(-4)}`; // Fallback
+            }
+        }
+
+        // 3. Prepare Final Doc
+        const leadDoc = {
+            ...reportData,
             source: sourceId,
-            timestamp: new Date().toLocaleString(),
-            ...reportData
+            serverTimestamp: new Date().toISOString(),
+            leadId: leadId
         };
 
-        // 5. Save back
-        leads.unshift(newLead); // Add to top
+        // 4. Save to Leads Collection
+        if (db) {
+            db.collection('leads').add(leadDoc)
+                .then(() => console.log("Lead Saved:", leadId))
+                .catch(e => console.error("Save Error:", e));
+        }
+
+        // 5. Local Backup
+        let leads = JSON.parse(localStorage.getItem('goldmorr_leads') || '[]');
+        leads.unshift(leadDoc);
         localStorage.setItem('goldmorr_leads', JSON.stringify(leads));
 
-        console.log("Report Uploaded to Mock DB:", newLead);
-        return newLead;
+        return leadDoc;
     },
 
-    getLeads: () => {
-        // In Firebase, this would be getDocs(collection(db, "leads"))
-        return JSON.parse(localStorage.getItem('goldmorr_leads') || '[]');
-    },
+    // --- DASHBOARD: GET METRICS ---
+    getDashboardData: async () => {
+        if (!db) return { leads: [], stats: null };
 
-    // --- AUTH (MOCK) ---
-    login: (username, password) => {
-        // Simple mock check
-        if(username === 'ADMIN' && password === 'password') {
-            return { id: 'admin-001', name: 'Goldmorr Admin' };
+        try {
+            // 1. Get Recent Leads
+            const leadSnap = await db.collection('leads').orderBy('serverTimestamp', 'desc').limit(50).get();
+            const leads = leadSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+            // 2. Get Distribution Count (Activations)
+            // Note: In a real high-volume app, we would use a distributed counter.
+            // For <1000 users, getting the size is acceptable or we read a stats doc.
+            const actSnap = await db.collection('activations').get();
+            const distributedCount = actSnap.size;
+
+            // 3. Get Scans Used (Total Reports)
+            // Ideally we use the 'counters/leads' doc we created
+            const counterDoc = await db.collection('counters').doc('leads').get();
+            const scansUsed = counterDoc.exists ? (counterDoc.data().count - 1000) : 0;
+
+            // 4. Active Users (Unique emails in usage_logs last 30 days - Simplified to total registrations for now)
+            const activeUsers = distributedCount;
+
+            return {
+                leads: leads,
+                stats: {
+                    distributed: distributedCount,
+                    scans: scansUsed,
+                    active: activeUsers
+                }
+            };
+        } catch (e) {
+            console.error("Dashboard Fetch Error:", e);
+            return { leads: [], stats: null };
         }
-        return null;
+    },
+
+    getLeads: async () => {
+        // Legacy support wrapper
+        const data = await API.getDashboardData();
+        return data.leads;
+    },
+
+    // --- ADMIN TOOLS ---
+    deleteLead: async (docId) => {
+        if (!db) return false;
+        try {
+            await db.collection('leads').doc(docId).delete();
+            console.log("Lead Deleted:", docId);
+            return true;
+        } catch (e) {
+            console.error("Delete Failed:", e);
+            return false;
+        }
+    },
+
+    resetSystem: async () => {
+        if (!db) return false;
+        const confirmCode = prompt("DANGER: Type 'RESET-GOLDMORR' to wipe ALL data and reset ID counter to 1000.");
+        if (confirmCode !== 'RESET-GOLDMORR') {
+            alert("Incorrect confirmation code. Reset cancelled.");
+            return false;
+        }
+
+        try {
+            const batch = db.batch();
+
+            // 1. Delete Leads
+            const leads = await db.collection('leads').get();
+            leads.forEach(doc => batch.delete(doc.ref));
+
+            // 2. Delete Activations
+            const activations = await db.collection('activations').get();
+            activations.forEach(doc => batch.delete(doc.ref));
+
+            // 3. Delete Logs
+            const logs = await db.collection('usage_logs').get();
+            logs.forEach(doc => batch.delete(doc.ref));
+
+            // 4. Reset Counter
+            const counterRef = db.collection('counters').doc('leads');
+            batch.set(counterRef, { count: 1000 });
+
+            await batch.commit();
+            console.log("System Reset Complete");
+            return true;
+        } catch (e) {
+            console.error("Reset Failed:", e);
+            alert("Reset Failed. See console.");
+            return false;
+        }
     }
 };
