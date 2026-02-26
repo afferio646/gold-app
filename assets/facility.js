@@ -247,7 +247,7 @@ function openReportModal() {
         <div class="mb-8 pl-4 border-l-4 border-[var(--g-cyan)]">
             <h4 class="font-bold text-lg uppercase mb-2 italic text-gray-900">SUBJECT: PROJECT ANALYSIS STRATEGY</h4>
             <div class="text-sm text-gray-800 leading-relaxed space-y-2">
-                <p><strong>Assessment Note:</strong> Based on the facility type (${projectInfo.type}) and water source (${projectInfo.source}), follow standard Goldmorr protocols for surface neutralization.</p>
+                <p><strong>Assessment Note:</strong> Based on the facility type (${projectInfo.type}) and water source (${projectInfo.source}), follow standard Goldmorr protocols for surface neutralization..</p>
                 ${analysisBullets}
                 <p class="text-[11px] text-gray-400 italic mt-2">Attached Evidence: ${photoCount} Photo(s) (See Appendix)</p>
             </div>
@@ -464,4 +464,34 @@ function openSettings() {
         document.getElementById('set-email').value = user.email;
     }
     toggleModal('settings-modal', true);
+}
+
+function resetForm() {
+    if(confirm("Start a new assessment? All current data will be cleared.")) {
+        // Clear Inputs
+        document.getElementById('p-name').value = '';
+        document.getElementById('f-photos').value = '';
+        document.getElementById('f-photo-count').innerText = 'No photos selected';
+
+        document.getElementById('f-type').selectedIndex = 0;
+        document.getElementById('f-source').selectedIndex = 0;
+        document.getElementById('f-mold-growth').selectedIndex = 0;
+        document.getElementById('f-surface-type').selectedIndex = 0;
+        document.getElementById('f-moisture-hist').selectedIndex = 0;
+        document.getElementById('f-sensory').selectedIndex = 0;
+        document.getElementById('f-hvac-risk').selectedIndex = 0;
+
+        document.getElementById('f-rh').value = '';
+        document.getElementById('f-temp').value = '';
+
+        // Hide Results
+        document.getElementById('f-res').classList.add('hidden');
+        document.getElementById('report-modal').classList.add('hidden');
+
+        // Clear stored data
+        window.currentReportData = null;
+
+        // Scroll to top
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
 }
