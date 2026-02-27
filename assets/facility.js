@@ -435,6 +435,13 @@ function saveUserSettings() {
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
     const isAndroid = /Android/.test(navigator.userAgent);
 
+    // Auto-Trigger Install Prompt on Android if available (Seamless Flow)
+    if (typeof triggerInstallFlow === 'function' && !isIOS) {
+        setTimeout(() => {
+            triggerInstallFlow();
+        }, 1000); // Slight delay to let modal transition finish
+    }
+
     const iosEl = document.getElementById('ios-instruct');
     const androidEl = document.getElementById('android-instruct');
     const container = iosEl ? iosEl.parentElement : null;

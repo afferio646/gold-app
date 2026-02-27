@@ -50,6 +50,27 @@ window.addEventListener('beforeinstallprompt', (e) => {
     showInstallButton();
 });
 
+// Helper to trigger install flow (called by button OR after registration)
+async function triggerInstallFlow() {
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    const btn = document.getElementById('pwa-install-btn');
+
+    if (isIOS) {
+        // iOS Custom Instruction
+        alert("To save this app on iPhone:\n\n1. Tap the Share button (square with arrow) at the bottom of your screen.\n2. Scroll down and tap 'Add to Home Screen'.");
+    } else if (deferredPrompt) {
+        // Android Native Prompt
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        console.log(`User response to the install prompt: ${outcome}`);
+        deferredPrompt = null;
+        if(btn) btn.remove(); // Hide after install
+    } else {
+        // Fallback
+        alert("To save: Tap your browser menu (⋮) and select 'Add to Home Screen'.");
+    }
+}
+
 function showInstallButton() {
     const header = document.querySelector('header .flex.gap-4');
     if (!header) return;
@@ -64,22 +85,17 @@ function showInstallButton() {
     btn.className = 'text-[9px] bg-[var(--g-cyan)] text-navy-900 border border-[var(--g-cyan)] px-3 py-1.5 rounded ml-2 uppercase font-black tracking-wider shadow-lg animate-pulse';
 
     btn.addEventListener('click', async () => {
-        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-
-        if (isIOS) {
-            // iOS Custom Instruction
-            alert("To save this app on iPhone:\n\n1. Tap the Share button (square with arrow) at the bottom of your screen.\n2. Scroll down and tap 'Add to Home Screen'.");
-        } else if (deferredPrompt) {
-            // Android Native Prompt
-            deferredPrompt.prompt();
-            const { outcome } = await deferredPrompt.userChoice;
-            console.log(`User response to the install prompt: ${outcome}`);
-            deferredPrompt = null;
-            btn.remove(); // Hide after install
-        } else {
-            // Fallback
-            alert("To save: Tap your browser menu (⋮) and select 'Add to Home Screen'.");
+        // 1. Gate: Check Registration First
+        const user = API.getSettings();
+        if (!user || !user.name) {
+            // Open Registration Modal if missing
+            toggleModal('settings-modal', true);
+            alert("Please certify your device before saving the app.");
+            return;
         }
+
+        // 2. Trigger Install Flow
+        triggerInstallFlow();
     });
 
     header.prepend(btn);
