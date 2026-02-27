@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Goldmorr Show Links</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root { --g-cyan: #D4AF37; }
+        body { background-color: #0F172A; font-family: 'Inter', sans-serif; color: #e2e8f0; }
+        .glass {
+            background: rgba(17, 24, 39, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .tech-font { font-family: 'Orbitron', sans-serif; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-6">
+
+    <div class="max-w-md w-full glass rounded-[24px] p-8 shadow-2xl border-t border-[rgba(212,175,55,0.3)]">
+
+        <div class="text-center mb-10">
+            <h1 class="tech-font text-2xl text-white font-bold tracking-widest uppercase mb-2">Goldmorr System</h1>
+            <p class="text-[var(--g-cyan)] uppercase text-[10px] tracking-[0.4em] font-light">Show Access Portal</p>
+        </div>
+
+        <div class="space-y-6">
+
+            <!-- Item 1: Admin Hub -->
+            <div class="group">
+                <div class="flex items-center justify-between mb-2">
+                    <h3 class="text-white font-bold uppercase tracking-wider text-sm">Admin Hub</h3>
+                    <span class="text-[9px] bg-slate-800 px-2 py-1 rounded text-slate-400 border border-slate-700">DESKTOP / MOBILE</span>
+                </div>
+                <p class="text-xs text-slate-400 mb-4 leading-relaxed">
+                    The central menu to launch either the Facility Tool or Member Suite. Best for starting on a laptop or iPad.
+                </p>
+                <a href="admin.html" target="_blank" class="block w-full bg-[var(--g-cyan)] text-navy-900 text-center font-bold uppercase text-xs py-3 rounded-lg hover:bg-white transition-colors tracking-widest shadow-lg">
+                    Open Admin Hub
+                </a>
+            </div>
+
+            <div class="h-px bg-slate-700/50 w-full"></div>
+
+            <!-- Item 2: Dashboard -->
+            <div class="group">
+                <div class="flex items-center justify-between mb-2">
+                    <h3 class="text-white font-bold uppercase tracking-wider text-sm">Live Dashboard</h3>
+                    <span class="text-[9px] bg-slate-800 px-2 py-1 rounded text-slate-400 border border-slate-700">DESKTOP ONLY</span>
+                </div>
+                <p class="text-xs text-slate-400 mb-4 leading-relaxed">
+                    View real-time leads, export data to CSV, and manage system resets. Keep this open on a monitor.
+                </p>
+                <a href="dashboard.html" target="_blank" class="block w-full border border-[var(--g-cyan)] text-[var(--g-cyan)] text-center font-bold uppercase text-xs py-3 rounded-lg hover:bg-[var(--g-cyan)] hover:text-navy-900 transition-all tracking-widest">
+                    View Live Data
+                </a>
+            </div>
+
+            <div class="h-px bg-slate-700/50 w-full"></div>
+
+            <!-- Item 3: Public Tool -->
+            <div class="group">
+                <div class="flex items-center justify-between mb-2">
+                    <h3 class="text-white font-bold uppercase tracking-wider text-sm">Facility Tool (Public)</h3>
+                    <span class="text-[9px] bg-slate-800 px-2 py-1 rounded text-slate-400 border border-slate-700">MOBILE / DEMO</span>
+                </div>
+                <p class="text-xs text-slate-400 mb-4 leading-relaxed">
+                    Simulate the exact experience a Facility Manager sees when scanning the QR code.
+                </p>
+                <a href="facility.html" target="_blank" class="block w-full bg-slate-700 text-white text-center font-bold uppercase text-xs py-3 rounded-lg hover:bg-slate-600 transition-colors tracking-widest">
+                    Launch Demo
+                </a>
+            </div>
+
+        </div>
+
+        <div class="mt-10 text-center">
+            <p class="text-[9px] text-slate-500 uppercase tracking-widest">Save this page for quick access</p>
+        </div>
+
+    </div>
+
+</body>
+</html>
