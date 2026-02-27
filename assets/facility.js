@@ -478,6 +478,10 @@ function closeCertification() {
 }
 
 function openSettings() {
+    // FORCE RESET MODAL STATE (Fix: Ensure Form shows, not "Save App" instructions)
+    document.getElementById('cert-step-1').classList.remove('hidden');
+    document.getElementById('cert-step-2').classList.add('hidden');
+
     const user = API.getSettings();
     if(user) {
         document.getElementById('set-name').value = user.name;
