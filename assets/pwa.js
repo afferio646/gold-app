@@ -37,19 +37,60 @@ async function requestNotificationPermission() {
 }
 
 // 3. UI Helper: Show/Hide Install & Push Buttons
+let deferredPrompt; // To capture the install prompt
+
+window.addEventListener('beforeinstallprompt', (e) => {
+    // Prevent Chrome 67 and earlier from automatically showing the prompt
+    e.preventDefault();
+    // Stash the event so it can be triggered later.
+    deferredPrompt = e;
+    console.log("Install prompt captured");
+
+    // Show Install Button if not already installed
+    showInstallButton();
+});
+
+function showInstallButton() {
+    const header = document.querySelector('header .flex.gap-4');
+    if (!header) return;
+
+    // Remove existing if any
+    const existing = document.getElementById('pwa-install-btn');
+    if (existing) existing.remove();
+
+    const btn = document.createElement('button');
+    btn.id = 'pwa-install-btn';
+    btn.innerText = 'Install App';
+    btn.className = 'text-[9px] bg-[var(--g-cyan)] text-navy-900 border border-[var(--g-cyan)] px-3 py-1.5 rounded ml-2 uppercase font-black tracking-wider shadow-lg animate-pulse';
+
+    btn.addEventListener('click', async () => {
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            console.log(`User response to the install prompt: ${outcome}`);
+            deferredPrompt = null;
+            btn.remove(); // Hide after install
+        } else {
+            alert("To install: Tap your browser menu (⋮) and select 'Install App' or 'Add to Home Screen'.");
+        }
+    });
+
+    header.prepend(btn);
+}
+
 function initPWAFeatures() {
     // Check if installed (standalone mode)
     const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
 
-    // Add UI element for Push if not already granted
-    if (Notification.permission !== 'granted' && isStandalone) {
-        const header = document.querySelector('header');
+    // If installed, show Push Button if needed
+    if (isStandalone && Notification.permission !== 'granted') {
+        const header = document.querySelector('header .flex.gap-4');
         if(header) {
             const btn = document.createElement('button');
             btn.innerText = 'Enable Updates';
             btn.className = 'text-[9px] border border-red-500 text-red-400 px-3 py-1 rounded ml-2 uppercase font-bold animate-pulse';
             btn.onclick = requestNotificationPermission;
-            header.querySelector('.flex.gap-4').prepend(btn);
+            header.prepend(btn);
         }
     }
 }
