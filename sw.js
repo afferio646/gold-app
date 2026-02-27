@@ -1,5 +1,5 @@
 // Service Worker for Goldmorr PWA
-const CACHE_NAME = 'goldmorr-v3-links';
+const CACHE_NAME = 'goldmorr-v4-fix-profile';
 const ASSETS = [
     '/',
     '/index.html',
