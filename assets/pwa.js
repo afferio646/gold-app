@@ -85,11 +85,14 @@ async function triggerInstallFlow() {
         if(btn) btn.remove(); // Hide after install
     } else {
         // Fallback
-        alert("To save: Tap your browser menu (⋮) and select 'Add to Home Screen'.");
+        alert("To save: Tap your browser menu (⋮) and select 'Add to Home Screen'.\n\nIf you don't see it, tap 'Open in Chrome' or 'Open in Browser' first.");
     }
 }
 
 function showInstallButton() {
+    // GUARD: If already standalone (App Mode), NEVER show this button
+    if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone) return;
+
     const header = document.querySelector('header .flex.gap-4');
     if (!header) return;
 
@@ -124,8 +127,9 @@ function initPWAFeatures() {
     const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 
-    // Force Show Button on iOS if not standalone (since beforeinstallprompt doesn't fire)
-    if (isIOS && !isStandalone) {
+    // Force Show Button if not standalone (iOS OR Android Browser)
+    // This ensures it shows up on the "Scanned App" even if the auto-prompt is delayed
+    if (!isStandalone) {
         showInstallButton();
     }
 
