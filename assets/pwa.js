@@ -30,6 +30,16 @@ async function requestNotificationPermission() {
         // Here you would subscribe the user to your backend
         // e.g., subscribeUserToPush();
         alert("Success! You will now receive field updates.");
+
+        // Fix: Remove the button immediately to stop flashing
+        const btn = document.querySelector('button[onclick="requestNotificationPermission"]'); // Or find via text/class
+        if (btn) btn.remove();
+        // Fallback search if above fails (it has no ID)
+        const headerBtns = document.querySelectorAll('header button');
+        headerBtns.forEach(b => {
+            if(b.innerText === 'ENABLE UPDATES' || b.innerText === 'Enable Updates') b.remove();
+        });
+
     } else {
         alert("Notifications blocked. Please enable them in your browser settings to receive updates.");
     }
