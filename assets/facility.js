@@ -435,6 +435,13 @@ function saveUserSettings() {
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
     const isAndroid = /Android/.test(navigator.userAgent);
 
+    // Auto-Trigger Install Prompt on Android if available (Seamless Flow)
+    if (typeof triggerInstallFlow === 'function' && !isIOS) {
+        setTimeout(() => {
+            triggerInstallFlow();
+        }, 1000); // Slight delay to let modal transition finish
+    }
+
     const iosEl = document.getElementById('ios-instruct');
     const androidEl = document.getElementById('android-instruct');
     const container = iosEl ? iosEl.parentElement : null;
@@ -477,6 +484,23 @@ function openSettings() {
         document.getElementById('set-company').value = user.company;
         document.getElementById('set-email').value = user.email;
     }
+
+    // Inject Reset Data Button if not present
+    const modalBody = document.querySelector('#cert-step-1 .space-y-4');
+    if(modalBody && !document.getElementById('reset-data-btn')) {
+        const resetBtn = document.createElement('button');
+        resetBtn.id = 'reset-data-btn';
+        resetBtn.innerText = "Reset App Registration (Fix Issues)";
+        resetBtn.className = "w-full border border-red-500 text-red-500 font-bold py-3 rounded-xl text-[9px] uppercase tracking-widest mt-4 hover:bg-red-900/20";
+        resetBtn.onclick = () => {
+            if(confirm("This will clear your registration and saved settings. Continue?")) {
+                localStorage.clear();
+                window.location.reload();
+            }
+        };
+        modalBody.appendChild(resetBtn);
+    }
+
     toggleModal('settings-modal', true);
 }
 
