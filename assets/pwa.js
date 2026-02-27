@@ -85,7 +85,7 @@ async function triggerInstallFlow() {
         if(btn) btn.remove(); // Hide after install
     } else {
         // Fallback
-        alert("To save: Tap your browser menu (⋮) and select 'Add to Home Screen'.");
+        alert("To save: Tap your browser menu (⋮) and select 'Add to Home Screen'.\n\nIf you don't see it, tap 'Open in Chrome' or 'Open in Browser' first.");
     }
 }
 
