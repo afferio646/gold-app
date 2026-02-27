@@ -135,6 +135,6 @@ function initPWAFeatures() {
 // Initialize on Load
 document.addEventListener('DOMContentLoaded', () => {
     registerServiceWorker();
-    // Delay slightly to let UI settle
-    setTimeout(initPWAFeatures, 1000);
+    // Run immediately to ensure button appears
+    initPWAFeatures();
 });
