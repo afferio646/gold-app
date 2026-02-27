@@ -50,6 +50,14 @@ window.addEventListener('beforeinstallprompt', (e) => {
     showInstallButton();
 });
 
+window.addEventListener('appinstalled', () => {
+    console.log('PWA was installed');
+    // Hide the button immediately
+    const btn = document.getElementById('pwa-install-btn');
+    if (btn) btn.remove();
+    deferredPrompt = null;
+});
+
 // Helper to trigger install flow (called by button OR after registration)
 async function triggerInstallFlow() {
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
