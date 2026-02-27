@@ -64,14 +64,21 @@ function showInstallButton() {
     btn.className = 'text-[9px] bg-[var(--g-cyan)] text-navy-900 border border-[var(--g-cyan)] px-3 py-1.5 rounded ml-2 uppercase font-black tracking-wider shadow-lg animate-pulse';
 
     btn.addEventListener('click', async () => {
-        if (deferredPrompt) {
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
+        if (isIOS) {
+            // iOS Custom Instruction
+            alert("To save this app on iPhone:\n\n1. Tap the Share button (square with arrow) at the bottom of your screen.\n2. Scroll down and tap 'Add to Home Screen'.");
+        } else if (deferredPrompt) {
+            // Android Native Prompt
             deferredPrompt.prompt();
             const { outcome } = await deferredPrompt.userChoice;
             console.log(`User response to the install prompt: ${outcome}`);
             deferredPrompt = null;
             btn.remove(); // Hide after install
         } else {
-            alert("To save: Tap your browser menu (⋮) and select 'Install App' or 'Add to Home Screen'.");
+            // Fallback
+            alert("To save: Tap your browser menu (⋮) and select 'Add to Home Screen'.");
         }
     });
 
@@ -81,6 +88,12 @@ function showInstallButton() {
 function initPWAFeatures() {
     // Check if installed (standalone mode)
     const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
+    // Force Show Button on iOS if not standalone (since beforeinstallprompt doesn't fire)
+    if (isIOS && !isStandalone) {
+        showInstallButton();
+    }
 
     // If installed, show Push Button if needed
     if (isStandalone && Notification.permission !== 'granted') {
