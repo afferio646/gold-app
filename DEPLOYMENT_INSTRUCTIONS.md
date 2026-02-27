@@ -1,6 +1,10 @@
 # 🚨 CRITICAL: HOW TO FIX "FILE NOT FOUND"
 
-You are seeing "File Not Found" because **this new page (`show_links.html`) is currently stuck in a "Pull Request"**. It has not been added to your live website yet.
+## 🛡️ SAFETY GUARANTEE
+Adding this file is **100% safe**.
+- The new page (`show_links.html`) is a standalone "Menu". It does not touch your main app code at all.
+- The update to the Service Worker (`sw.js`) just tells the app, "Hey, remember this menu page too."
+- It **will not** break the Facility Tool or Dashboard.
 
 ## THE FIX
 1. **Go to GitHub.**
