@@ -26,6 +26,11 @@
 
     <!-- USER CERTIFICATION MODAL (First Run) -->
     <div id="settings-modal" class="fixed inset-0 bg-black/95 z-[3000] hidden flex justify-center items-center p-6">
+        <!-- Close Button for Emergency Egress (Fixes Android Menu Block) -->
+        <button onclick="closeCertification()" class="absolute top-6 right-6 text-gray-500 hover:text-white z-[3010]">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+
         <div id="cert-step-1" class="glass p-10 rounded-2xl w-full max-w-md border border-[var(--g-cyan)]">
             <h2 class="tech-font text-xl text-[var(--g-cyan)] mb-6 uppercase tracking-widest text-center">User Certification</h2>
             <p class="text-gray-400 text-xs mb-8 text-center">Please enter your details to certify your device.</p>
@@ -73,7 +78,11 @@
                         <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path></svg>
                     </div>
                     <p class="text-[9px] text-gray-400 uppercase font-bold mb-1">Android</p>
-                    <p class="text-[9px] text-gray-300 leading-tight">Tap <strong class="text-white">Menu</strong> then <strong class="text-white">'Add to Home Screen'</strong></p>
+                    <p class="text-[9px] text-gray-300 leading-tight text-left">
+                        1. Tap <strong class="text-white">X</strong> (Top Right)<br>
+                        2. Tap <strong class="text-white">Menu</strong> (⋮)<br>
+                        3. Select <strong class="text-white">'Add to Home Screen'</strong>
+                    </p>
                 </div>
             </div>
 
