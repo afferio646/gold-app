@@ -60,7 +60,7 @@ function showInstallButton() {
 
     const btn = document.createElement('button');
     btn.id = 'pwa-install-btn';
-    btn.innerText = 'Install App';
+    btn.innerText = 'Save App';
     btn.className = 'text-[9px] bg-[var(--g-cyan)] text-navy-900 border border-[var(--g-cyan)] px-3 py-1.5 rounded ml-2 uppercase font-black tracking-wider shadow-lg animate-pulse';
 
     btn.addEventListener('click', async () => {
@@ -71,7 +71,7 @@ function showInstallButton() {
             deferredPrompt = null;
             btn.remove(); // Hide after install
         } else {
-            alert("To install: Tap your browser menu (⋮) and select 'Install App' or 'Add to Home Screen'.");
+            alert("To save: Tap your browser menu (⋮) and select 'Install App' or 'Add to Home Screen'.");
         }
     });
 
