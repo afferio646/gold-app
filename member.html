@@ -155,7 +155,7 @@
                 <div class="space-y-5">
 
                     <!-- Mandatory Fields -->
-                    <div class="grid grid-cols-2 gap-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <label class="block text-[9px] uppercase text-gray-500 mb-2 font-black tracking-widest">Facility Type *</label>
                             <select id="m-type" class="w-full bg-slate-900 border border-gray-700 p-2 sm:p-3 rounded text-white text-[12px] sm:text-base">
@@ -177,7 +177,7 @@
 
                     <div>
                         <label class="block text-[9px] uppercase text-gray-500 mb-2 font-black tracking-widest">Job Type (Hold Ctrl/Cmd to select multiple) *</label>
-                        <select id="m-jobtype" class="w-full h-24 bg-slate-900 border border-gray-700 p-2 sm:p-3 rounded text-white text-[12px] sm:text-base" multiple onchange="toggleAtticDropdown()">
+                        <select id="m-jobtype" class="w-full h-16 bg-slate-900 border border-gray-700 p-2 sm:p-3 rounded text-white text-[12px] sm:text-base" multiple onchange="toggleAtticDropdown()">
                             <option>Crawl Space</option>
                             <option>Attic</option>
                             <option>Interior</option>
@@ -197,9 +197,9 @@
                     </div>
 
                     <!-- Metrics -->
-                    <div class="grid grid-cols-2 gap-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
-                <label class="block text-xs uppercase font-bold text-gray-400 mb-1">Mold Sq Ft (Footprint)</label>
+                            <label class="block text-[9px] uppercase text-gray-400 mb-2 font-black tracking-widest">Mold Sq.Ft.</label>
                             <input type="number" id="m-mold-sqft" placeholder="0" class="w-full bg-slate-900 border border-gray-700 p-3 rounded text-white placeholder-gray-600">
                         </div>
                         <div>
@@ -208,7 +208,7 @@
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <label class="block text-[9px] uppercase text-gray-400 mb-2 font-black tracking-widest">Avg Ceiling Ht (Ft)</label>
                             <input type="number" id="m-ceiling" placeholder="8" class="w-full bg-slate-900 border border-gray-700 p-3 rounded text-white placeholder-gray-600">
@@ -234,7 +234,7 @@
                     </div>
 
                     <!-- NEW: Surface Condition & Waste Buffer (Moved here per request) -->
-                    <div class="grid grid-cols-2 gap-4 mt-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
                         <div>
                             <label class="block text-[9px] uppercase text-gray-400 mb-2 font-black tracking-widest">Surface Condition</label>
                             <select id="m-surface-cond" class="w-full p-2 sm:p-3 bg-slate-900 border border-gray-700 rounded text-white focus:border-[var(--g-cyan)] outline-none text-[12px] sm:text-base">
@@ -252,7 +252,7 @@
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-4 border-t border-gray-700 pt-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 border-t border-gray-700 pt-4">
                         <div>
                             <label class="block text-[9px] uppercase text-gray-400 mb-2 font-black tracking-widest">Current RH (%)</label>
                             <input type="number" id="m-rh" placeholder="Optional" class="w-full bg-slate-900 border border-gray-700 p-3 rounded text-white placeholder-gray-600 italic">
@@ -265,7 +265,7 @@
 
                     <div class="border-t border-gray-700 pt-4 mt-4">
                         <p class="text-[9px] text-[var(--g-cyan)] font-bold mb-3 uppercase">Fogging Requirements</p>
-                         <div class="grid grid-cols-2 gap-4 mb-3">
+                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-3">
                             <div>
                                 <label class="block text-[9px] uppercase text-gray-400 mb-2 font-black tracking-widest">Fogging Area Sq Ft</label>
                                 <input type="number" id="m-fog-sqft" placeholder="0" class="w-full bg-slate-900 border border-gray-700 p-3 rounded text-white placeholder-gray-600">
@@ -372,9 +372,11 @@
 
                 <!-- BID RESULT -->
                 <div class="flex flex-col items-center justify-center h-full">
-                    <div class="p-8 sm:p-14 bg-green-900/10 border-2 border-dashed border-green-500/30 rounded-[60px] w-full text-center mb-8">
+                    <div class="p-8 sm:p-14 bg-green-900/10 border-2 border-dashed border-green-500/30 rounded-[60px] w-full text-center mb-8" style="container-type: inline-size;">
                         <p class="text-[11px] uppercase font-black text-green-400 mb-4 tracking-[0.3em] leading-tight break-words">Suggested Retail Bid</p>
-                        <p id="p-bid" class="text-4xl sm:text-5xl md:text-6xl font-black text-green-400 mb-6 tracking-tighter break-words">$0.00</p>
+                        <div class="w-full flex justify-center items-center">
+                            <p id="p-bid" class="font-black text-green-400 mb-6 tracking-tighter whitespace-nowrap" style="font-size: clamp(1.5rem, 10cqw, 4rem);">$0.00</p>
+                        </div>
                         <p id="p-margin-label" class="text-[11px] text-gray-400 font-light uppercase font-bold italic tracking-widest leading-tight break-words">"Guarding 68.9% Certified Member Margin"</p>
                         <p class="text-[9px] text-gray-500 italic mt-4 max-w-xs mx-auto text-center leading-relaxed">*Bulk Rate pricing is used for all calculations. Adjust your quote accordingly if you are not purchasing on a bulk rate basis from Goldmorr.</p>
                     </div>
