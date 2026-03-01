@@ -155,6 +155,7 @@
                     <thead>
                         <tr>
                             <th>Lead ID</th>
+                            <th>System</th>
                             <th>Source</th>
                             <th>Contact</th>
                             <th>Date</th>
@@ -163,7 +164,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr><td colspan="6" style="text-align: center;">Loading data...</td></tr>
+                        <tr><td colspan="7" style="text-align: center;">Loading data...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -266,11 +267,13 @@
                 const row = tableBody.insertRow();
                 const status = lead.appType === 'Member Suite' ? 'High Activity' : 'New Lead';
                 const badgeClass = status === 'High Activity' ? 'status-high' : 'status-low';
+                const systemType = lead.appType || 'Unknown System';
+                const systemColor = systemType === 'Member Suite' ? '#D4AF37' : 'var(--primary-light)';
 
                 row.innerHTML = `
                     <td>${new Date(lead.serverTimestamp || lead.timestamp).toLocaleString()}</td>
                     <td>${lead.leadId || lead.id}</td>
-                    <td>${lead.appType} Submission</td>
+                    <td><span style="color:${systemColor}; font-weight:bold;">${systemType}</span> Submission</td>
                     <td><span class="status-badge ${badgeClass}">${status}</span></td>
                 `;
             });
@@ -286,10 +289,13 @@
                     const src = lead.source || 'General';
                     const userName = lead.user ? lead.user.name : 'Unknown';
                     const email = lead.user ? lead.user.email : '';
+                    const systemType = lead.appType || 'Unknown System';
+                    const systemColor = systemType === 'Member Suite' ? '#D4AF37' : 'var(--primary-light)'; // Gold for members, blue for facility
 
                     r.innerHTML = `
                         <td>${lead.leadId || lead.id}</td>
-                        <td><span style="font-weight:bold; color:var(--primary-light)">${src}</span></td>
+                        <td><span class="status-badge" style="background: rgba(255,255,255,0.1); color:${systemColor}; border:1px solid ${systemColor};">${systemType}</span></td>
+                        <td><span style="font-weight:bold; color:#9ca3af">${src}</span></td>
                         <td>${userName}<br><span style="font-size:0.8em; color:#9ca3af">${email}</span></td>
                         <td>${new Date(lead.serverTimestamp || lead.timestamp).toLocaleDateString()}</td>
                         <td><span class="status-badge status-low">Active</span></td>
@@ -301,7 +307,7 @@
                     `;
                  });
             } else {
-                archiveBody.innerHTML = `<tr><td colspan="6" style="text-align: center;">Waiting for live data... Scan the QR codes to start!</td></tr>`;
+                archiveBody.innerHTML = `<tr><td colspan="7" style="text-align: center;">Waiting for live data... Scan the QR codes to start!</td></tr>`;
             }
         }
 
