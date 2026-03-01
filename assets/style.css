@@ -32,3 +32,8 @@ body {
 
 /* --- RESULT CARD ELEMENTS --- */
 /* (Gauge styles removed in favor of Dual Score Layout) */
+.active-tab {
+    opacity: 1 !important;
+    border-color: #D4AF37 !important;
+    background-color: rgba(212, 175, 55, 0.1) !important;
+}
