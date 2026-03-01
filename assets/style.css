@@ -36,4 +36,6 @@ body {
     opacity: 1 !important;
     border-color: #D4AF37 !important;
     background-color: rgba(212, 175, 55, 0.1) !important;
+    color: #D4AF37 !important;
+    box-shadow: 0 0 10px rgba(212, 175, 55, 0.3) !important;
 }

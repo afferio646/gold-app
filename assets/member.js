@@ -525,15 +525,17 @@ function resetForm() {
         document.getElementById('m-results').classList.add('hidden');
         document.getElementById('report-modal').classList.add('hidden');
 
+        // Ensure we navigate back to the Protocol tab
+        if(typeof switchTab === 'function') {
+            switchTab('quantifier');
+        }
+
         // Scroll to top
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 }
 
-
 // Added for context-aware bottom buttons
 window.clearProjectData = function() {
-    if(confirm("Are you sure you want to clear current project data and start a new project?")) {
-        window.location.reload();
-    }
+    handleHomeClick();
 }
