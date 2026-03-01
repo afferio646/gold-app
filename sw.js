@@ -1,5 +1,5 @@
 // Service Worker for Goldmorr PWA
-const CACHE_NAME = 'goldmorr-v4-fix-profile';
+const CACHE_NAME = 'goldmorr-v5-member-suite';
 const ASSETS = [
     '/',
     '/index.html',
@@ -12,10 +12,12 @@ const ASSETS = [
     '/assets/script.js',
     '/assets/api.js',
     '/assets/facility.js',
+    '/assets/member.js',
     '/assets/pwa.js',
     '/icon-512.png',
     '/manifest.json',
-    '/manifest-admin.json'
+    '/manifest-admin.json',
+    '/manifest-member.json'
 ];
 
 // Install Event: Cache core assets
