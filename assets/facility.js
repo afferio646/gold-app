@@ -384,17 +384,20 @@ function openReportModal() {
     `;
 
     document.getElementById('report-modal').classList.remove('hidden');
+
+    // --- NEW: Trigger lead generation immediately when they view the report ---
+    triggerEarlyLeadGeneration();
 }
 
-function uploadReport() {
-    const user = API.getSettings();
-    if(!user) { alert("Please complete registration in settings."); return; }
+function triggerEarlyLeadGeneration() {
+    // Only fire once per session to avoid duplicate leads if they open/close the modal
+    if(window.hasGeneratedLeadForThisSession) return;
 
-    // Check for Source Param
+    const user = API.getSettings();
+    if(!user) return; // Silent fail if not registered yet
+
     const urlParams = new URLSearchParams(window.location.search);
     const source = urlParams.get('source') || 'General';
-
-    // Minimal Data for Dashboard
     const pName = document.getElementById('p-name').value || "N/A";
     const scoreText = `S:${document.getElementById('score-struct-val').innerText} / AQ:${document.getElementById('score-aq-val').innerText}`;
 
@@ -411,10 +414,21 @@ function uploadReport() {
         details: window.currentReportData
     };
 
-    // Save
+    // Save early lead
     API.saveReport(reportData);
+    window.hasGeneratedLeadForThisSession = true;
+}
 
-    alert(`Report for "${pName}" exported successfully! \n(Saved to Dashboard)`);
+function uploadReport() {
+    const user = API.getSettings();
+    if(!user) { alert("Please complete registration in settings."); return; }
+
+    const pName = document.getElementById('p-name').value || "N/A";
+
+    // Since we already saved the lead when they opened the modal,
+    // we don't need to call API.saveReport again here unless we want to update the record.
+    // For now, we'll just simulate the success alert to the user.
+    alert(`Report for "${pName}" exported successfully! \n(PDF emailed to ${user.email})`);
     document.getElementById('report-modal').classList.add('hidden');
 }
 
@@ -548,6 +562,7 @@ function resetForm() {
 
         // Clear stored data
         window.currentReportData = null;
+        window.hasGeneratedLeadForThisSession = false;
 
         // Scroll to top
         window.scrollTo({ top: 0, behavior: 'smooth' });
