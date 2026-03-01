@@ -290,6 +290,15 @@ function calculateBid() {
     const bid = totalCOGS / divisor;
     document.getElementById('p-bid').innerText = '$' + bid.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
     document.getElementById('p-margin-label').innerText = labelText;
+
+    // --- NEW: Trigger lead generation immediately when they calculate the bid ---
+    // (This covers the case where they just look at the price and leave)
+    // We only want to trigger this if they have actually entered square footage
+    // to avoid triggering a blank lead on initial load
+    const moldSq = parseFloat(document.getElementById('m-mold-sqft').value) || 0;
+    if (moldSq > 0) {
+        triggerEarlyLeadGenerationMember();
+    }
 }
 
 function openMemberReportModal() {
@@ -435,17 +444,26 @@ function openMemberReportModal() {
     `;
 
     document.getElementById('report-modal').classList.remove('hidden');
+
+    // Fallback trigger in case they opened report without changing calc inputs
+    triggerEarlyLeadGenerationMember();
 }
 
-function uploadReport() {
+function triggerEarlyLeadGenerationMember() {
+    // Only fire once per session to avoid duplicate leads
+    if(window.hasGeneratedLeadForThisSession) return;
+
     const user = API.getSettings();
-    if(!user) { alert("Please complete registration in settings."); return; }
+    if(!user) return; // Silent fail if not registered yet
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const source = urlParams.get('source') || 'General';
 
     // Gather all data
     const reportData = {
         user: user,
         project: {
-            name: document.getElementById('p-name').value,
+            name: document.getElementById('p-name').value || 'Unnamed Project',
             contact: document.getElementById('p-contact').value,
             email: document.getElementById('p-email').value,
             phone: document.getElementById('p-phone').value
@@ -463,17 +481,26 @@ function uploadReport() {
             bid: document.getElementById('p-bid').innerText
         },
         appType: 'Member Suite',
-        hasPhotos: document.getElementById('p-photos').files.length > 0
+        source: source,
+        hasPhotos: document.getElementById('p-photos').files && document.getElementById('p-photos').files.length > 0
     };
 
-    // Save via API
+    // Save early lead
     API.saveReport(reportData);
+    window.hasGeneratedLeadForThisSession = true;
+}
+
+function uploadReport() {
+    const user = API.getSettings();
+    if(!user) { alert("Please complete registration in settings."); return; }
+
+    const pName = document.getElementById('p-name').value || 'Unnamed Project';
 
     // Close modal
     document.getElementById('report-modal').classList.add('hidden');
 
-    // Show Success Alert (since text was removed from screen)
-    alert(`Report for "${reportData.project.name}" uploaded successfully! \nThe PDF report has been sent to ${user.email}.`);
+    // Show Success Alert (Lead already saved)
+    alert(`Report for "${pName}" exported successfully! \nThe PDF report has been emailed to ${user.email}.`);
 }
 
 function handleHomeClick() {
@@ -524,6 +551,9 @@ function resetForm() {
         // Hide Results
         document.getElementById('m-results').classList.add('hidden');
         document.getElementById('report-modal').classList.add('hidden');
+
+        // Clear early lead tracker
+        window.hasGeneratedLeadForThisSession = false;
 
         // Ensure we navigate back to the Protocol tab
         if(typeof switchTab === 'function') {
