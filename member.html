@@ -136,11 +136,11 @@
         </div>
 
         <div class="flex gap-2 sm:gap-4 mb-8">
-            <button onclick="switchTab('quantifier')" id="tab-quantifier" class="flex-1 active-tab tech-font text-[9px] sm:text-[10px] tracking-widest uppercase px-2 sm:px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg whitespace-nowrap shadow-md transition-all">
+            <button onclick="switchTab('quantifier')" id="tab-quantifier" class="flex-1 active-tab tech-font text-[9px] sm:text-[10px] tracking-widest uppercase px-2 sm:px-4 py-3 bg-gray-900 border border-gray-700 text-gray-400 rounded-lg whitespace-nowrap shadow-md transition-all">
                 <span class="hidden sm:inline">01. Quantifier & Protocol</span>
                 <span class="sm:hidden">01. Protocol</span>
             </button>
-            <button onclick="switchTab('profit')" id="tab-profit" class="flex-1 tech-font text-[9px] sm:text-[10px] tracking-widest uppercase px-2 sm:px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg whitespace-nowrap shadow-md transition-all opacity-70">
+            <button onclick="switchTab('profit')" id="tab-profit" class="flex-1 tech-font text-[9px] sm:text-[10px] tracking-widest uppercase px-2 sm:px-4 py-3 bg-gray-900 border border-gray-700 text-gray-400 rounded-lg whitespace-nowrap shadow-md transition-all opacity-70 hover:border-gray-500">
                 <span class="hidden sm:inline">02. Profitability Guard</span>
                 <span class="sm:hidden">02. Profit Guard</span>
             </button>
@@ -308,8 +308,8 @@
             </div>
 
             <!-- Bottom Button for Quantifier -->
-            <div class="mt-8 flex justify-center w-full">
-                <button onclick="switchTab('profit')" class="tech-font text-[10px] sm:text-[12px] font-black tracking-widest uppercase px-6 py-4 bg-[var(--g-cyan)] text-navy-900 border border-[var(--g-cyan)] rounded-xl shadow-[0_0_15px_rgba(212,175,55,0.3)] transition-all">Next: Profit Guard ➔</button>
+            <div class="mt-8 flex justify-center w-full pb-8">
+                <button type="button" onclick="switchTab('profit')" class="w-full sm:w-auto tech-font text-[10px] sm:text-[12px] font-black tracking-widest uppercase px-6 py-5 bg-[var(--g-cyan)] text-navy-900 hover:brightness-110 border border-[var(--g-cyan)] rounded-xl shadow-[0_0_15px_rgba(212,175,55,0.3)] transition-all z-10 relative cursor-pointer active:scale-95">Next: Profit Guard ➔</button>
             </div>
         </div>
 
@@ -390,8 +390,8 @@
             </div>
 
             <!-- Bottom Button for Profitability -->
-            <div class="mt-12 flex justify-center w-full">
-                <button onclick="clearProjectData()" class="tech-font text-[10px] sm:text-[12px] font-black tracking-widest uppercase px-6 py-4 bg-gray-900 text-gray-300 border border-gray-700 rounded-xl shadow-md transition-all">↺ Start New Project</button>
+            <div class="mt-12 flex justify-center w-full pb-8">
+                <button type="button" onclick="clearProjectData()" class="w-full sm:w-auto tech-font text-[10px] sm:text-[12px] font-black tracking-widest uppercase px-6 py-5 bg-gray-800 hover:bg-gray-700 text-white border border-gray-600 rounded-xl shadow-md transition-all z-10 relative cursor-pointer active:scale-95">↺ Start New Project</button>
             </div>
         </div>
     </div>
