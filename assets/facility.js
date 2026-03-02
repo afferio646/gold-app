@@ -426,28 +426,48 @@ function downloadReport() {
     const pName = document.getElementById('p-name').value || "Facility_Project";
     const safeFileName = pName.replace(/[^a-z0-9]/gi, '_').toLowerCase() + '_goldmorr_report.pdf';
 
-    // Get the modal content element
-    const element = document.getElementById('modal-content').parentElement; // Grab the wrapper with the white background
+    // Get the exact container we want to print, avoiding parent modal scrolling properties
+    const element = document.getElementById('printable-report');
+    if (!element) {
+        console.error("Printable report container not found");
+        return;
+    }
 
-    // Configure PDF options
+    // Temporarily hide action buttons just in case
+    const actionBtns = document.getElementById('report-action-buttons');
+    if (actionBtns) actionBtns.classList.add('hidden');
+
+    // Display a loading indicator or UX feedback here if desired
+    alert("Generating PDF... Please wait.");
+
+    // Configure PDF options specifically designed to avoid blank pages and clipping
     const opt = {
-        margin:       [0.5, 0.5, 0.5, 0.5], // top, left, bottom, right
+        margin:       [0.3, 0.3, 0.3, 0.3], // slightly smaller margins to fit content better
         filename:     safeFileName,
-        image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 2, useCORS: true },
-        jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+        image:        { type: 'jpeg', quality: 1.0 },
+        html2canvas:  {
+            scale: 2,
+            useCORS: true,
+            windowWidth: 800, // force a consistent width rather than device viewport
+            scrollY: 0 // prevent capturing issues caused by modal scroll position
+        },
+        jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' },
+        pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
     };
 
     // Generate and save the PDF
     if (typeof html2pdf !== 'undefined') {
         html2pdf().set(opt).from(element).save().then(() => {
-            // Close modal after download triggers
+            if (actionBtns) actionBtns.classList.remove('hidden');
+            // User requested not to show the modal visual after downloading.
             document.getElementById('report-modal').classList.add('hidden');
         }).catch(err => {
             console.error("PDF Generation Error: ", err);
+            if (actionBtns) actionBtns.classList.remove('hidden');
             alert("There was an error generating your PDF. Please try again.");
         });
     } else {
+        if (actionBtns) actionBtns.classList.remove('hidden');
         alert("PDF generator library is not loaded. Please check your internet connection and try again.");
     }
 }
