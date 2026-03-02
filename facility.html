@@ -17,6 +17,15 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
+    <!-- EmailJS SDK -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script type="text/javascript">
+        (function() {
+            // REPLACE WITH YOUR EMAILJS PUBLIC KEY
+            emailjs.init("YOUR_EMAILJS_PUBLIC_KEY");
+        })();
+    </script>
+
     <script src="assets/api.js"></script>
     <script src="assets/script.js"></script>
     <script src="assets/facility.js"></script>

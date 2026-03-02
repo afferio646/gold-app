@@ -425,11 +425,37 @@ function uploadReport() {
 
     const pName = document.getElementById('p-name').value || "N/A";
 
-    // Since we already saved the lead when they opened the modal,
-    // we don't need to call API.saveReport again here unless we want to update the record.
-    // For now, we'll just simulate the success alert to the user.
-    alert(`Report for "${pName}" exported successfully! \n(PDF emailed to ${user.email})`);
+    // Prepare EmailJS Data
+    // Note: You must create a template in EmailJS that accepts these variables
+    const templateParams = {
+        to_name: user.name,
+        to_email: user.email,
+        project_name: pName,
+        system_type: "Facility Guard",
+        report_link: "https://gold-app-two.vercel.app" // In a real system, you'd upload the PDF to Firebase Storage and pass the download link here
+    };
+
+    // Close modal immediately for better UX
     document.getElementById('report-modal').classList.add('hidden');
+
+    // Send the email via EmailJS
+    const EMAILJS_SERVICE_ID = 'YOUR_SERVICE_ID'; // e.g. 'service_xxxxxx'
+    const EMAILJS_TEMPLATE_ID = 'YOUR_TEMPLATE_ID'; // e.g. 'template_xxxxxx'
+
+    if (typeof emailjs !== 'undefined' && emailjs._publicKey && emailjs._publicKey !== "YOUR_EMAILJS_PUBLIC_KEY" && EMAILJS_SERVICE_ID !== 'YOUR_SERVICE_ID') {
+        emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams)
+            .then(function(response) {
+               console.log('SUCCESS!', response.status, response.text);
+               alert(`Report for "${pName}" exported successfully! \nAn email has been sent to ${user.email}.`);
+            }, function(error) {
+               console.error('FAILED...', error);
+               alert(`Report exported to dashboard, but the email failed to send. \nError: ${error.text || 'Unknown error'}`);
+            });
+    } else {
+        // Fallback simulated success if EmailJS is not configured yet
+        console.warn("EmailJS is not configured yet. The lead was saved to the Dashboard, but no email was actually sent.");
+        alert(`Report for "${pName}" saved to Dashboard! \n\n(Note: Email sending is currently disabled pending EmailJS configuration setup. Check developer instructions.)`);
+    }
 }
 
 function saveUserSettings() {
