@@ -374,6 +374,50 @@ function openMemberReportModal() {
     document.getElementById('report-modal').classList.remove('hidden');
 }
 
+function clearProjectData() {
+    document.getElementById('p-name').value = '';
+    document.getElementById('p-contact').value = '';
+    document.getElementById('p-email').value = '';
+    document.getElementById('p-phone').value = '';
+
+    document.getElementById('m-type').selectedIndex = 0;
+
+    const jobSelect = document.getElementById('m-jobtype');
+    for(let i=0; i<jobSelect.options.length; i++) {
+        jobSelect.options[i].selected = false;
+    }
+
+    document.getElementById('m-mold-sqft').value = '';
+    document.getElementById('m-cubic').value = '';
+    document.getElementById('m-rh').value = '';
+    document.getElementById('m-temp').value = '';
+    document.getElementById('p-photos').value = '';
+    document.getElementById('photo-preview').innerHTML = '';
+
+    document.getElementById('calc-results').classList.add('hidden');
+    document.getElementById('calc-btn').classList.remove('hidden');
+
+    switchTab('quantifier');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function resetForm() {
+    clearProjectData();
+}
+
+function handleHomeClick() {
+    const isEditing = document.getElementById('p-name').value !== '' ||
+                      document.getElementById('m-mold-sqft').value !== '';
+
+    if (isEditing) {
+        if(confirm("Are you sure you want to leave? Unsaved changes will be lost.")) {
+            window.location.href = 'index.html';
+        }
+    } else {
+        window.location.href = 'index.html';
+    }
+}
+
 function downloadReport() {
     const user = API.getSettings();
     if(!user) { alert("Please complete registration in settings."); return; }
@@ -381,49 +425,64 @@ function downloadReport() {
     const pName = document.getElementById('p-name').value || 'Unnamed Project';
     const safeFileName = pName.replace(/[^a-z0-9]/gi, '_').toLowerCase() + '_goldmorr_report.pdf';
 
-    // Get the exact container we want to print, avoiding parent modal scrolling properties
-    const element = document.getElementById('printable-report');
-    if (!element) {
+    // Get the exact container we want to print
+    const originalElement = document.getElementById('printable-report');
+    if (!originalElement) {
         console.error("Printable report container not found");
         return;
     }
 
-    // Temporarily hide action buttons just in case
-    const actionBtns = document.getElementById('report-action-buttons');
-    if (actionBtns) actionBtns.classList.add('hidden');
-
-    // Display a loading indicator or UX feedback here if desired
     alert("Generating PDF... Please wait.");
 
-    // Configure PDF options specifically designed to avoid blank pages and clipping
+    // CLONE APPROACH: Deep clone the element and append to body to avoid flex/modal clipping bugs
+    const clone = originalElement.cloneNode(true);
+    clone.id = 'pdf-clone-container';
+
+    // Position it off-screen but natively in the document body flow
+    Object.assign(clone.style, {
+        position: 'absolute',
+        top: '0',
+        left: '-9999px',
+        width: '800px', // strict width to ensure consistent layout
+        background: 'white',
+        color: 'black',
+        padding: '20px',
+        zIndex: '-1'
+    });
+
+    // Ensure styles that hide elements on screens don't hide them in the clone
+    document.body.appendChild(clone);
+
+    // Configure PDF options specifically designed to avoid blank pages
     const opt = {
-        margin:       [0.3, 0.3, 0.3, 0.3], // slightly smaller margins to fit content better
+        margin:       [0.5, 0.5, 0.5, 0.5],
         filename:     safeFileName,
         image:        { type: 'jpeg', quality: 1.0 },
         html2canvas:  {
             scale: 2,
             useCORS: true,
-            windowWidth: 800, // force a consistent width rather than device viewport
-            scrollY: 0 // prevent capturing issues caused by modal scroll position
+            windowWidth: 800,
+            scrollY: 0,
+            logging: false
         },
         jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' },
-        pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
+        pagebreak:    { mode: 'css', avoid: 'tr, td, p, h2, h3' } // CSS page breaks work best on clean block elements
     };
 
     // Generate and save the PDF
     if (typeof html2pdf !== 'undefined') {
-        html2pdf().set(opt).from(element).save().then(() => {
-            if (actionBtns) actionBtns.classList.remove('hidden');
-            // The user requested to bypass the visual review completely after download:
-            // "we dont really need to show the downloadable pdf when Iclick theuplod pdf report... Ther doesnt need to be another preview of the downladable report"
+        html2pdf().set(opt).from(clone).save().then(() => {
+            // Clean up clone
+            document.body.removeChild(clone);
+            // User requested not to show the modal visual after downloading.
             document.getElementById('report-modal').classList.add('hidden');
         }).catch(err => {
             console.error("PDF Generation Error: ", err);
-            if (actionBtns) actionBtns.classList.remove('hidden');
+            document.body.removeChild(clone);
             alert("There was an error generating your PDF. Please try again.");
         });
     } else {
-        if (actionBtns) actionBtns.classList.remove('hidden');
+        document.body.removeChild(clone);
         alert("PDF generator library is not loaded. Please check your internet connection and try again.");
     }
 }
