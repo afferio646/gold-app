@@ -419,17 +419,37 @@ function triggerEarlyLeadGeneration() {
     window.hasGeneratedLeadForThisSession = true;
 }
 
-function uploadReport() {
+function downloadReport() {
     const user = API.getSettings();
     if(!user) { alert("Please complete registration in settings."); return; }
 
-    const pName = document.getElementById('p-name').value || "N/A";
+    const pName = document.getElementById('p-name').value || "Facility_Project";
+    const safeFileName = pName.replace(/[^a-z0-9]/gi, '_').toLowerCase() + '_goldmorr_report.pdf';
 
-    // Since we already saved the lead when they opened the modal,
-    // we don't need to call API.saveReport again here unless we want to update the record.
-    // For now, we'll just simulate the success alert to the user.
-    alert(`Report for "${pName}" exported successfully! \n(PDF emailed to ${user.email})`);
-    document.getElementById('report-modal').classList.add('hidden');
+    // Get the modal content element
+    const element = document.getElementById('modal-content').parentElement; // Grab the wrapper with the white background
+
+    // Configure PDF options
+    const opt = {
+        margin:       [0.5, 0.5, 0.5, 0.5], // top, left, bottom, right
+        filename:     safeFileName,
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2, useCORS: true },
+        jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+    };
+
+    // Generate and save the PDF
+    if (typeof html2pdf !== 'undefined') {
+        html2pdf().set(opt).from(element).save().then(() => {
+            // Close modal after download triggers
+            document.getElementById('report-modal').classList.add('hidden');
+        }).catch(err => {
+            console.error("PDF Generation Error: ", err);
+            alert("There was an error generating your PDF. Please try again.");
+        });
+    } else {
+        alert("PDF generator library is not loaded. Please check your internet connection and try again.");
+    }
 }
 
 function saveUserSettings() {

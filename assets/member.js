@@ -52,53 +52,11 @@ function saveUserSettings() {
         return;
     }
 
-    // Save with userType 'member' (optional, for future use)
-    API.saveSettings({ name, company, email, userType: 'member' });
+    API.saveSettings({ name, company, email });
 
     // Show Certification Complete Step
     document.getElementById('cert-step-1').classList.add('hidden');
     document.getElementById('cert-step-2').classList.remove('hidden');
-
-    // Smart Highlight: Add a "Recommended" border to the detected device AND Hide irrelevant one
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-    const isAndroid = /Android/.test(navigator.userAgent);
-
-    // Auto-Trigger Install Prompt on Android if available (Seamless Flow)
-    if (typeof triggerInstallFlow === 'function' && !isIOS) {
-        setTimeout(() => {
-            triggerInstallFlow();
-        }, 1000); // Slight delay to let modal transition finish
-    }
-
-    const iosEl = document.getElementById('ios-instruct');
-    const androidEl = document.getElementById('android-instruct');
-    const container = iosEl ? iosEl.parentElement : null;
-
-    if (isIOS && iosEl) {
-        // Highlight iOS
-        iosEl.classList.remove('border-gray-700');
-        iosEl.classList.add('border-[var(--g-cyan)]', 'bg-slate-800', 'shadow-[0_0_15px_rgba(34,211,238,0.15)]');
-        iosEl.innerHTML += `<div class="mt-2 text-[8px] uppercase font-bold text-[var(--g-cyan)] tracking-widest animate-pulse">Detected Device</div>`;
-
-        // Hide Android & Center
-        if(androidEl) androidEl.classList.add('hidden');
-        if(container) {
-            container.classList.remove('grid-cols-2');
-            container.classList.add('flex', 'justify-center');
-        }
-    } else if (isAndroid && androidEl) {
-        // Highlight Android
-        androidEl.classList.remove('border-gray-700');
-        androidEl.classList.add('border-[var(--g-cyan)]', 'bg-slate-800', 'shadow-[0_0_15px_rgba(34,211,238,0.15)]');
-        androidEl.innerHTML += `<div class="mt-2 text-[8px] uppercase font-bold text-[var(--g-cyan)] tracking-widest animate-pulse">Detected Device</div>`;
-
-        // Hide iOS & Center
-        if(iosEl) iosEl.classList.add('hidden');
-        if(container) {
-            container.classList.remove('grid-cols-2');
-            container.classList.add('flex', 'justify-center');
-        }
-    }
 }
 
 function closeCertification() {
@@ -106,34 +64,13 @@ function closeCertification() {
 }
 
 function openSettings() {
-    // FORCE RESET MODAL STATE
-    document.getElementById('cert-step-1').classList.remove('hidden');
-    document.getElementById('cert-step-2').classList.add('hidden');
-
-    const user = API.getSettings();
-    if(user) {
-        document.getElementById('set-name').value = user.name;
-        document.getElementById('set-company').value = user.company;
-        document.getElementById('set-email').value = user.email;
-    }
-
-    // Inject Reset Data Button if not present
-    const modalBody = document.querySelector('#cert-step-1 .space-y-4');
-    if(modalBody && !document.getElementById('reset-data-btn')) {
-        const resetBtn = document.createElement('button');
-        resetBtn.id = 'reset-data-btn';
-        resetBtn.innerText = "Reset App Registration (Fix Issues)";
-        resetBtn.className = "w-full border border-red-500 text-red-500 font-bold py-3 rounded-xl text-[9px] uppercase tracking-widest mt-4 hover:bg-red-900/20";
-        resetBtn.onclick = () => {
-            if(confirm("This will clear your registration and saved settings. Continue?")) {
-                localStorage.clear();
-                window.location.reload();
-            }
-        };
-        modalBody.appendChild(resetBtn);
-    }
-
-    toggleModal('settings-modal', true);
+     const user = API.getSettings();
+     if(user) {
+         document.getElementById('set-name').value = user.name;
+         document.getElementById('set-company').value = user.company;
+         document.getElementById('set-email').value = user.email;
+     }
+     toggleModal('settings-modal', true);
 }
 
 function toggleAtticDropdown() {
@@ -290,15 +227,6 @@ function calculateBid() {
     const bid = totalCOGS / divisor;
     document.getElementById('p-bid').innerText = '$' + bid.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
     document.getElementById('p-margin-label').innerText = labelText;
-
-    // --- NEW: Trigger lead generation immediately when they calculate the bid ---
-    // (This covers the case where they just look at the price and leave)
-    // We only want to trigger this if they have actually entered square footage
-    // to avoid triggering a blank lead on initial load
-    const moldSq = parseFloat(document.getElementById('m-mold-sqft').value) || 0;
-    if (moldSq > 0) {
-        triggerEarlyLeadGenerationMember();
-    }
 }
 
 function openMemberReportModal() {
@@ -444,128 +372,37 @@ function openMemberReportModal() {
     `;
 
     document.getElementById('report-modal').classList.remove('hidden');
-
-    // Fallback trigger in case they opened report without changing calc inputs
-    triggerEarlyLeadGenerationMember();
 }
 
-function triggerEarlyLeadGenerationMember() {
-    // Only fire once per session to avoid duplicate leads
-    if(window.hasGeneratedLeadForThisSession) return;
-
-    const user = API.getSettings();
-    if(!user) return; // Silent fail if not registered yet
-
-    const urlParams = new URLSearchParams(window.location.search);
-    const source = urlParams.get('source') || 'General';
-
-    // Gather all data
-    const reportData = {
-        user: user,
-        project: {
-            name: document.getElementById('p-name').value || 'Unnamed Project',
-            contact: document.getElementById('p-contact').value,
-            email: document.getElementById('p-email').value,
-            phone: document.getElementById('p-phone').value
-        },
-        inputs: {
-            type: document.getElementById('m-type').value,
-            jobTypes: Array.from(document.getElementById('m-jobtype').selectedOptions).map(o => o.value),
-            moldSq: document.getElementById('m-mold-sqft').value,
-            cubic: document.getElementById('m-cubic').value,
-            rh: document.getElementById('m-rh').value,
-            temp: document.getElementById('m-temp').value
-        },
-        financials: {
-            cogs: document.getElementById('p-total-cogs').innerText,
-            bid: document.getElementById('p-bid').innerText
-        },
-        appType: 'Member Suite',
-        source: source,
-        hasPhotos: document.getElementById('p-photos').files && document.getElementById('p-photos').files.length > 0
-    };
-
-    // Save early lead
-    API.saveReport(reportData);
-    window.hasGeneratedLeadForThisSession = true;
-}
-
-function uploadReport() {
+function downloadReport() {
     const user = API.getSettings();
     if(!user) { alert("Please complete registration in settings."); return; }
 
     const pName = document.getElementById('p-name').value || 'Unnamed Project';
+    const safeFileName = pName.replace(/[^a-z0-9]/gi, '_').toLowerCase() + '_goldmorr_report.pdf';
 
-    // Close modal
-    document.getElementById('report-modal').classList.add('hidden');
+    // Get the modal content element
+    const element = document.getElementById('modal-content').parentElement; // Grab the wrapper with the white background
 
-    // Show Success Alert (Lead already saved)
-    alert(`Report for "${pName}" exported successfully! \nThe PDF report has been emailed to ${user.email}.`);
-}
+    // Configure PDF options
+    const opt = {
+        margin:       [0.5, 0.5, 0.5, 0.5], // top, left, bottom, right
+        filename:     safeFileName,
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2, useCORS: true },
+        jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+    };
 
-function handleHomeClick() {
-    // Check if launched from Hub/Admin (via ?hub=true)
-    const urlParams = new URLSearchParams(window.location.search);
-    const isHub = urlParams.get('hub') === 'true';
-
-    if (isHub) {
-        if(confirm("Return to Admin Hub? Any unsaved data will be lost.")) {
-            window.location.href = 'admin.html';
-        }
+    // Generate and save the PDF
+    if (typeof html2pdf !== 'undefined') {
+        html2pdf().set(opt).from(element).save().then(() => {
+            // Close modal after download triggers
+            document.getElementById('report-modal').classList.add('hidden');
+        }).catch(err => {
+            console.error("PDF Generation Error: ", err);
+            alert("There was an error generating your PDF. Please try again.");
+        });
     } else {
-        resetForm();
+        alert("PDF generator library is not loaded. Please check your internet connection and try again.");
     }
-}
-
-function resetForm() {
-    if(confirm("Start a new assessment? All current data will be cleared.")) {
-        // Clear Inputs
-        document.getElementById('p-name').value = '';
-        document.getElementById('p-contact').value = '';
-        document.getElementById('p-email').value = '';
-        document.getElementById('p-phone').value = '';
-        document.getElementById('p-photos').value = '';
-        document.getElementById('p-photo-count').innerText = 'No photos selected';
-
-        document.getElementById('m-type').selectedIndex = 0;
-        document.getElementById('m-jobtype').selectedIndex = -1; // Multi-select clear
-        document.getElementById('m-mold-sqft').value = '';
-        document.getElementById('m-density').selectedIndex = 0;
-        document.getElementById('m-porosity').selectedIndex = 0;
-        document.getElementById('m-surface-cond').selectedIndex = 0;
-        document.getElementById('m-waste-buffer').selectedIndex = 0;
-
-        document.getElementById('m-cubic').value = '';
-        document.getElementById('m-agent').selectedIndex = 0;
-
-        document.getElementById('m-rh').value = '';
-        document.getElementById('m-temp').value = '';
-
-        // Costs
-        document.getElementById('c-product').value = '';
-        document.getElementById('c-techs').value = '';
-        document.getElementById('c-hours').value = '';
-        document.getElementById('c-rate').value = '';
-        document.getElementById('c-misc').value = '';
-
-        // Hide Results
-        document.getElementById('m-results').classList.add('hidden');
-        document.getElementById('report-modal').classList.add('hidden');
-
-        // Clear early lead tracker
-        window.hasGeneratedLeadForThisSession = false;
-
-        // Ensure we navigate back to the Protocol tab
-        if(typeof switchTab === 'function') {
-            switchTab('quantifier');
-        }
-
-        // Scroll to top
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-}
-
-// Added for context-aware bottom buttons
-window.clearProjectData = function() {
-    handleHomeClick();
 }
