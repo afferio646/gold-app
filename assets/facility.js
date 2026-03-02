@@ -419,42 +419,36 @@ function triggerEarlyLeadGeneration() {
     window.hasGeneratedLeadForThisSession = true;
 }
 
-function uploadReport() {
+function downloadReport() {
     const user = API.getSettings();
     if(!user) { alert("Please complete registration in settings."); return; }
 
-    const pName = document.getElementById('p-name').value || "N/A";
+    const pName = document.getElementById('p-name').value || "Facility_Project";
+    const safeFileName = pName.replace(/[^a-z0-9]/gi, '_').toLowerCase() + '_goldmorr_report.pdf';
 
-    // Prepare EmailJS Data
-    // Note: You must create a template in EmailJS that accepts these variables
-    const templateParams = {
-        to_name: user.name,
-        to_email: user.email,
-        project_name: pName,
-        system_type: "Facility Guard",
-        report_link: "https://gold-app-two.vercel.app" // In a real system, you'd upload the PDF to Firebase Storage and pass the download link here
+    // Get the modal content element
+    const element = document.getElementById('modal-content').parentElement; // Grab the wrapper with the white background
+
+    // Configure PDF options
+    const opt = {
+        margin:       [0.5, 0.5, 0.5, 0.5], // top, left, bottom, right
+        filename:     safeFileName,
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2, useCORS: true },
+        jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
     };
 
-    // Close modal immediately for better UX
-    document.getElementById('report-modal').classList.add('hidden');
-
-    // Send the email via EmailJS
-    const EMAILJS_SERVICE_ID = 'YOUR_SERVICE_ID'; // e.g. 'service_xxxxxx'
-    const EMAILJS_TEMPLATE_ID = 'YOUR_TEMPLATE_ID'; // e.g. 'template_xxxxxx'
-
-    if (typeof emailjs !== 'undefined' && emailjs._publicKey && emailjs._publicKey !== "YOUR_EMAILJS_PUBLIC_KEY" && EMAILJS_SERVICE_ID !== 'YOUR_SERVICE_ID') {
-        emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams)
-            .then(function(response) {
-               console.log('SUCCESS!', response.status, response.text);
-               alert(`Report for "${pName}" exported successfully! \nAn email has been sent to ${user.email}.`);
-            }, function(error) {
-               console.error('FAILED...', error);
-               alert(`Report exported to dashboard, but the email failed to send. \nError: ${error.text || 'Unknown error'}`);
-            });
+    // Generate and save the PDF
+    if (typeof html2pdf !== 'undefined') {
+        html2pdf().set(opt).from(element).save().then(() => {
+            // Close modal after download triggers
+            document.getElementById('report-modal').classList.add('hidden');
+        }).catch(err => {
+            console.error("PDF Generation Error: ", err);
+            alert("There was an error generating your PDF. Please try again.");
+        });
     } else {
-        // Fallback simulated success if EmailJS is not configured yet
-        console.warn("EmailJS is not configured yet. The lead was saved to the Dashboard, but no email was actually sent.");
-        alert(`Report for "${pName}" saved to Dashboard! \n\n(Note: Email sending is currently disabled pending EmailJS configuration setup. Check developer instructions.)`);
+        alert("PDF generator library is not loaded. Please check your internet connection and try again.");
     }
 }
 

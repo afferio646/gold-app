@@ -17,14 +17,8 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
-    <!-- EmailJS SDK -->
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-    <script type="text/javascript">
-        (function() {
-            // REPLACE WITH YOUR EMAILJS PUBLIC KEY
-            emailjs.init("YOUR_EMAILJS_PUBLIC_KEY");
-        })();
-    </script>
+    <!-- HTML2PDF SDK -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <script src="assets/api.js"></script>
     <script src="assets/script.js"></script>
@@ -428,9 +422,9 @@
             </div>
 
             <div class="flex flex-col items-center gap-4 mt-12 border-t-2 border-gray-100 pt-10">
-                <button onclick="uploadReport()" class="bg-[var(--g-cyan)] text-navy-900 px-8 py-3 rounded-lg text-[11px] font-black uppercase tracking-widest hover:brightness-110 transition-all shadow-lg flex items-center gap-2">
+                <button onclick="downloadReport()" class="bg-[var(--g-cyan)] text-navy-900 px-8 py-3 rounded-lg text-[11px] font-black uppercase tracking-widest hover:brightness-110 transition-all shadow-lg flex items-center gap-2">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-                    Export PDF Report
+                    Download PDF Report
                 </button>
                 <button onclick="document.getElementById('report-modal').classList.add('hidden')" class="text-gray-400 text-[10px] uppercase font-bold hover:text-black">Close Review</button>
             </div>
