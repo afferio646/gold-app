@@ -38,12 +38,12 @@ def run():
 
         # Open Report Modal
         page.click('button[onclick="openReportModal()"]')
-        page.wait_for_selector('#report-modal', state='visible')
+        page.wait_for_selector('#report-view-container', state='visible')
 
-        # Click "Export / Email Report" to trigger uploadReport() which saves the data
+        # Click "Export / Email Report" to trigger downloadReport() which saves the data
         # Note: This will trigger an alert. We need to handle it.
         page.on("dialog", lambda dialog: dialog.accept())
-        page.click('button[onclick="uploadReport()"]')
+        page.click('button[onclick="downloadReport()"]')
 
         # Now verify data in LocalStorage (via API mock)
         # We can check the leads via console evaluation of API.getLeads()
