@@ -58,7 +58,6 @@ const API = {
         const user = API.getSettings();
         if (user && db) {
             try {
-                // Find user's activation document
                 const activations = await db.collection('activations')
                     .where('email', '==', user.email)
                     .orderBy('timestamp', 'desc')
@@ -146,7 +145,7 @@ const API = {
         leads.unshift(leadDoc);
         localStorage.setItem('goldmorr_leads', JSON.stringify(leads));
 
-        // 6. Store current lead ID for later updates (like PDF upload)
+        // 6. Store current lead ID for PDF upload reference
         window.currentSessionLeadId = leadId;
 
         return leadDoc;
@@ -217,15 +216,12 @@ const API = {
     updateLeadPDF: async (leadId, pdfUrl) => {
         if (!db) return;
         try {
-            // Because leadId might be the document ID or a custom field 'leadId'
-            // We search for it
             const leadQuery = await db.collection('leads').where('leadId', '==', leadId).limit(1).get();
             if (!leadQuery.empty) {
                 await leadQuery.docs[0].ref.update({
                     pdfUrl: pdfUrl
                 });
             } else {
-                // Try as document ID
                 await db.collection('leads').doc(leadId).update({
                     pdfUrl: pdfUrl
                 });
