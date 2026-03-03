@@ -1,5 +1,32 @@
 // Service Worker for Goldmorr PWA
-const CACHE_NAME = 'goldmorr-v6-member-suite';
+importScripts('https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js');
+importScripts('https://www.gstatic.com/firebasejs/8.10.1/firebase-messaging.js');
+
+firebase.initializeApp({
+  apiKey: "AIzaSyBqumaIsqElLFIE7qgRSO-jptkGa7-4LWw",
+  authDomain: "goldmorr-hub.firebaseapp.com",
+  projectId: "goldmorr-hub",
+  storageBucket: "goldmorr-hub.firebasestorage.app",
+  messagingSenderId: "900594097755",
+  appId: "1:900594097755:web:750378fabd2e97135ba97e"
+});
+
+const messaging = firebase.messaging();
+
+messaging.onBackgroundMessage(function(payload) {
+  console.log('[sw.js] Received background message ', payload);
+  const notificationTitle = payload.notification.title;
+  const notificationOptions = {
+    body: payload.notification.body,
+    icon: '/icon-512.png',
+    data: { url: payload.data ? payload.data.url : '/' }
+  };
+
+  self.registration.showNotification(notificationTitle,
+    notificationOptions);
+});
+
+const CACHE_NAME = 'goldmorr-v9-member-suite';
 const ASSETS = [
     '/',
     '/index.html',
@@ -55,30 +82,6 @@ self.addEventListener('fetch', (event) => {
         caches.match(event.request).then(cachedResponse => {
             return cachedResponse || fetch(event.request);
         })
-    );
-});
-
-// Push Notification Event
-self.addEventListener('push', (event) => {
-    let data = { title: 'Goldmorr Update', body: 'New information available.' };
-
-    if (event.data) {
-        try {
-            data = event.data.json();
-        } catch (e) {
-            data = { title: 'Goldmorr Update', body: event.data.text() };
-        }
-    }
-
-    const options = {
-        body: data.body,
-        icon: '/icon-512.png',
-        badge: '/icon-512.png',
-        data: { url: data.link || '/' } // Store the link for click handling
-    };
-
-    event.waitUntil(
-        self.registration.showNotification(data.title, options)
     );
 });
 
