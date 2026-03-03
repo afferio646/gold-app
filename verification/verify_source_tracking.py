@@ -18,8 +18,8 @@ def run():
             page.fill('#set-name', 'Verifier')
             page.fill('#set-company', 'Test Corp')
             page.fill('#set-email', 'test@example.com')
-            page.evaluate("API.saveSettings({name: 'Verifier', company: 'Test Corp', email: 'test@example.com'}); document.getElementById('settings-modal').classList.add('hidden');")
-            page.wait_for_selector('#settings-modal', state='hidden', timeout=2000)
+            page.click('button[onclick="saveUserSettings()"]')
+            page.wait_for_selector('#settings-modal', state='hidden')
             print("Settings modal closed.")
         except:
             print("Settings modal check skipped.")
@@ -38,12 +38,12 @@ def run():
 
         # Open Report Modal
         page.click('button[onclick="openReportModal()"]')
-        page.wait_for_selector('#report-view-container', state='visible')
+        page.wait_for_selector('#report-modal', state='visible')
 
-        # Click "Export / Email Report" to trigger downloadReport() which saves the data
+        # Click "Export / Email Report" to trigger uploadReport() which saves the data
         # Note: This will trigger an alert. We need to handle it.
         page.on("dialog", lambda dialog: dialog.accept())
-        page.click('button[onclick="downloadReport()"]')
+        page.click('button[onclick="uploadReport()"]')
 
         # Now verify data in LocalStorage (via API mock)
         # We can check the leads via console evaluation of API.getLeads()
