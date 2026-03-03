@@ -410,11 +410,12 @@ function handleHomeClick() {
                       document.getElementById('m-mold-sqft').value !== '';
 
     if (isEditing) {
-        if(confirm("Are you sure you want to leave? Unsaved changes will be lost.")) {
-            window.location.href = 'index.html';
+        if(confirm("Are you sure you want to clear this project? Unsaved changes will be lost.")) {
+            clearProjectData();
         }
     } else {
-        window.location.href = 'index.html';
+        // Just reset if they click it when empty
+        clearProjectData();
     }
 }
 
@@ -422,67 +423,16 @@ function downloadReport() {
     const user = API.getSettings();
     if(!user) { alert("Please complete registration in settings."); return; }
 
+    const originalTitle = document.title;
     const pName = document.getElementById('p-name').value || 'Unnamed Project';
-    const safeFileName = pName.replace(/[^a-z0-9]/gi, '_').toLowerCase() + '_goldmorr_report.pdf';
+    document.title = pName.replace(/[^a-z0-9]/gi, '_').toLowerCase() + '_goldmorr_report';
 
-    // Get the exact container we want to print
-    const originalElement = document.getElementById('printable-report');
-    if (!originalElement) {
-        console.error("Printable report container not found");
-        return;
-    }
+    // Native Print - user selects Save as PDF
+    window.print();
 
-    alert("Generating PDF... Please wait.");
+    // Restore title
+    document.title = originalTitle;
 
-    // CLONE APPROACH: Deep clone the element and append to body to avoid flex/modal clipping bugs
-    const clone = originalElement.cloneNode(true);
-    clone.id = 'pdf-clone-container';
-
-    // Position it off-screen but natively in the document body flow
-    Object.assign(clone.style, {
-        position: 'absolute',
-        top: '0',
-        left: '-9999px',
-        width: '800px', // strict width to ensure consistent layout
-        background: 'white',
-        color: 'black',
-        padding: '20px',
-        zIndex: '-1'
-    });
-
-    // Ensure styles that hide elements on screens don't hide them in the clone
-    document.body.appendChild(clone);
-
-    // Configure PDF options specifically designed to avoid blank pages
-    const opt = {
-        margin:       [0.5, 0.5, 0.5, 0.5],
-        filename:     safeFileName,
-        image:        { type: 'jpeg', quality: 1.0 },
-        html2canvas:  {
-            scale: 2,
-            useCORS: true,
-            windowWidth: 800,
-            scrollY: 0,
-            logging: false
-        },
-        jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' },
-        pagebreak:    { mode: 'css', avoid: 'tr, td, p, h2, h3' } // CSS page breaks work best on clean block elements
-    };
-
-    // Generate and save the PDF
-    if (typeof html2pdf !== 'undefined') {
-        html2pdf().set(opt).from(clone).save().then(() => {
-            // Clean up clone
-            document.body.removeChild(clone);
-            // User requested not to show the modal visual after downloading.
-            document.getElementById('report-modal').classList.add('hidden');
-        }).catch(err => {
-            console.error("PDF Generation Error: ", err);
-            document.body.removeChild(clone);
-            alert("There was an error generating your PDF. Please try again.");
-        });
-    } else {
-        document.body.removeChild(clone);
-        alert("PDF generator library is not loaded. Please check your internet connection and try again.");
-    }
+    // Optionally close modal
+    document.getElementById('report-modal').classList.add('hidden');
 }
