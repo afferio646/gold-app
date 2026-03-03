@@ -17,9 +17,6 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
-    <!-- HTML2PDF SDK -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-
     <script src="assets/api.js"></script>
     <script src="assets/script.js"></script>
     <script src="assets/facility.js"></script>
@@ -96,7 +93,7 @@
     <header class="p-4 border-b border-cyan-900/50 flex justify-between items-center glass sticky top-0 z-50">
         <div class="flex items-center gap-3">
             <!-- LOGO (Home/Reset Action) -->
-            <div onclick="handleHomeClick()" class="w-10 h-10 bg-[var(--g-cyan)] rounded flex items-center justify-center font-bold text-navy-900 shadow-lg tech-font text-lg cursor-pointer hover:brightness-110 transition-all" title="Start New Assessment / Reset">G</div>
+            <div onclick="handleHomeClick()" class="w-10 h-10 bg-[var(--g-cyan)] rounded flex items-center justify-center font-bold text-navy-900 shadow-lg tech-font text-lg cursor-pointer hover:brightness-110 transition-all" title="Back to Hub / New Assessment">G</div>
             <div class="tech-font text-[12px] tracking-[0.4em] uppercase font-bold hidden md:block">
                 <span style="color: var(--g-cyan)">Facility</span> Goldmorr Guard
             </div>
@@ -321,21 +318,10 @@
 
                     </div>
 
-                    <div class="flex flex-col sm:flex-row gap-3 w-full">
-                        <button onclick="openReportModal()" class="w-full sm:w-1/2 bg-gray-800 text-white border border-gray-600 font-black py-4 rounded-xl text-[10px] uppercase tracking-widest hover:bg-gray-700 transition-all shadow-lg">
-                            View Full Report
-                        </button>
-                        <button onclick="openReportModal(); setTimeout(downloadReport, 500);" class="w-full sm:w-1/2 bg-[var(--g-cyan)] text-navy-900 border border-[var(--g-cyan)] font-black py-4 rounded-xl text-[10px] uppercase tracking-widest hover:brightness-110 transition-all shadow-lg flex items-center justify-center gap-2">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-                            Download PDF Now
-                        </button>
-                    </div>
+                    <button onclick="openReportModal()" class="w-full bg-gray-800 text-white border border-gray-600 font-black py-4 rounded-xl text-[10px] uppercase tracking-widest hover:bg-gray-700 transition-all shadow-lg">
+                        View Full Project Report
+                    </button>
                 </div>
-            </div>
-
-            <!-- Bottom Control Buttons -->
-            <div class="mt-12 flex justify-center w-full pb-8">
-                <button onclick="resetForm()" class="w-full sm:w-auto tech-font text-[10px] sm:text-[12px] font-black tracking-widest uppercase px-6 py-5 bg-gray-800 hover:bg-gray-700 text-white border border-gray-600 rounded-xl shadow-md transition-all z-10 relative cursor-pointer active:scale-95">↺ Start New Assessment</button>
             </div>
         </div>
     </div>
@@ -347,31 +333,29 @@
     <!-- REPORT MODAL -->
     <div id="report-modal" class="fixed inset-0 bg-black/98 z-[2000] hidden overflow-y-auto p-4 lg:p-12 flex justify-center items-start">
         <div class="max-w-4xl w-full bg-white text-gray-900 p-8 lg:p-12 relative animate-in fade-in duration-300 shadow-2xl">
-            <div id="printable-report" class="bg-white">
-                <div class="absolute top-8 right-8 text-[9px] text-gray-400 tech-font">REF ID: GM-FAC-RISK</div>
+            <div class="absolute top-8 right-8 text-[9px] text-gray-400 tech-font">REF ID: GM-FAC-RISK</div>
 
-                <div class="border-b-4 border-black pb-6 mb-8 flex justify-between items-end">
-                    <div>
-                        <h2 class="text-3xl font-black uppercase tracking-tighter mb-1 italic">GOLDMORR SYSTEM</h2>
-                        <p class="text-[10px] font-bold text-gray-500 uppercase tracking-[0.4em] tracking-widest">Project Assessment & Risk Report</p>
-                    </div>
-                    <div class="text-right text-[10px] font-bold uppercase tracking-widest text-black italic">Version 3.1</div>
+            <div class="border-b-4 border-black pb-6 mb-8 flex justify-between items-end">
+                <div>
+                    <h2 class="text-3xl font-black uppercase tracking-tighter mb-1 italic">GOLDMORR SYSTEM</h2>
+                    <p class="text-[10px] font-bold text-gray-500 uppercase tracking-[0.4em] tracking-widest">Project Assessment & Risk Report</p>
                 </div>
-
-                <div id="modal-content" class="text-[14px] leading-relaxed">
-                    <!-- Content injected via JS -->
-                </div>
-
-                <div class="bg-black text-white p-6 rounded mt-8 text-center uppercase font-bold text-xs tracking-widest">
-                    Disclaimer: Use as a practical field scoring aid. Not a laboratory diagnosis.<br>
-                    <span class="text-[9px] normal-case text-gray-400 mt-2 block font-medium">This sheet is a practical scoring aid. It is not a laboratory diagnosis and does not replace professional judgment.</span>
-                </div>
+                <div class="text-right text-[10px] font-bold uppercase tracking-widest text-black italic">Version 3.1</div>
             </div>
 
-            <div id="report-action-buttons" class="flex flex-col items-center gap-4 mt-12 border-t-2 border-gray-100 pt-10">
-                <button onclick="downloadReport()" class="bg-[var(--g-cyan)] text-navy-900 px-8 py-3 rounded-lg text-[11px] font-black uppercase tracking-widest hover:brightness-110 transition-all shadow-lg flex items-center gap-2">
+            <div id="modal-content" class="text-[14px] leading-relaxed">
+                <!-- Content injected via JS -->
+            </div>
+
+            <div class="bg-black text-white p-6 rounded mt-8 text-center uppercase font-bold text-xs tracking-widest">
+                Disclaimer: Use as a practical field scoring aid. Not a laboratory diagnosis.<br>
+                <span class="text-[9px] normal-case text-gray-400 mt-2 block font-medium">This sheet is a practical scoring aid. It is not a laboratory diagnosis and does not replace professional judgment.</span>
+            </div>
+
+            <div class="flex flex-col items-center gap-4 mt-12 border-t-2 border-gray-100 pt-10">
+                <button onclick="uploadReport()" class="bg-[var(--g-cyan)] text-navy-900 px-8 py-3 rounded-lg text-[11px] font-black uppercase tracking-widest hover:brightness-110 transition-all shadow-lg flex items-center gap-2">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-                    Download PDF Report
+                    Export / Email Report
                 </button>
                 <div class="flex gap-4 items-center">
                     <button onclick="document.getElementById('report-modal').classList.add('hidden')" class="text-gray-400 text-[10px] uppercase font-bold hover:text-white transition-colors">Keep Editing</button>

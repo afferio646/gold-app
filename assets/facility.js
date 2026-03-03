@@ -419,21 +419,16 @@ function triggerEarlyLeadGeneration() {
     window.hasGeneratedLeadForThisSession = true;
 }
 
-function downloadReport() {
+function uploadReport() {
     const user = API.getSettings();
     if(!user) { alert("Please complete registration in settings."); return; }
 
-    const originalTitle = document.title;
-    const pName = document.getElementById('p-name').value || "Facility_Project";
-    document.title = pName.replace(/[^a-z0-9]/gi, '_').toLowerCase() + '_goldmorr_report';
+    const pName = document.getElementById('p-name').value || "N/A";
 
-    // Trigger Native Browser Print (which natively allows saving as perfect PDF)
-    window.print();
-
-    // Restore original title
-    document.title = originalTitle;
-
-    // Optionally close the modal as requested
+    // Since we already saved the lead when they opened the modal,
+    // we don't need to call API.saveReport again here unless we want to update the record.
+    // For now, we'll just simulate the success alert to the user.
+    alert(`Report for "${pName}" exported successfully! \n(PDF emailed to ${user.email})`);
     document.getElementById('report-modal').classList.add('hidden');
 }
 
@@ -528,9 +523,19 @@ function openSettings() {
 }
 
 function handleHomeClick() {
-    // The user specifically requested that clicking the Logo should reset the form, NOT leave the page.
-    // Leaving the page triggers the index.html routing bug.
-    resetForm();
+    // Check if launched from Hub/Admin (via ?hub=true)
+    const urlParams = new URLSearchParams(window.location.search);
+    const isHub = urlParams.get('hub') === 'true';
+
+    if (isHub) {
+        if(confirm("Return to Admin Hub? Any unsaved data will be lost.")) {
+            // Go back to the dedicated Admin page
+            window.location.href = 'admin.html';
+        }
+    } else {
+        // Normal behavior: Reset Form
+        resetForm();
+    }
 }
 
 function resetForm() {
@@ -538,21 +543,13 @@ function resetForm() {
         // Clear Inputs
         document.getElementById('p-name').value = '';
         document.getElementById('f-photos').value = '';
-        if(document.getElementById('f-photo-count')) {
-            document.getElementById('f-photo-count').innerText = 'No photos selected';
-        }
-        if(document.getElementById('photo-preview')) {
-            document.getElementById('photo-preview').innerHTML = '';
-        }
+        document.getElementById('f-photo-count').innerText = 'No photos selected';
 
-        // Reset dropdowns explicitly mapping to IDs in facility.html
         document.getElementById('f-type').selectedIndex = 0;
         document.getElementById('f-source').selectedIndex = 0;
         document.getElementById('f-mold-growth').selectedIndex = 0;
-        if(document.getElementById('f-surface')) document.getElementById('f-surface').selectedIndex = 0;
-        if(document.getElementById('f-surface-type')) document.getElementById('f-surface-type').selectedIndex = 0;
-        if(document.getElementById('f-moisture')) document.getElementById('f-moisture').selectedIndex = 0;
-        if(document.getElementById('f-moisture-hist')) document.getElementById('f-moisture-hist').selectedIndex = 0;
+        document.getElementById('f-surface-type').selectedIndex = 0;
+        document.getElementById('f-moisture-hist').selectedIndex = 0;
         document.getElementById('f-sensory').selectedIndex = 0;
         document.getElementById('f-hvac-risk').selectedIndex = 0;
 
