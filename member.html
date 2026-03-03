@@ -140,7 +140,7 @@
                 <span class="hidden sm:inline">01. Quantifier & Protocol</span>
                 <span class="sm:hidden">01. Protocol</span>
             </button>
-            <button onclick="switchTab('profit')" id="tab-profit" class="flex-1 tech-font text-[9px] sm:text-[10px] tracking-widest uppercase px-2 sm:px-4 py-3 bg-gray-900 border border-gray-700 text-gray-400 rounded-lg whitespace-nowrap shadow-md transition-all opacity-70 hover:border-gray-500">
+            <button onclick="calculateProtocol(); switchTab('profit');" id="tab-profit" class="flex-1 tech-font text-[9px] sm:text-[10px] tracking-widest uppercase px-2 sm:px-4 py-3 bg-gray-900 border border-gray-700 text-gray-400 rounded-lg whitespace-nowrap shadow-md transition-all opacity-70 hover:border-gray-500">
                 <span class="hidden sm:inline">02. Profitability Guard</span>
                 <span class="sm:hidden">02. Profit Guard</span>
             </button>
@@ -284,7 +284,6 @@
                         </div>
                     </div>
 
-                    <button onclick="calculateProtocol()" class="w-full bg-[var(--g-cyan)] text-navy-900 font-black py-4 rounded-xl tech-font text-[10px] tracking-widest shadow-lg mt-6">Generate Protocol</button>
                 </div>
             </div>
 
@@ -309,7 +308,7 @@
 
             <!-- Bottom Button for Quantifier -->
             <div class="mt-8 flex justify-center w-full pb-8">
-                <button type="button" onclick="switchTab('profit')" class="w-full sm:w-auto tech-font text-[10px] sm:text-[12px] font-black tracking-widest uppercase px-6 py-5 bg-[var(--g-cyan)] text-navy-900 hover:brightness-110 border border-[var(--g-cyan)] rounded-xl shadow-[0_0_15px_rgba(212,175,55,0.3)] transition-all z-10 relative cursor-pointer active:scale-95">Next: Profit Guard ➔</button>
+                <button type="button" onclick="calculateProtocol(); switchTab('profit');" class="w-full sm:w-auto tech-font text-[10px] sm:text-[12px] font-black tracking-widest uppercase px-6 py-5 bg-[var(--g-cyan)] text-navy-900 hover:brightness-110 border border-[var(--g-cyan)] rounded-xl shadow-[0_0_15px_rgba(212,175,55,0.3)] transition-all z-10 relative cursor-pointer active:scale-95">Next: Profit Guard ➔</button>
             </div>
         </div>
 
@@ -399,14 +398,15 @@
     <!-- MEMBER REPORT MODAL -->
     <div id="report-modal" class="fixed inset-0 bg-black/98 z-[2000] hidden overflow-y-auto p-4 lg:p-12 flex justify-center items-start">
         <div class="max-w-4xl w-full bg-white text-gray-900 p-8 lg:p-12 relative animate-in zoom-in duration-300 shadow-2xl">
-            <div class="absolute top-8 right-8 text-[9px] text-gray-400 tech-font">REF ID: GM-MEMBER-SUITE</div>
 
-            <div class="border-b-4 border-black pb-6 mb-8 flex justify-between items-end">
-                <div>
-                    <h2 class="text-3xl font-black uppercase tracking-tighter mb-1 italic">GOLDMORR SYSTEM</h2>
-                    <p class="text-[10px] font-bold text-gray-500 uppercase tracking-[0.4em] tracking-widest">Certified Remediation Protocol</p>
-                </div>
-                <div class="text-right text-[10px] font-bold uppercase tracking-widest text-black italic">Member Suite v2.0</div>
+            <div class="absolute top-8 right-8 text-right flex flex-col items-end gap-1">
+                <div class="text-[9px] text-gray-400 tech-font">REF ID: GM-MEMBER-SUITE</div>
+                <div class="text-[10px] font-bold uppercase tracking-widest text-black italic">Member Suite v2.0</div>
+            </div>
+
+            <div class="border-b-4 border-black pb-6 mb-8 mt-6">
+                <h2 class="text-3xl font-black uppercase tracking-tighter mb-1 italic">GOLDMORR SYSTEM</h2>
+                <p class="text-[10px] font-bold text-gray-500 uppercase tracking-[0.4em] tracking-widest">Certified Remediation Protocol</p>
             </div>
 
             <div id="modal-content" class="text-[14px] leading-relaxed space-y-8">
