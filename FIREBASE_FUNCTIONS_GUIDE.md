@@ -137,6 +137,6 @@ Firebase will upload the code to Google's servers. When it finishes, it will pri
 
 ### Step 7: Update Your Dashboard
 Take that URL and paste it into your `dashboard.html` file on line 408 where it says:
-`const BACKEND_URL = 'YOUR_SECURE_BACKEND_URL';`
+`const BACKEND_URL = 'https://us-central1-goldmorr-hub.cloudfunctions.net/sendPushNotification';`
 
 Your Dashboard will now have full power to send Push Notifications securely!

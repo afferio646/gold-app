@@ -400,11 +400,6 @@ async function sendPushNotification() {
     };
 
     try {
-        // --- SIMULATION ---
-        // Firebase Cloud Messaging (FCM) requires server-to-server calls to send push notifications.
-        // It actively blocks client-to-client sending for security reasons.
-        // Therefore, this request must be handled by a backend service, such as Firebase Cloud Functions.
-
         // Example integration:
         const BACKEND_URL = 'https://us-central1-goldmorr-hub.cloudfunctions.net/sendPushNotification'; // Change if your region/project name differs
         try {

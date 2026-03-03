@@ -504,40 +504,38 @@ async function uploadReport() {
     btn.innerHTML = 'Generating PDF...';
     btn.disabled = true;
 
+    // Grab the modal and the content block
+    const modalWrapper = document.getElementById('report-modal');
+    const element = modalWrapper.querySelector('.max-w-4xl');
+
+    // Store original styles so we can put them back
+    const originalWrapperCss = modalWrapper.style.cssText;
+    const originalWrapperClass = modalWrapper.className;
+
+    // Temporarily hide action buttons
+    const actionButtons = element.querySelector('.flex.flex-col.items-center.gap-4.mt-12');
+    if(actionButtons) actionButtons.style.display = 'none';
+
+    // 1. Force the Modal to be a normal, flat document block
+    // We remove 'fixed', 'inset-0', 'overflow-y-auto' so the browser draws its full height
+    modalWrapper.className = 'absolute top-0 left-0 w-full min-h-screen bg-white z-[9999] flex justify-center p-4';
+    // Scroll to top to ensure html2canvas captures from the beginning
+    window.scrollTo(0, 0);
+
     try {
-        // 1. Generate PDF blob
-        // Fix for blank pages: html2canvas struggles with overflow/fixed modals.
-        // We clone the content into a temporary, unstyled absolute container.
-        const originalElement = document.getElementById('report-modal').querySelector('.max-w-4xl');
-        const printContainer = document.createElement('div');
-
-        // Apply base styles to ensure rendering isn't clipped by screen size
-        printContainer.style.position = 'absolute';
-        printContainer.style.top = '-9999px';
-        printContainer.style.left = '-9999px';
-        printContainer.style.width = '800px'; // Fixed width for A4/Letter proportion
-        printContainer.style.background = 'white';
-        printContainer.style.padding = '40px';
-        printContainer.style.color = 'black'; // Force black text
-
-        // Clone the content
-        printContainer.innerHTML = originalElement.innerHTML;
-
-        // Remove the action buttons from the clone
-        const actionButtons = printContainer.querySelector('.flex.flex-col.items-center.gap-4.mt-12');
-        if(actionButtons) actionButtons.remove();
-
-        document.body.appendChild(printContainer);
-
         const opt = {
             margin:       [0.5, 0.5, 0.5, 0.5], // top, left, bottom, right
             filename:     fileName,
             image:        { type: 'jpeg', quality: 0.98 },
-            html2canvas:  { scale: 2, useCORS: true, windowWidth: 800 },
+            html2canvas:  { scale: 2, useCORS: true, scrollY: 0 },
             jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
         };
 
-        const pdfBlob = await html2pdf().set(opt).from(printContainer).outputPdf('blob');
+        // Generate Blob directly from the now-flattened active DOM element
+        const pdfBlob = await html2pdf().set(opt).from(element).outputPdf('blob');
+
+        // Restore action buttons so they exist if the user stays
+        if(actionButtons) actionButtons.style.display = 'flex';
 
         // 2. Upload to Firebase Storage
         btn.innerHTML = 'Uploading to Cloud...';
@@ -551,23 +549,23 @@ async function uploadReport() {
             alert(`Report for "${pName}" exported successfully to Firebase Cloud Storage! \n(A local copy will now download)`);
 
             // Trigger local download too
-            html2pdf().set(opt).from(printContainer).save().then(() => {
-                document.body.removeChild(printContainer);
-            });
+            html2pdf().set(opt).from(element).save();
         } else {
             throw new Error("Upload returned null");
         }
     } catch (e) {
         console.error("PDF Generation Error:", e);
         alert("Failed to generate or upload PDF. See console for details.");
-        try {
-            const el = document.querySelector('div[style*="-9999px"]');
-            if(el) el.remove();
-        } catch(ex){}
     } finally {
+        // Restore buttons if not already done
+        if(actionButtons) actionButtons.style.display = 'flex';
+        // Put the modal wrapper exactly back how we found it
+        modalWrapper.style.cssText = originalWrapperCss;
+        modalWrapper.className = originalWrapperClass;
+
         btn.innerHTML = originalText;
         btn.disabled = false;
-        document.getElementById('report-modal').classList.add('hidden');
+        modalWrapper.classList.add('hidden'); // Close it
     }
 }
 

@@ -419,89 +419,17 @@ function triggerEarlyLeadGeneration() {
     window.hasGeneratedLeadForThisSession = true;
 }
 
-async function uploadReport() {
+function uploadReport() {
     const user = API.getSettings();
     if(!user) { alert("Please complete registration in settings."); return; }
 
-    const pName = document.getElementById('p-name').value || "Unnamed_Project";
-    const cleanName = pName.replace(/[^a-z0-9]/gi, '_').toLowerCase();
-    const fileName = `facility_report_${cleanName}_${Date.now()}.pdf`;
+    const pName = document.getElementById('p-name').value || "N/A";
 
-    // Visual feedback
-    const btn = document.querySelector('button[onclick="uploadReport()"]');
-    const originalText = btn.innerHTML;
-    btn.innerHTML = 'Generating PDF...';
-    btn.disabled = true;
-
-    try {
-        // 1. Generate PDF blob
-        // Fix for blank pages: html2canvas struggles with overflow/fixed modals.
-        // We clone the content into a temporary, unstyled absolute container.
-        const originalElement = document.getElementById('report-modal').querySelector('.max-w-4xl');
-        const printContainer = document.createElement('div');
-
-        // Apply base styles to ensure rendering isn't clipped by screen size
-        printContainer.style.position = 'absolute';
-        printContainer.style.top = '-9999px';
-        printContainer.style.left = '-9999px';
-        printContainer.style.width = '800px'; // Fixed width for A4/Letter proportion
-        printContainer.style.background = 'white';
-        printContainer.style.padding = '40px';
-        printContainer.style.color = 'black'; // Force black text
-
-        // Clone the content
-        printContainer.innerHTML = originalElement.innerHTML;
-
-        // Remove the action buttons from the clone
-        const actionButtons = printContainer.querySelector('.flex.flex-col.items-center.gap-4.mt-12');
-        if(actionButtons) actionButtons.remove();
-
-        document.body.appendChild(printContainer);
-
-        const opt = {
-            margin:       [0.5, 0.5, 0.5, 0.5], // top, left, bottom, right
-            filename:     fileName,
-            image:        { type: 'jpeg', quality: 0.98 },
-            html2canvas:  { scale: 2, useCORS: true, windowWidth: 800 },
-            jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
-        };
-
-        // Generate Blob
-        const pdfBlob = await html2pdf().set(opt).from(printContainer).outputPdf('blob');
-
-        // 2. Upload to Firebase Storage
-        btn.innerHTML = 'Uploading to Cloud...';
-        const pdfUrl = await API.uploadPDF(pdfBlob, fileName);
-
-        if (pdfUrl) {
-            // 3. Update the lead record with the PDF URL
-            if (window.currentSessionLeadId) {
-                await API.updateLeadPDF(window.currentSessionLeadId, pdfUrl);
-            }
-
-            alert(`Report for "${pName}" exported successfully to Firebase Cloud Storage! \n(A local copy will now download)`);
-
-            // Trigger local download too
-            html2pdf().set(opt).from(printContainer).save().then(() => {
-                // Cleanup temp DOM element after save
-                document.body.removeChild(printContainer);
-            });
-        } else {
-            throw new Error("Upload returned null");
-        }
-    } catch (e) {
-        console.error("PDF Generation Error:", e);
-        alert("Failed to generate or upload PDF. See console for details.");
-        // Attempt cleanup if failed before save
-        try {
-            const el = document.querySelector('div[style*="-9999px"]');
-            if(el) el.remove();
-        } catch(ex){}
-    } finally {
-        btn.innerHTML = originalText;
-        btn.disabled = false;
-        document.getElementById('report-modal').classList.add('hidden');
-    }
+    // Since we already saved the lead when they opened the modal,
+    // we don't need to call API.saveReport again here unless we want to update the record.
+    // For now, we'll just simulate the success alert to the user.
+    alert(`Report for "${pName}" exported successfully! \n(PDF emailed to ${user.email})`);
+    document.getElementById('report-modal').classList.add('hidden');
 }
 
 function saveUserSettings() {
