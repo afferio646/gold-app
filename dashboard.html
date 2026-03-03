@@ -401,20 +401,29 @@ async function sendPushNotification() {
 
     try {
         // --- SIMULATION ---
-        const BACKEND_URL = 'YOUR_SECURE_BACKEND_URL'; // Placeholder
-        const response = await fetch(`${BACKEND_URL}/api/v1/push/send`, {
-            method: 'POST',
-            // ... headers and body remain the same ...
-            body: JSON.stringify(pushPayload)
-        });
+        // Firebase Cloud Messaging (FCM) requires server-to-server calls to send push notifications.
+        // It actively blocks client-to-client sending for security reasons.
+        // Therefore, this request must be handled by a backend service, such as Firebase Cloud Functions.
+
+        // Example integration:
+        const BACKEND_URL = 'YOUR_SECURE_BACKEND_URL'; // Replace with your Firebase Cloud Function URL
+        try {
+            const response = await fetch(`${BACKEND_URL}/api/v1/push/send`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(pushPayload)
+            });
+
+            // ... handle response ...
+        } catch (fetchError) {
+            console.warn("Backend URL not configured. Simulating success instead.", fetchError);
+        }
 
         // --- Mocking success and showing the filter used ---
-        await new Promise(resolve => setTimeout(resolve, 3000));
-
-        const mockSubscribers = MOCK_MULTI_CLIENT_DATA[authenticatedExhId].aggregates.activeSubscribers;
+        await new Promise(resolve => setTimeout(resolve, 2000));
 
         const attachMsg = attachment ? `\nAttachment: ${attachment.name}` : "";
-        alert(`SUCCESS! Notification request sent. Filter Used: ${targetFilter}.${attachMsg} (Message will appear on subscribed devices.)`);
+        alert(`SUCCESS! Notification request prepared for backend. Filter Used: ${targetFilter}.${attachMsg} \n\n(Note: A backend Firebase Function is required to physically deliver this message via FCM.)`);
 
     } catch (e) {
         console.error("Push API Failure:", e);

@@ -27,19 +27,43 @@ async function requestNotificationPermission() {
     console.log('Notification Permission:', permission);
 
     if (permission === 'granted') {
-        // Here you would subscribe the user to your backend
-        // e.g., subscribeUserToPush();
-        alert("Success! You will now receive field updates.");
+        try {
+            // Subscribe the user to Firebase Cloud Messaging
+            const messaging = firebase.messaging();
+            const vapidKey = "BMUx5mbW2eO9JO0kB0OiQNORUBEmOHYVleU1V5zFpA8bfii5X-wjUx9g-GrEFHMdliUyldEWc0mIchFvCf52SbU";
 
-        // Fix: Remove the button immediately to stop flashing
-        const btn = document.querySelector('button[onclick="requestNotificationPermission"]'); // Or find via text/class
-        if (btn) btn.remove();
-        // Fallback search if above fails (it has no ID)
-        const headerBtns = document.querySelectorAll('header button');
-        headerBtns.forEach(b => {
-            if(b.innerText === 'ENABLE UPDATES' || b.innerText === 'Enable Updates') b.remove();
-        });
+            // Wait for our custom service worker to be ready so Firebase messaging doesn't look for firebase-messaging-sw.js
+            const registration = await navigator.serviceWorker.ready;
 
+            const currentToken = await messaging.getToken({
+                vapidKey: vapidKey,
+                serviceWorkerRegistration: registration
+            });
+
+            if (currentToken) {
+                console.log('FCM Token received:', currentToken);
+                // Save token to Firestore under the user's activation record
+                if (window.API && window.API.savePushToken) {
+                    window.API.savePushToken(currentToken);
+                }
+                alert("Success! You will now receive field updates.");
+
+                // Remove the button immediately to stop flashing
+                const btn = document.querySelector('button[onclick="requestNotificationPermission()"]');
+                if (btn) btn.remove();
+
+                // Fallback search if above fails (it has no ID)
+                const headerBtns = document.querySelectorAll('header button');
+                headerBtns.forEach(b => {
+                    if(b.innerText === 'ENABLE UPDATES' || b.innerText === 'Enable Updates') b.remove();
+                });
+            } else {
+                console.log('No registration token available. Request permission to generate one.');
+            }
+        } catch (err) {
+            console.error('An error occurred while retrieving token. ', err);
+            alert("Failed to subscribe to updates. Please try again later.");
+        }
     } else {
         alert("Notifications blocked. Please enable them in your browser settings to receive updates.");
     }
@@ -140,7 +164,7 @@ function initPWAFeatures() {
             const btn = document.createElement('button');
             btn.innerText = 'Enable Updates';
             btn.className = 'text-[9px] border border-red-500 text-red-400 px-3 py-1 rounded ml-2 uppercase font-bold animate-pulse';
-            btn.onclick = requestNotificationPermission;
+            btn.setAttribute('onclick', 'requestNotificationPermission()');
             header.prepend(btn);
         }
     }

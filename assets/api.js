@@ -7,12 +7,12 @@
 // import { getFirestore, collection, addDoc, getDocs, query, orderBy, limit } from "firebase/firestore";
 
 const firebaseConfig = {
-    apiKey: "AIzaSyBqumaIsQEllFIE7qgRSO-jptkGa7-4LWw",
-    authDomain: "goldmorr-hub.firebaseapp.com",
-    projectId: "goldmorr-hub",
-    storageBucket: "goldmorr-hub.firebasestorage.app",
-    messagingSenderId: "900594097755",
-    appId: "1:900594097755:web:750378fabd2e97135ba97e"
+  apiKey: "AIzaSyBqumaIsqElLFIE7qgRSO-jptkGa7-4LWw",
+  authDomain: "goldmorr-hub.firebaseapp.com",
+  projectId: "goldmorr-hub",
+  storageBucket: "goldmorr-hub.firebasestorage.app",
+  messagingSenderId: "900594097755",
+  appId: "1:900594097755:web:750378fabd2e97135ba97e"
 };
 
 let db; // Firestore instance
@@ -52,6 +52,30 @@ const API = {
     getSettings: () => {
         const s = localStorage.getItem('goldmorr_settings');
         return s ? JSON.parse(s) : null;
+    },
+
+    savePushToken: async (token) => {
+        const user = API.getSettings();
+        if (user && db) {
+            try {
+                // Find user's activation document
+                const activations = await db.collection('activations')
+                    .where('email', '==', user.email)
+                    .orderBy('timestamp', 'desc')
+                    .limit(1)
+                    .get();
+
+                if (!activations.empty) {
+                    await activations.docs[0].ref.update({
+                        pushToken: token,
+                        tokenUpdatedAt: new Date().toISOString()
+                    });
+                    console.log("Push token saved to Firestore");
+                }
+            } catch (e) {
+                console.error("Error saving push token:", e);
+            }
+        }
     },
 
     // --- HEARTBEAT (Usage Tracking) ---
@@ -122,6 +146,9 @@ const API = {
         leads.unshift(leadDoc);
         localStorage.setItem('goldmorr_leads', JSON.stringify(leads));
 
+        // 6. Store current lead ID for later updates (like PDF upload)
+        window.currentSessionLeadId = leadId;
+
         return leadDoc;
     },
 
@@ -166,6 +193,46 @@ const API = {
         // Legacy support wrapper
         const data = await API.getDashboardData();
         return data.leads;
+    },
+
+    // --- PDF STORAGE ---
+    uploadPDF: async (pdfBlob, fileName) => {
+        if (!firebase.storage) {
+            console.error("Firebase storage not initialized");
+            return null;
+        }
+
+        try {
+            const storageRef = firebase.storage().ref();
+            const pdfRef = storageRef.child(`reports/${fileName}`);
+            await pdfRef.put(pdfBlob);
+            const downloadURL = await pdfRef.getDownloadURL();
+            return downloadURL;
+        } catch (e) {
+            console.error("PDF Upload Error:", e);
+            return null;
+        }
+    },
+
+    updateLeadPDF: async (leadId, pdfUrl) => {
+        if (!db) return;
+        try {
+            // Because leadId might be the document ID or a custom field 'leadId'
+            // We search for it
+            const leadQuery = await db.collection('leads').where('leadId', '==', leadId).limit(1).get();
+            if (!leadQuery.empty) {
+                await leadQuery.docs[0].ref.update({
+                    pdfUrl: pdfUrl
+                });
+            } else {
+                // Try as document ID
+                await db.collection('leads').doc(leadId).update({
+                    pdfUrl: pdfUrl
+                });
+            }
+        } catch (e) {
+            console.error("Error updating lead with PDF URL:", e);
+        }
     },
 
     // --- ADMIN TOOLS ---

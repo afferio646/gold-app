@@ -419,17 +419,66 @@ function triggerEarlyLeadGeneration() {
     window.hasGeneratedLeadForThisSession = true;
 }
 
-function uploadReport() {
+async function uploadReport() {
     const user = API.getSettings();
     if(!user) { alert("Please complete registration in settings."); return; }
 
-    const pName = document.getElementById('p-name').value || "N/A";
+    const pName = document.getElementById('p-name').value || "Unnamed_Project";
+    const cleanName = pName.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+    const fileName = `facility_report_${cleanName}_${Date.now()}.pdf`;
 
-    // Since we already saved the lead when they opened the modal,
-    // we don't need to call API.saveReport again here unless we want to update the record.
-    // For now, we'll just simulate the success alert to the user.
-    alert(`Report for "${pName}" exported successfully! \n(PDF emailed to ${user.email})`);
-    document.getElementById('report-modal').classList.add('hidden');
+    // Visual feedback
+    const btn = document.querySelector('button[onclick="uploadReport()"]');
+    const originalText = btn.innerHTML;
+    btn.innerHTML = 'Generating PDF...';
+    btn.disabled = true;
+
+    try {
+        // 1. Generate PDF blob
+        const element = document.getElementById('report-modal').querySelector('.max-w-4xl');
+
+        // Temporarily hide action buttons for the PDF
+        const actionButtons = element.querySelector('.flex.flex-col.items-center.gap-4.mt-12');
+        if(actionButtons) actionButtons.style.display = 'none';
+
+        const opt = {
+            margin:       1,
+            filename:     fileName,
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2 },
+            jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+        };
+
+        const pdfBlob = await html2pdf().set(opt).from(element).outputPdf('blob');
+
+        // Restore action buttons
+        if(actionButtons) actionButtons.style.display = 'flex';
+
+        // 2. Upload to Firebase Storage
+        btn.innerHTML = 'Uploading to Cloud...';
+        const pdfUrl = await API.uploadPDF(pdfBlob, fileName);
+
+        if (pdfUrl) {
+            // 3. Update the lead record with the PDF URL
+            if (window.currentSessionLeadId) {
+                await API.updateLeadPDF(window.currentSessionLeadId, pdfUrl);
+            }
+
+            alert(`Report for "${pName}" exported successfully to Firebase Cloud Storage! \n(A local copy will now download)`);
+
+            // Trigger local download too
+            html2pdf().set(opt).from(element).save();
+        } else {
+            throw new Error("Upload returned null");
+        }
+    } catch (e) {
+        console.error("PDF Generation Error:", e);
+        alert("Failed to generate or upload PDF. See console for details.");
+    } finally {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+        document.getElementById('report-modal').classList.add('hidden');
+    }
 }
 
 function saveUserSettings() {
