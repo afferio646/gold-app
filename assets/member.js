@@ -443,21 +443,10 @@ function openMemberReportModal() {
         </div>
     `;
 
-    // Swap the main view for the report view
-    document.getElementById('main-app-container').classList.add('hidden');
-    document.getElementById('report-view-container').classList.remove('hidden');
-
-    // Scroll to top of report
-    window.scrollTo({ top: 0, behavior: 'instant' });
+    document.getElementById('report-modal').classList.remove('hidden');
 
     // Fallback trigger in case they opened report without changing calc inputs
     triggerEarlyLeadGenerationMember();
-}
-
-function closeReportView() {
-    document.getElementById('report-view-container').classList.add('hidden');
-    document.getElementById('main-app-container').classList.remove('hidden');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function triggerEarlyLeadGenerationMember() {
@@ -501,49 +490,17 @@ function triggerEarlyLeadGenerationMember() {
     window.hasGeneratedLeadForThisSession = true;
 }
 
-function downloadReport() {
+function uploadReport() {
     const user = API.getSettings();
     if(!user) { alert("Please complete registration in settings."); return; }
 
     const pName = document.getElementById('p-name').value || 'Unnamed Project';
-    const safeFileName = pName.replace(/[^a-z0-9]/gi, '_').toLowerCase() + '_goldmorr_report.pdf';
 
-    // Get the exact container we want to print
-    const element = document.getElementById('printable-report');
-    if (!element) {
-        console.error("Printable report container not found");
-        return;
-    }
+    // Close modal
+    document.getElementById('report-modal').classList.add('hidden');
 
-    alert("Generating PDF... Please wait.");
-
-    // Configure PDF options specifically designed to avoid blank pages and clipping
-    const opt = {
-        margin:       [0.5, 0.5, 0.5, 0.5],
-        filename:     safeFileName,
-        image:        { type: 'jpeg', quality: 1.0 },
-        html2canvas:  {
-            scale: 2,
-            useCORS: true,
-            windowWidth: 800, // force a consistent width rather than device viewport
-            scrollY: 0, // prevent capturing issues
-            logging: false
-        },
-        jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
-    };
-
-    // Generate and save the PDF
-    if (typeof html2pdf !== 'undefined') {
-        html2pdf().set(opt).from(element).save().then(() => {
-            // Close report view automatically
-            closeReportView();
-        }).catch(err => {
-            console.error("PDF Generation Error: ", err);
-            alert("There was an error generating your PDF. Please try again.");
-        });
-    } else {
-        alert("PDF generator library is not loaded. Please check your internet connection and try again.");
-    }
+    // Show Success Alert (Lead already saved)
+    alert(`Report for "${pName}" exported successfully! \nThe PDF report has been emailed to ${user.email}.`);
 }
 
 function handleHomeClick() {

@@ -98,8 +98,7 @@
         </div>
     </header>
 
-    <!-- MAIN APPLICATION CONTAINER (Hidden when Report is visible) -->
-    <div id="main-app-container" class="max-w-6xl mx-auto py-8 px-4">
+    <div class="max-w-6xl mx-auto py-8 px-4">
 
         <!-- PROJECT INFO CARD -->
         <div class="glass p-8 rounded-[30px] mb-8 border border-gray-800">
@@ -397,12 +396,9 @@
         </div>
     </div>
 
-    </div> <!-- END MAIN APPLICATION CONTAINER -->
-
-    <!-- REPORT VIEW CONTAINER (Standard HTML Document Flow - Not a Modal) -->
-    <div id="report-view-container" class="hidden min-h-screen bg-gray-200 py-8 px-4 flex justify-center">
-        <!-- The actual printable boundary -->
-        <div id="printable-report" class="max-w-4xl w-full bg-white text-gray-900 p-8 lg:p-12 relative shadow-2xl">
+    <!-- MEMBER REPORT MODAL -->
+    <div id="report-modal" class="fixed inset-0 bg-black/98 z-[2000] hidden overflow-y-auto p-4 lg:p-12 flex justify-center items-start">
+        <div class="max-w-4xl w-full bg-white text-gray-900 p-8 lg:p-12 relative animate-in zoom-in duration-300 shadow-2xl">
             <div class="absolute top-8 right-8 text-[9px] text-gray-400 tech-font">REF ID: GM-MEMBER-SUITE</div>
 
             <div class="border-b-4 border-black pb-6 mb-8 flex justify-between items-end">
@@ -422,15 +418,12 @@
                 <span class="text-[9px] normal-case text-gray-400 mt-2 block font-medium">This sheet is a practical scoring aid. It is not a laboratory diagnosis and does not replace professional judgment.</span>
             </div>
 
-            <!-- ACTION BUTTONS (Hidden during PDF export) -->
-            <div id="report-action-buttons" class="flex flex-col items-center gap-4 mt-12 border-t-2 border-gray-100 pt-10" data-html2canvas-ignore>
-                <button onclick="downloadReport()" class="bg-[var(--g-cyan)] text-navy-900 px-8 py-4 rounded-xl text-[12px] font-black uppercase tracking-[0.2em] hover:brightness-110 transition-all shadow-lg flex items-center gap-2">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                    Download Official PDF Report
+            <div class="flex flex-col items-center gap-4 mt-12 border-t-2 border-gray-100 pt-10">
+                <button onclick="uploadReport()" class="bg-[var(--g-cyan)] text-navy-900 px-8 py-3 rounded-lg text-[11px] font-black uppercase tracking-widest hover:brightness-110 transition-all shadow-lg flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                    Export PDF Report
                 </button>
-                <button onclick="closeReportView()" class="text-gray-500 border border-gray-300 px-6 py-2 rounded text-[10px] uppercase font-bold hover:bg-gray-100 mt-2 transition-all">
-                    Return to Project Form
-                </button>
+                <button onclick="document.getElementById('report-modal').classList.add('hidden')" class="text-gray-400 text-[10px] uppercase font-bold hover:text-black">Close Review</button>
             </div>
         </div>
     </div>
