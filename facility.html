@@ -321,10 +321,21 @@
 
                     </div>
 
-                    <button onclick="openReportModal()" class="w-full bg-gray-800 text-white border border-gray-600 font-black py-4 rounded-xl text-[10px] uppercase tracking-widest hover:bg-gray-700 transition-all shadow-lg">
-                        View Full Project Report
-                    </button>
+                    <div class="flex flex-col sm:flex-row gap-3 w-full">
+                        <button onclick="openReportModal()" class="w-full sm:w-1/2 bg-gray-800 text-white border border-gray-600 font-black py-4 rounded-xl text-[10px] uppercase tracking-widest hover:bg-gray-700 transition-all shadow-lg">
+                            View Full Report
+                        </button>
+                        <button onclick="openReportModal(); setTimeout(downloadReport, 500);" class="w-full sm:w-1/2 bg-[var(--g-cyan)] text-navy-900 border border-[var(--g-cyan)] font-black py-4 rounded-xl text-[10px] uppercase tracking-widest hover:brightness-110 transition-all shadow-lg flex items-center justify-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                            Download PDF Now
+                        </button>
+                    </div>
                 </div>
+            </div>
+
+            <!-- Bottom Control Buttons -->
+            <div class="mt-12 flex justify-center w-full pb-8">
+                <button onclick="resetForm()" class="w-full sm:w-auto tech-font text-[10px] sm:text-[12px] font-black tracking-widest uppercase px-6 py-5 bg-gray-800 hover:bg-gray-700 text-white border border-gray-600 rounded-xl shadow-md transition-all z-10 relative cursor-pointer active:scale-95">↺ Start New Assessment</button>
             </div>
         </div>
     </div>

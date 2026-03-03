@@ -385,10 +385,15 @@
                     </div>
 
                     <!-- UPLOAD BUTTON -->
-                    <button onclick="openMemberReportModal()" class="w-full bg-[var(--g-cyan)] text-white font-black py-5 rounded-2xl tech-font text-[12px] uppercase tracking-[0.2em] shadow-2xl transition-colors">
-                        Review Certified Report
-                    </button>
-                    <!-- Note removed as requested -->
+                    <div class="flex flex-col sm:flex-row gap-3 w-full">
+                        <button onclick="openMemberReportModal()" class="w-full sm:w-1/2 bg-gray-800 text-white font-black py-5 rounded-2xl tech-font text-[10px] uppercase tracking-[0.2em] border border-gray-600 shadow-2xl hover:bg-gray-700 transition-colors">
+                            Review Full Report
+                        </button>
+                        <button onclick="openMemberReportModal(); setTimeout(downloadReport, 500);" class="w-full sm:w-1/2 bg-[var(--g-cyan)] text-navy-900 border border-[var(--g-cyan)] font-black py-5 rounded-2xl tech-font text-[10px] uppercase tracking-[0.2em] hover:brightness-110 transition-all shadow-2xl flex items-center justify-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                            Download PDF Now
+                        </button>
+                    </div>
                 </div>
             </div>
 
