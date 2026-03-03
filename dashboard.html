@@ -291,10 +291,11 @@
                     const email = lead.user ? lead.user.email : '';
                     const systemType = lead.appType || 'Unknown System';
                     const systemColor = systemType === 'Member Suite' ? '#D4AF37' : 'var(--primary-light)'; // Gold for members, blue for facility
+                    const shortSystemType = systemType === 'Member Suite' ? 'Member' : (systemType === 'Facility Guard' ? 'Facility' : systemType);
 
                     r.innerHTML = `
                         <td>${lead.leadId || lead.id}</td>
-                        <td><span class="status-badge" style="background: rgba(255,255,255,0.1); color:${systemColor}; border:1px solid ${systemColor};">${systemType}</span></td>
+                        <td><span class="status-badge" style="background: rgba(255,255,255,0.1); color:${systemColor}; border:1px solid ${systemColor}; white-space: nowrap;">${shortSystemType}</span></td>
                         <td><span style="font-weight:bold; color:#9ca3af">${src}</span></td>
                         <td>${userName}<br><span style="font-size:0.8em; color:#9ca3af">${email}</span></td>
                         <td>${new Date(lead.serverTimestamp || lead.timestamp).toLocaleDateString()}</td>
