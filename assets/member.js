@@ -506,24 +506,38 @@ async function uploadReport() {
 
     try {
         // 1. Generate PDF blob
-        const element = document.getElementById('report-modal').querySelector('.max-w-4xl');
+        // Fix for blank pages: html2canvas struggles with overflow/fixed modals.
+        // We clone the content into a temporary, unstyled absolute container.
+        const originalElement = document.getElementById('report-modal').querySelector('.max-w-4xl');
+        const printContainer = document.createElement('div');
 
-        // Temporarily hide action buttons for the PDF
-        const actionButtons = element.querySelector('.flex.flex-col.items-center.gap-4.mt-12');
-        if(actionButtons) actionButtons.style.display = 'none';
+        // Apply base styles to ensure rendering isn't clipped by screen size
+        printContainer.style.position = 'absolute';
+        printContainer.style.top = '-9999px';
+        printContainer.style.left = '-9999px';
+        printContainer.style.width = '800px'; // Fixed width for A4/Letter proportion
+        printContainer.style.background = 'white';
+        printContainer.style.padding = '40px';
+        printContainer.style.color = 'black'; // Force black text
+
+        // Clone the content
+        printContainer.innerHTML = originalElement.innerHTML;
+
+        // Remove the action buttons from the clone
+        const actionButtons = printContainer.querySelector('.flex.flex-col.items-center.gap-4.mt-12');
+        if(actionButtons) actionButtons.remove();
+
+        document.body.appendChild(printContainer);
 
         const opt = {
-            margin:       1,
+            margin:       [0.5, 0.5, 0.5, 0.5], // top, left, bottom, right
             filename:     fileName,
             image:        { type: 'jpeg', quality: 0.98 },
-            html2canvas:  { scale: 2 },
+            html2canvas:  { scale: 2, useCORS: true, windowWidth: 800 },
             jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
         };
 
-        const pdfBlob = await html2pdf().set(opt).from(element).outputPdf('blob');
-
-        // Restore action buttons
-        if(actionButtons) actionButtons.style.display = 'flex';
+        const pdfBlob = await html2pdf().set(opt).from(printContainer).outputPdf('blob');
 
         // 2. Upload to Firebase Storage
         btn.innerHTML = 'Uploading to Cloud...';
@@ -537,13 +551,19 @@ async function uploadReport() {
             alert(`Report for "${pName}" exported successfully to Firebase Cloud Storage! \n(A local copy will now download)`);
 
             // Trigger local download too
-            html2pdf().set(opt).from(element).save();
+            html2pdf().set(opt).from(printContainer).save().then(() => {
+                document.body.removeChild(printContainer);
+            });
         } else {
             throw new Error("Upload returned null");
         }
     } catch (e) {
         console.error("PDF Generation Error:", e);
         alert("Failed to generate or upload PDF. See console for details.");
+        try {
+            const el = document.querySelector('div[style*="-9999px"]');
+            if(el) el.remove();
+        } catch(ex){}
     } finally {
         btn.innerHTML = originalText;
         btn.disabled = false;
