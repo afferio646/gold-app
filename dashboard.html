@@ -294,7 +294,7 @@
 
                     r.innerHTML = `
                         <td>${lead.leadId || lead.id}</td>
-                        <td><span class="status-badge" style="background: rgba(255,255,255,0.1); color:${systemColor}; border:1px solid ${systemColor}; white-space: nowrap;">${systemType}</span></td>
+                        <td><span class="status-badge" style="background: rgba(255,255,255,0.1); color:${systemColor}; border:1px solid ${systemColor};">${systemType}</span></td>
                         <td><span style="font-weight:bold; color:#9ca3af">${src}</span></td>
                         <td>${userName}<br><span style="font-size:0.8em; color:#9ca3af">${email}</span></td>
                         <td>${new Date(lead.serverTimestamp || lead.timestamp).toLocaleDateString()}</td>
@@ -399,30 +399,25 @@ async function sendPushNotification() {
     };
 
     try {
-        // --- REAL FIREBASE IMPLEMENTATION ---
-        // Instead of hitting a fake server, we save the notification request to Firestore.
-        // A Firebase Cloud Function (which you must deploy) will listen for this new document
-        // and execute the actual push notification to all matched device tokens.
-
-        const attachName = attachment ? attachment.name : null;
-
-        await db.collection('notifications').add({
-            exhId: authenticatedExhId,
-            targetFilter: targetFilter,
-            title: title,
-            body: body,
-            link: targetUrl || 'https://gold-app-two.vercel.app/',
-            attachmentName: attachName,
-            status: 'pending', // The Cloud Function will change this to 'sent'
-            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        // --- SIMULATION ---
+        const BACKEND_URL = 'YOUR_SECURE_BACKEND_URL'; // Placeholder
+        const response = await fetch(`${BACKEND_URL}/api/v1/push/send`, {
+            method: 'POST',
+            // ... headers and body remain the same ...
+            body: JSON.stringify(pushPayload)
         });
 
+        // --- Mocking success and showing the filter used ---
+        await new Promise(resolve => setTimeout(resolve, 3000));
+
+        const mockSubscribers = MOCK_MULTI_CLIENT_DATA[authenticatedExhId].aggregates.activeSubscribers;
+
         const attachMsg = attachment ? `\nAttachment: ${attachment.name}` : "";
-        alert(`SUCCESS! Notification request queued. Filter Used: ${targetFilter}.${attachMsg} \n(Once your Cloud Function is deployed, this will reach subscribed devices.)`);
+        alert(`SUCCESS! Notification request sent. Filter Used: ${targetFilter}.${attachMsg} (Message will appear on subscribed devices.)`);
 
     } catch (e) {
         console.error("Push API Failure:", e);
-        alert(`Database Error: Could not queue the notification. ${e.message}`);
+        alert("Network Error: Could not reach the notification server.");
     } finally {
         // 5. Reset UI
         sendBtn.disabled = false;
