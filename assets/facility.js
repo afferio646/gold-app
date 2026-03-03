@@ -423,69 +423,18 @@ function downloadReport() {
     const user = API.getSettings();
     if(!user) { alert("Please complete registration in settings."); return; }
 
+    const originalTitle = document.title;
     const pName = document.getElementById('p-name').value || "Facility_Project";
-    const safeFileName = pName.replace(/[^a-z0-9]/gi, '_').toLowerCase() + '_goldmorr_report.pdf';
+    document.title = pName.replace(/[^a-z0-9]/gi, '_').toLowerCase() + '_goldmorr_report';
 
-    // Get the exact container we want to print
-    const originalElement = document.getElementById('printable-report');
-    if (!originalElement) {
-        console.error("Printable report container not found");
-        return;
-    }
+    // Trigger Native Browser Print (which natively allows saving as perfect PDF)
+    window.print();
 
-    alert("Generating PDF... Please wait.");
+    // Restore original title
+    document.title = originalTitle;
 
-    // CLONE APPROACH: Deep clone the element and append to body to avoid flex/modal clipping bugs
-    const clone = originalElement.cloneNode(true);
-    clone.id = 'pdf-clone-container';
-
-    // Position it off-screen but natively in the document body flow
-    Object.assign(clone.style, {
-        position: 'absolute',
-        top: '0',
-        left: '-9999px',
-        width: '800px', // strict width to ensure consistent layout
-        background: 'white',
-        color: 'black',
-        padding: '20px',
-        zIndex: '-1'
-    });
-
-    // Ensure styles that hide elements on screens don't hide them in the clone
-    document.body.appendChild(clone);
-
-    // Configure PDF options specifically designed to avoid blank pages
-    const opt = {
-        margin:       [0.5, 0.5, 0.5, 0.5],
-        filename:     safeFileName,
-        image:        { type: 'jpeg', quality: 1.0 },
-        html2canvas:  {
-            scale: 2,
-            useCORS: true,
-            windowWidth: 800,
-            scrollY: 0,
-            logging: false
-        },
-        jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' },
-        pagebreak:    { mode: 'css', avoid: 'tr, td, p, h2, h3' } // CSS page breaks work best on clean block elements
-    };
-
-    // Generate and save the PDF
-    if (typeof html2pdf !== 'undefined') {
-        html2pdf().set(opt).from(clone).save().then(() => {
-            // Clean up clone
-            document.body.removeChild(clone);
-            // User requested not to show the modal visual after downloading.
-            document.getElementById('report-modal').classList.add('hidden');
-        }).catch(err => {
-            console.error("PDF Generation Error: ", err);
-            document.body.removeChild(clone);
-            alert("There was an error generating your PDF. Please try again.");
-        });
-    } else {
-        document.body.removeChild(clone);
-        alert("PDF generator library is not loaded. Please check your internet connection and try again.");
-    }
+    // Optionally close the modal as requested
+    document.getElementById('report-modal').classList.add('hidden');
 }
 
 function saveUserSettings() {
@@ -579,19 +528,9 @@ function openSettings() {
 }
 
 function handleHomeClick() {
-    // Check if launched from Hub/Admin (via ?hub=true)
-    const urlParams = new URLSearchParams(window.location.search);
-    const isHub = urlParams.get('hub') === 'true';
-
-    if (isHub) {
-        if(confirm("Return to Admin Hub? Any unsaved data will be lost.")) {
-            // Go back to the dedicated Admin page
-            window.location.href = 'admin.html';
-        }
-    } else {
-        // Normal behavior: Reset Form
-        resetForm();
-    }
+    // The user specifically requested that clicking the Logo should reset the form, NOT leave the page.
+    // Leaving the page triggers the index.html routing bug.
+    resetForm();
 }
 
 function resetForm() {
@@ -599,13 +538,21 @@ function resetForm() {
         // Clear Inputs
         document.getElementById('p-name').value = '';
         document.getElementById('f-photos').value = '';
-        document.getElementById('f-photo-count').innerText = 'No photos selected';
+        if(document.getElementById('f-photo-count')) {
+            document.getElementById('f-photo-count').innerText = 'No photos selected';
+        }
+        if(document.getElementById('photo-preview')) {
+            document.getElementById('photo-preview').innerHTML = '';
+        }
 
+        // Reset dropdowns explicitly mapping to IDs in facility.html
         document.getElementById('f-type').selectedIndex = 0;
         document.getElementById('f-source').selectedIndex = 0;
         document.getElementById('f-mold-growth').selectedIndex = 0;
-        document.getElementById('f-surface-type').selectedIndex = 0;
-        document.getElementById('f-moisture-hist').selectedIndex = 0;
+        if(document.getElementById('f-surface')) document.getElementById('f-surface').selectedIndex = 0;
+        if(document.getElementById('f-surface-type')) document.getElementById('f-surface-type').selectedIndex = 0;
+        if(document.getElementById('f-moisture')) document.getElementById('f-moisture').selectedIndex = 0;
+        if(document.getElementById('f-moisture-hist')) document.getElementById('f-moisture-hist').selectedIndex = 0;
         document.getElementById('f-sensory').selectedIndex = 0;
         document.getElementById('f-hvac-risk').selectedIndex = 0;
 

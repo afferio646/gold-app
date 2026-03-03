@@ -30,6 +30,55 @@ body {
     to { transform: rotate(360deg); }
 }
 
+/* --- NATIVE PRINT / PDF EXPORT RULES --- */
+/* Completely overrides screen layout to perfectly format the #printable-report container to A4/Letter size */
+@media print {
+    /* Hide the entire app UI, headers, footers, buttons, and backgrounds */
+    body * {
+        visibility: hidden;
+    }
+
+    /* Reveal ONLY the report content */
+    #printable-report, #printable-report * {
+        visibility: visible;
+    }
+
+    /* Force the printable container to stretch full page, reset margins, and remove scrollbars */
+    #printable-report {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100% !important;
+        margin: 0;
+        padding: 0;
+        box-shadow: none !important;
+        border: none !important;
+        background: white !important;
+        color: black !important;
+    }
+
+    /* Remove specific print artifacts like margins and page numbers if supported */
+    @page {
+        margin: 0.5in;
+        size: letter portrait;
+    }
+
+    /* Ensure specific styling for headings and tables doesn't get messed up */
+    .text-white {
+        color: black !important;
+    }
+    .bg-black {
+        background: transparent !important;
+        color: black !important;
+        border: 1px solid black;
+    }
+    /* Hide all action buttons and modals when printing */
+    #report-action-buttons, .fixed, .shadow-2xl, button {
+        display: none !important;
+        visibility: hidden !important;
+    }
+}
+
 /* --- RESULT CARD ELEMENTS --- */
 /* (Gauge styles removed in favor of Dual Score Layout) */
 .active-tab {
