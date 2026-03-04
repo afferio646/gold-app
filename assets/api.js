@@ -60,16 +60,22 @@ const API = {
             try {
                 const activations = await db.collection('activations')
                     .where('email', '==', user.email)
-                    .orderBy('timestamp', 'desc')
-                    .limit(1)
                     .get();
 
                 if (!activations.empty) {
-                    await activations.docs[0].ref.update({
-                        pushToken: token,
-                        tokenUpdatedAt: new Date().toISOString()
+                    // Update all activations matching this email to ensure coverage
+                    // without relying on complex indexes that might be missing
+                    const batch = db.batch();
+                    activations.docs.forEach(doc => {
+                        batch.update(doc.ref, {
+                            pushToken: token,
+                            tokenUpdatedAt: new Date().toISOString()
+                        });
                     });
+                    await batch.commit();
                     console.log("Push token saved to Firestore");
+                } else {
+                    console.warn("No activation found for this email to attach push token.");
                 }
             } catch (e) {
                 console.error("Error saving push token:", e);
