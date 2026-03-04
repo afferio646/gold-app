@@ -26,7 +26,7 @@ messaging.onBackgroundMessage(function(payload) {
     notificationOptions);
 });
 
-const CACHE_NAME = 'goldmorr-v10-member-suite';
+const CACHE_NAME = 'goldmorr-v11-member-suite';
 const ASSETS = [
     '/',
     '/index.html',

@@ -43,9 +43,14 @@ async function requestNotificationPermission() {
             if (currentToken) {
                 console.log('FCM Token received:', currentToken);
                 // Save token to Firestore under the user's activation record
-                if (window.API && window.API.savePushToken) {
+                if (typeof API !== 'undefined' && API.savePushToken) {
+                    API.savePushToken(currentToken);
+                } else if (window.API && window.API.savePushToken) {
                     window.API.savePushToken(currentToken);
+                } else {
+                    console.error("API is not available to save push token!");
                 }
+
                 alert("Success! You will now receive field updates.");
 
                 // Remove the button immediately to stop flashing

@@ -405,7 +405,10 @@ async function sendPushNotification() {
         try {
             const response = await fetch(BACKEND_URL, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer YOUR_SECRET_TOKEN_123'
+                },
                 body: JSON.stringify(pushPayload)
             });
 

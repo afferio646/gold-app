@@ -61,6 +61,12 @@ exports.sendPushNotification = functions.https.onRequest((req, res) => {
             return res.status(405).send('Method Not Allowed');
         }
 
+        // 2. Validate Authorization Header
+        const authHeader = req.headers.authorization;
+        if (!authHeader || !authHeader.startsWith('Bearer ') || authHeader.split('Bearer ')[1] !== 'YOUR_SECRET_TOKEN_123') {
+            return res.status(401).send('Unauthorized');
+        }
+
         try {
             const { message, targetFilter } = req.body;
 

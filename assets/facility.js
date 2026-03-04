@@ -419,17 +419,77 @@ function triggerEarlyLeadGeneration() {
     window.hasGeneratedLeadForThisSession = true;
 }
 
-function uploadReport() {
+async function uploadReport() {
     const user = API.getSettings();
     if(!user) { alert("Please complete registration in settings."); return; }
 
-    const pName = document.getElementById('p-name').value || "N/A";
+    const pName = document.getElementById('p-name').value || 'Unnamed Project';
+    const cleanName = pName.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+    const fileName = `facility_guard_report_${cleanName}_${Date.now()}.pdf`;
 
-    // Since we already saved the lead when they opened the modal,
-    // we don't need to call API.saveReport again here unless we want to update the record.
-    // For now, we'll just simulate the success alert to the user.
-    alert(`Report for "${pName}" exported successfully! \n(PDF emailed to ${user.email})`);
-    document.getElementById('report-modal').classList.add('hidden');
+    // Visual feedback
+    const btn = document.querySelector('button[onclick="uploadReport()"]');
+    const originalText = btn.innerHTML;
+    btn.innerHTML = 'Generating PDF...';
+    btn.disabled = true;
+
+    // Grab the modal and the content block
+    const modalWrapper = document.getElementById('report-modal');
+    const element = modalWrapper.querySelector('.max-w-4xl');
+
+    // Store original styles so we can put them back
+    const originalWrapperCss = modalWrapper.style.cssText;
+    const originalWrapperClass = modalWrapper.className;
+
+    // Temporarily hide action buttons
+    const actionButtons = element.querySelector('.flex.flex-col.items-center.gap-4.mt-12');
+    if(actionButtons) actionButtons.style.display = 'none';
+
+    // 1. Force the Modal to be a normal, flat document block
+    modalWrapper.className = 'absolute top-0 left-0 w-full min-h-screen bg-white z-[9999] flex justify-center p-4';
+    window.scrollTo(0, 0);
+
+    try {
+        const opt = {
+            margin:       [0.5, 0.5, 0.5, 0.5],
+            filename:     fileName,
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2, useCORS: true, scrollY: 0 },
+            jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+        };
+
+        const blob = await html2pdf().set(opt).from(element).output('blob');
+        const uploadResult = await API.uploadPDF(blob, fileName);
+
+        if (uploadResult && window.currentSessionLeadId) {
+            await db.collection('leads').doc(window.currentSessionLeadId).update({
+                pdfUrl: uploadResult.url
+            });
+            console.log("PDF URL attached to lead:", window.currentSessionLeadId);
+        }
+
+        // Trigger Download
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = fileName;
+        link.click();
+
+        alert(`Report for "${pName}" exported and saved successfully!`);
+    } catch (err) {
+        console.error("PDF Generation Error:", err);
+        alert("Failed to generate PDF. Please try again.");
+    } finally {
+        // Restore Modal Styles
+        modalWrapper.className = originalWrapperClass;
+        modalWrapper.style.cssText = originalWrapperCss;
+        if(actionButtons) actionButtons.style.display = 'flex';
+
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+
+        // Hide Modal
+        modalWrapper.classList.add('hidden');
+    }
 }
 
 function saveUserSettings() {
