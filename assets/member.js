@@ -430,7 +430,8 @@ function openMemberReportModal() {
                     </ul>
                 </div>
 
-                <div class="html2pdf__page-break bg-blue-50 border-l-4 border-blue-400 p-4 mt-6">
+                <div class="html2pdf__page-break" style="page-break-before: always; height: 1px; display: block; clear: both; margin: 0; padding: 0;"></div>
+                <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mt-6">
                     <h4 class="font-bold text-blue-800 uppercase mb-1 text-xs tracking-wider">Field Advisory</h4>
                     <ul class="list-disc pl-5 space-y-1 text-blue-700 text-xs italic">
                         <li>The estimating tool provides standardized projections based on Goldmorr coverage testing and field averages.</li>
