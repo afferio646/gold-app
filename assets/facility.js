@@ -463,7 +463,7 @@ async function uploadReport() {
 
         if (uploadResult && window.currentSessionLeadId) {
             await db.collection('leads').doc(window.currentSessionLeadId).update({
-                pdfUrl: uploadResult.url
+                pdfUrl: uploadResult
             });
             console.log("PDF URL attached to lead:", window.currentSessionLeadId);
         }
