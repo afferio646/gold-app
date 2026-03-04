@@ -416,16 +416,16 @@ async function sendPushNotification() {
                  const result = await response.json();
                  alert(`SUCCESS! Notifications sent successfully to ${result.sentCount} devices.`);
             } else {
-                 throw new Error("Server responded with status " + response.status);
+                 throw new Error(`Server responded with HTTP ${response.status}`);
             }
         } catch (fetchError) {
-            console.warn("Backend URL not responding. Make sure the Cloud Function is deployed.", fetchError);
-            alert("Error: Could not reach the Firebase Cloud Function to send the notification. Please ensure you have deployed the backend function as described in the guide.");
+            console.error("Fetch Error:", fetchError);
+            alert(`Error: ${fetchError.message}. Ensure your dashboard has refreshed to the latest version so it sends the required security password.`);
         }
 
     } catch (e) {
         console.error("Push API Failure:", e);
-        alert("Network Error: Could not reach the notification server.");
+        alert(`Network Error: ${e.message}`);
     } finally {
         // 5. Reset UI
         sendBtn.disabled = false;
