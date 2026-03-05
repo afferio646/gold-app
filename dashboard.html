@@ -270,7 +270,7 @@
                 btn.disabled = true;
             }
             try {
-                await API.db.collection('activations').doc(docId).update({ isMember: newStatus });
+                await API.updateMemberStatus(docId, newStatus);
 
                 // Trigger an unlock notification if they have a token
                 if (newStatus && pushToken) {

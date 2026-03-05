@@ -54,6 +54,18 @@ const API = {
         return s ? JSON.parse(s) : null;
     },
 
+    // Update user's member status in Firestore (for admin dashboard)
+    updateMemberStatus: async (docId, isMember) => {
+        if (!db) return false;
+        try {
+            await db.collection('activations').doc(docId).update({ isMember: isMember });
+            return true;
+        } catch (e) {
+            console.error("Error updating member status:", e);
+            throw e;
+        }
+    },
+
     // Check if the user is a registered member via Firestore
     checkMemberStatus: async (email) => {
         if (!db || !email) return false;
