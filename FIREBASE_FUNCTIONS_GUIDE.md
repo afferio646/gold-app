@@ -68,33 +68,29 @@ exports.sendPushNotification = functions.https.onRequest((req, res) => {
         }
 
         try {
-            const { message, targetFilter } = req.body;
+            const { message, targetFilter, targetToken } = req.body;
 
             if (!message || !message.title || !message.body) {
                 return res.status(400).send('Missing message title or body');
             }
 
-            // 2. Query Firestore for users who have a pushToken
-            // Note: In a production app with thousands of users, you would use
-            // messaging().sendMulticast() and chunk the tokens into arrays of 500.
             const db = admin.firestore();
-            let usersQuery = db.collection('activations').where('pushToken', '!=', null);
-
-            // Apply simplistic filtering based on the dashboard dropdown
-            if (targetFilter === 'HighActivity') {
-                 // Example: If you had a 'scanCount' field, you'd add `.where('scanCount', '>=', 5)`
-                 // For now, we will just send to all, or you can implement logic here.
-            }
-
-            const snapshot = await usersQuery.get();
             const tokens = [];
 
-            snapshot.forEach(doc => {
-                const data = doc.data();
-                if (data.pushToken) {
-                    tokens.push(data.pushToken);
-                }
-            });
+            if (targetFilter === 'Specific' && targetToken) {
+                // Send directly to a specific user (e.g. unlock notification)
+                tokens.push(targetToken);
+            } else {
+                // Broadcast to everyone
+                let usersQuery = db.collection('activations').where('pushToken', '!=', null);
+                const snapshot = await usersQuery.get();
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    if (data.pushToken) {
+                        tokens.push(data.pushToken);
+                    }
+                });
+            }
 
             if (tokens.length === 0) {
                 return res.status(200).send({ success: true, message: 'No valid push tokens found to send to.' });

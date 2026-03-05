@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Goldmorr Innovation Hub | Landing</title>
+    <title>Goldmorr Systems Utilities | Landing</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/style.css">
@@ -26,52 +26,54 @@
                 document.getElementById('manifest-link').href = 'manifest-admin.json';
                 console.log("Admin Role Detected: Loading Full Suite Manifest");
             } else {
-                // Default: Redirect public users to Facility Tool immediately
-                // If they hit index.html without ?role=admin, send them away.
-                console.log("Public User Detected: Redirecting to Facility Tool...");
-                window.location.replace('facility.html');
+                // Trojan Horse Guard: Only bounce them if they are NOT a locally known member
+                let isKnownMember = false;
+                try {
+                    const s = localStorage.getItem('goldmorr_settings');
+                    if (s) {
+                        const user = JSON.parse(s);
+                        if (user.isMember) isKnownMember = true;
+                    }
+                } catch(e) {}
+
+                if (!isKnownMember) {
+                    console.log("Public User Detected: Redirecting to Facility Tool...");
+                    window.location.replace('facility.html');
+                } else {
+                    console.log("Unlocked User Detected: Allowed to view Hub");
+                }
             }
         })();
-
-        function manualFacilityCheck() {
-            window.location.href = 'facility.html';
-        }
     </script>
 </head>
 <body class="min-h-screen flex flex-col items-center justify-center">
 
     <div class="text-center mb-16 px-6">
-        <h1 class="tech-font text-3xl mb-3 tracking-tighter uppercase text-white font-bold tracking-widest">Goldmorr Innovation Hub</h1>
+        <h1 class="tech-font text-3xl mb-3 tracking-tighter uppercase text-white font-bold tracking-widest">Goldmorr Systems Utilities</h1>
         <p class="text-[var(--g-cyan)] uppercase text-[10px] tracking-[0.5em] font-light mb-4">Select Your Utility</p>
-
-        <!-- Auto-Login Button for PWA Failures -->
-        <button onclick="manualFacilityCheck()" class="bg-gray-800 text-gray-300 border border-gray-600 px-4 py-2 rounded text-[10px] uppercase tracking-widest hover:border-[var(--g-cyan)] hover:text-white transition-all shadow-lg mt-2">
-            Facility Manager Auto-Login
-        </button>
-        <p class="text-[8px] text-gray-600 mt-2 italic">(Use if app does not automatically redirect)</p>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-10 max-w-4xl px-6">
-        <a href="member.html?hub=true" class="glass p-10 rounded-[40px] cursor-pointer hover:border-[var(--g-cyan)] transition-all group shadow-xl block text-center">
+    <div id="hub-grid" class="grid grid-cols-1 md:grid-cols-2 gap-10 max-w-4xl px-6 w-full place-items-center">
+        <a href="member.html?hub=true" id="member-suite-btn" class="hidden glass p-10 rounded-[40px] cursor-pointer hover:border-[var(--g-cyan)] transition-all group shadow-xl w-full text-center max-w-sm">
             <div class="w-16 h-16 bg-[var(--g-cyan)] rounded-2xl mb-8 flex items-center justify-center text-navy-900 shadow-lg mx-auto">
                 <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
             </div>
-            <h2 class="tech-font text-xl mb-4 text-white uppercase tracking-tight font-bold">Member Contractor Suite</h2>
+            <h2 class="tech-font text-xl mb-4 text-white uppercase tracking-tight font-bold">Scope & Profit Tool</h2>
             <div class="text-[var(--g-cyan)] font-bold tracking-[0.2em] text-[9px] uppercase group-hover:underline">Launch Suite →</div>
         </a>
 
-        <a href="facility.html?hub=true" class="glass p-10 rounded-[40px] cursor-pointer hover:border-white transition-all group shadow-xl block text-center">
+        <a href="facility.html?hub=true" class="glass p-10 rounded-[40px] cursor-pointer hover:border-white transition-all group shadow-xl w-full text-center max-w-sm">
             <div class="w-16 h-16 bg-white rounded-2xl mb-8 flex items-center justify-center shadow-lg mx-auto">
                 <svg class="w-10 h-10" style="color: var(--g-cyan);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
             </div>
-            <h2 class="tech-font text-xl mb-4 text-white uppercase tracking-tight font-bold">Facility Goldmorr Guard</h2>
+            <h2 class="tech-font text-xl mb-4 text-white uppercase tracking-tight font-bold">Fungal Risk Assessment Tool</h2>
             <div class="text-white font-bold tracking-[0.2em] text-[9px] uppercase group-hover:underline">Start Assessment →</div>
         </a>
     </div>
 
-    <div class="mt-16">
-        <a href="dashboard.html" class="text-slate-400 text-xs uppercase tracking-widest hover:text-white transition-colors border-b border-transparent hover:border-white pb-1">Access Dashboard</a>
-    </div>
+    <!-- Firebase Core (Needed for DB queries) -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
     <script>
         if ('serviceWorker' in navigator) {
@@ -81,6 +83,51 @@
                     .catch(err => console.log('SW registration failed:', err));
             });
         }
+
+        // Trojan Horse Logic
+        document.addEventListener('DOMContentLoaded', async () => {
+            const user = API.getSettings();
+            const memberBtn = document.getElementById('member-suite-btn');
+            const grid = document.getElementById('hub-grid');
+
+            // Initial UI state: Center the Facility button if Member is hidden
+            if (memberBtn.classList.contains('hidden')) {
+                grid.classList.remove('md:grid-cols-2');
+                grid.classList.add('flex', 'flex-col');
+            }
+
+            if (user && user.email) {
+                // If they are already known to be a member locally, show it immediately!
+                if (user.isMember) {
+                    memberBtn.classList.remove('hidden');
+                    grid.classList.add('md:grid-cols-2');
+                    grid.classList.remove('flex', 'flex-col');
+                }
+
+                // Double check with Firebase to keep them synced
+                setTimeout(async () => {
+                    try {
+                        const isMember = await API.checkMemberStatus(user.email);
+                        if (isMember) {
+                            user.isMember = true;
+                            localStorage.setItem('goldmorr_settings', JSON.stringify(user));
+                            memberBtn.classList.remove('hidden');
+                            grid.classList.add('md:grid-cols-2');
+                            grid.classList.remove('flex', 'flex-col');
+                        } else if (!isMember && user.isMember) {
+                            // If they were locked from the dashboard, hide it again
+                            user.isMember = false;
+                            localStorage.setItem('goldmorr_settings', JSON.stringify(user));
+                            memberBtn.classList.add('hidden');
+                            grid.classList.remove('md:grid-cols-2');
+                            grid.classList.add('flex', 'flex-col');
+                        }
+                    } catch (e) {
+                        console.error("Hub init member check error:", e);
+                    }
+                }, 1000); // Small delay to ensure db is ready
+            }
+        });
     </script>
 </body>
 </html>

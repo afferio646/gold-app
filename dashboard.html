@@ -141,6 +141,31 @@
 
     <div>
 
+        <!-- User Management (Trojan Horse) -->
+        <div class="lead-archive" style="margin-bottom: 2rem; border-left: 4px solid #D4AF37; padding-left: 1rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <h2>User Access Management (<span id="userTotal">0</span> Active)</h2>
+                <div style="font-size: 0.85rem; color: #64748b;">Unlock Member Suite for specific users below.</div>
+            </div>
+            <div class="lead-archive-container">
+                <table id="userManagementTable">
+                    <thead>
+                        <tr>
+                            <th>User Name</th>
+                            <th>Company</th>
+                            <th>Email</th>
+                            <th>Date Joined</th>
+                            <th>Contractor Suite Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td colspan="6" style="text-align: center;">Loading data...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
         <div class="lead-archive" style="margin-bottom: 2rem;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
                 <h2>Lead Archive (Total: <span id="archiveTotal">0</span>)</h2>
@@ -234,10 +259,56 @@
             refreshDashboard();
         });
 
+        const PUSH_BACKEND_URL = 'https://sendpushnotification-svojuu4dwa-uc.a.run.app';
+
+        // Toggle User Access
+        async function toggleUserAccess(docId, currentStatus, pushToken) {
+            const newStatus = !currentStatus;
+            const btn = document.getElementById(`btn-toggle-${docId}`);
+            if (btn) {
+                btn.innerText = 'Updating...';
+                btn.disabled = true;
+            }
+            try {
+                await API.updateMemberStatus(docId, newStatus);
+
+                // Trigger an unlock notification if they have a token
+                if (newStatus && pushToken) {
+                    try {
+                        await fetch(PUSH_BACKEND_URL, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': 'Bearer YOUR_SECRET_TOKEN_123'
+                            },
+                            body: JSON.stringify({
+                                message: {
+                                    title: 'Contractor Suite Unlocked!',
+                                    body: 'Your Goldmorr app has been upgraded to the full Member Suite.',
+                                    link: 'https://gold-app-two.vercel.app/'
+                                },
+                                targetFilter: 'Specific',
+                                targetToken: pushToken
+                            })
+                        });
+                    } catch (pushErr) {
+                        console.warn("User access updated, but push notification failed to send:", pushErr);
+                    }
+                }
+
+                await refreshDashboard();
+            } catch(e) {
+                console.error("Error updating access:", e);
+                alert("Failed to update user access.");
+                if (btn) btn.disabled = false;
+            }
+        }
+
         async function refreshDashboard() {
             // 1. Fetch Real Data + Stats from API (Firebase)
             const data = await API.getDashboardData();
             const leads = data.leads;
+            const activations = data.activations || [];
             const stats = data.stats;
 
             // 2. Update Metrics Cards
@@ -258,6 +329,35 @@
             const qualifiedLeads = leads.filter(l => l.appType === 'Member Suite' || (l.financials && l.financials.bid)).length;
             document.getElementById('qualifiedLeads').textContent = qualifiedLeads;
             document.getElementById('subscriberCountText').textContent = `${active} Active Users`;
+
+            // 2.5 Update User Management Table
+            const userBody = document.querySelector('#userManagementTable tbody');
+            userBody.innerHTML = '';
+            document.getElementById('userTotal').innerText = activations.length;
+
+            if (activations.length > 0) {
+                // Sort newest first
+                activations.sort((a, b) => new Date(b.timestamp || 0) - new Date(a.timestamp || 0)).forEach(user => {
+                    const r = userBody.insertRow();
+                    const isMember = user.isMember === true;
+
+                    const statusText = isMember ? '<span class="status-badge status-high">UNLOCKED</span>' : '<span class="status-badge" style="background:#f1f5f9; color:#64748b;">LOCKED</span>';
+                    const actionBtn = isMember
+                        ? `<button id="btn-toggle-${user.id}" class="btn-primary" style="background:#ef4444; width:120px;" onclick="toggleUserAccess('${user.id}', true, '${user.pushToken || ''}')">Lock Access</button>`
+                        : `<button id="btn-toggle-${user.id}" class="btn-primary" style="background:#D4AF37; width:120px; color:black;" onclick="toggleUserAccess('${user.id}', false, '${user.pushToken || ''}')">Unlock System</button>`;
+
+                    r.innerHTML = `
+                        <td style="font-weight: bold;">${user.name || 'N/A'}</td>
+                        <td>${user.company || 'N/A'}</td>
+                        <td>${user.email || 'N/A'}</td>
+                        <td>${user.timestamp ? new Date(user.timestamp).toLocaleDateString() : 'N/A'}</td>
+                        <td>${statusText}</td>
+                        <td>${actionBtn}</td>
+                    `;
+                });
+            } else {
+                userBody.innerHTML = '<tr><td colspan="6" style="text-align: center;">No users registered yet.</td></tr>';
+            }
 
             // 3. Update Recent Activity Table
             const tableBody = document.getElementById('activityTableBody');

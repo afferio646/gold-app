@@ -580,18 +580,54 @@ function openSettings() {
     toggleModal('settings-modal', true);
 }
 
-function handleHomeClick() {
-    // Check if launched from Hub/Admin (via ?hub=true)
+async function handleHomeClick() {
+    // 1. Check if launched from Admin Hub (via ?hub=true)
     const urlParams = new URLSearchParams(window.location.search);
     const isHub = urlParams.get('hub') === 'true';
 
     if (isHub) {
         if(confirm("Return to Admin Hub? Any unsaved data will be lost.")) {
-            // Go back to the dedicated Admin page
             window.location.href = 'admin.html';
+            return;
         }
-    } else {
-        // Normal behavior: Reset Form
+    }
+
+    // 2. "Trojan Horse" Logic Check - Allow unlocked users to reach the hub
+    const user = API.getSettings();
+    if (user && user.email) {
+        console.log("Checking member status for:", user.email);
+        try {
+            // Wait slightly in case db isn't fully initialized
+            if (typeof db === 'undefined' || !db) {
+                console.log("Waiting for db init...");
+                await new Promise(r => setTimeout(r, 1000));
+            }
+            const isMember = await API.checkMemberStatus(user.email);
+            console.log("Member Status result:", isMember);
+
+            if (isMember) {
+                // Also save it locally as a backup so they don't have to keep fetching it
+                user.isMember = true;
+                localStorage.setItem('goldmorr_settings', JSON.stringify(user));
+
+                if (confirm("Return to Hub to access the Goldmorr Scope & Profit Tool?")) {
+                    window.location.href = 'index.html';
+                }
+                return;
+            } else if (user.isMember) {
+                 // Fallback: If network failed but they were previously unlocked locally
+                 if (confirm("Return to Hub to access the Goldmorr Scope & Profit Tool? (Local Cache)")) {
+                     window.location.href = 'index.html';
+                 }
+                 return;
+            }
+        } catch(e) {
+            console.error("Error checking member status on home click:", e);
+        }
+    }
+
+    // 3. Normal public user behavior: Clear form to start new scan
+    if (confirm("Start a new assessment? This will clear current inputs.")) {
         resetForm();
     }
 }

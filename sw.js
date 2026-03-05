@@ -13,20 +13,7 @@ firebase.initializeApp({
 
 const messaging = firebase.messaging();
 
-messaging.onBackgroundMessage(function(payload) {
-  console.log('[sw.js] Received background message ', payload);
-  const notificationTitle = payload.notification.title;
-  const notificationOptions = {
-    body: payload.notification.body,
-    icon: '/icon-512.png',
-    data: { url: payload.data ? payload.data.url : '/' }
-  };
-
-  self.registration.showNotification(notificationTitle,
-    notificationOptions);
-});
-
-// FCM Push Notification Handling
+// Manual FCM Push Notification Handling
 self.addEventListener('push', function(event) {
     console.log('[Service Worker] Push Received.');
     let title = 'Goldmorr Hub';
