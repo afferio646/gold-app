@@ -259,40 +259,48 @@
             refreshDashboard();
         });
 
+        const PUSH_BACKEND_URL = 'https://sendpushnotification-svojuu4dwa-uc.a.run.app';
+
         // Toggle User Access
         async function toggleUserAccess(docId, currentStatus, pushToken) {
             const newStatus = !currentStatus;
             const btn = document.getElementById(`btn-toggle-${docId}`);
-            btn.innerText = 'Updating...';
-            btn.disabled = true;
+            if (btn) {
+                btn.innerText = 'Updating...';
+                btn.disabled = true;
+            }
             try {
                 await API.db.collection('activations').doc(docId).update({ isMember: newStatus });
 
                 // Trigger an unlock notification if they have a token
                 if (newStatus && pushToken) {
-                    await fetch(BACKEND_URL, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': 'Bearer YOUR_SECRET_TOKEN_123'
-                        },
-                        body: JSON.stringify({
-                            message: {
-                                title: 'Contractor Suite Unlocked!',
-                                body: 'Your Goldmorr app has been upgraded to the full Member Suite.',
-                                link: 'https://gold-app-two.vercel.app/'
+                    try {
+                        await fetch(PUSH_BACKEND_URL, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': 'Bearer YOUR_SECRET_TOKEN_123'
                             },
-                            targetFilter: 'Specific',
-                            targetToken: pushToken
-                        })
-                    });
+                            body: JSON.stringify({
+                                message: {
+                                    title: 'Contractor Suite Unlocked!',
+                                    body: 'Your Goldmorr app has been upgraded to the full Member Suite.',
+                                    link: 'https://gold-app-two.vercel.app/'
+                                },
+                                targetFilter: 'Specific',
+                                targetToken: pushToken
+                            })
+                        });
+                    } catch (pushErr) {
+                        console.warn("User access updated, but push notification failed to send:", pushErr);
+                    }
                 }
 
                 await refreshDashboard();
             } catch(e) {
                 console.error("Error updating access:", e);
                 alert("Failed to update user access.");
-                btn.disabled = false;
+                if (btn) btn.disabled = false;
             }
         }
 
