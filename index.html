@@ -26,10 +26,22 @@
                 document.getElementById('manifest-link').href = 'manifest-admin.json';
                 console.log("Admin Role Detected: Loading Full Suite Manifest");
             } else {
-                // Default: Redirect public users to Facility Tool immediately
-                // If they hit index.html without ?role=admin, send them away.
-                console.log("Public User Detected: Redirecting to Facility Tool...");
-                window.location.replace('facility.html');
+                // Trojan Horse Guard: Only bounce them if they are NOT a locally known member
+                let isKnownMember = false;
+                try {
+                    const s = localStorage.getItem('goldmorr_settings');
+                    if (s) {
+                        const user = JSON.parse(s);
+                        if (user.isMember) isKnownMember = true;
+                    }
+                } catch(e) {}
+
+                if (!isKnownMember) {
+                    console.log("Public User Detected: Redirecting to Facility Tool...");
+                    window.location.replace('facility.html');
+                } else {
+                    console.log("Unlocked User Detected: Allowed to view Hub");
+                }
             }
         })();
 
