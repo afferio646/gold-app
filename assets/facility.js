@@ -462,9 +462,7 @@ async function uploadReport() {
         const uploadResult = await API.uploadPDF(blob, fileName);
 
         if (uploadResult && window.currentSessionLeadId) {
-            await db.collection('leads').doc(window.currentSessionLeadId).update({
-                pdfUrl: uploadResult
-            });
+            await API.updateLeadPDF(window.currentSessionLeadId, uploadResult);
             console.log("PDF URL attached to lead:", window.currentSessionLeadId);
         }
 
