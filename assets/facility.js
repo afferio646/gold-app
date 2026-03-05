@@ -610,13 +610,13 @@ async function handleHomeClick() {
                 user.isMember = true;
                 localStorage.setItem('goldmorr_settings', JSON.stringify(user));
 
-                if (confirm("Return to Hub to access the Member Contractor Suite?")) {
+                if (confirm("Return to Hub to access the Goldmorr Scope & Profit Tool?")) {
                     window.location.href = 'index.html';
                 }
                 return;
             } else if (user.isMember) {
                  // Fallback: If network failed but they were previously unlocked locally
-                 if (confirm("Return to Hub to access the Member Contractor Suite? (Local Cache)")) {
+                 if (confirm("Return to Hub to access the Goldmorr Scope & Profit Tool? (Local Cache)")) {
                      window.location.href = 'index.html';
                  }
                  return;
