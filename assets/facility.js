@@ -580,18 +580,32 @@ function openSettings() {
     toggleModal('settings-modal', true);
 }
 
-function handleHomeClick() {
-    // Check if launched from Hub/Admin (via ?hub=true)
+async function handleHomeClick() {
+    // 1. Check if launched from Admin Hub (via ?hub=true)
     const urlParams = new URLSearchParams(window.location.search);
     const isHub = urlParams.get('hub') === 'true';
 
     if (isHub) {
         if(confirm("Return to Admin Hub? Any unsaved data will be lost.")) {
-            // Go back to the dedicated Admin page
             window.location.href = 'admin.html';
+            return;
         }
-    } else {
-        // Normal behavior: Reset Form
+    }
+
+    // 2. "Trojan Horse" Logic Check - Allow unlocked users to reach the hub
+    const user = API.getSettings();
+    if (user && user.email) {
+        const isMember = await API.checkMemberStatus(user.email);
+        if (isMember) {
+            if (confirm("Return to Hub to access the Member Contractor Suite?")) {
+                window.location.href = 'index.html';
+            }
+            return;
+        }
+    }
+
+    // 3. Normal public user behavior: Clear form to start new scan
+    if (confirm("Start a new assessment? This will clear current inputs.")) {
         resetForm();
     }
 }
