@@ -54,6 +54,21 @@ const API = {
         return s ? JSON.parse(s) : null;
     },
 
+    // Check if the user is a registered member via Firestore
+    checkMemberStatus: async (email) => {
+        if (!db || !email) return false;
+        try {
+            const actSnap = await db.collection('activations').where('email', '==', email).limit(1).get();
+            if (!actSnap.empty) {
+                return actSnap.docs[0].data().isMember === true;
+            }
+            return false;
+        } catch (e) {
+            console.error("Error checking member status:", e);
+            return false;
+        }
+    },
+
     savePushToken: async (token) => {
         const user = API.getSettings();
         if (user && db) {
@@ -180,8 +195,12 @@ const API = {
             // 4. Active Users (Unique emails in usage_logs last 30 days - Simplified to total registrations for now)
             const activeUsers = distributedCount;
 
+            // 5. Get All Activations for User Management Table
+            const activationsData = actSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
             return {
                 leads: leads,
+                activations: activationsData,
                 stats: {
                     distributed: distributedCount,
                     scans: scansUsed,
