@@ -595,12 +595,34 @@ async function handleHomeClick() {
     // 2. "Trojan Horse" Logic Check - Allow unlocked users to reach the hub
     const user = API.getSettings();
     if (user && user.email) {
-        const isMember = await API.checkMemberStatus(user.email);
-        if (isMember) {
-            if (confirm("Return to Hub to access the Member Contractor Suite?")) {
-                window.location.href = 'index.html';
+        console.log("Checking member status for:", user.email);
+        try {
+            // Wait slightly in case db isn't fully initialized
+            if (typeof db === 'undefined' || !db) {
+                console.log("Waiting for db init...");
+                await new Promise(r => setTimeout(r, 1000));
             }
-            return;
+            const isMember = await API.checkMemberStatus(user.email);
+            console.log("Member Status result:", isMember);
+
+            if (isMember) {
+                // Also save it locally as a backup so they don't have to keep fetching it
+                user.isMember = true;
+                localStorage.setItem('goldmorr_settings', JSON.stringify(user));
+
+                if (confirm("Return to Hub to access the Member Contractor Suite?")) {
+                    window.location.href = 'index.html';
+                }
+                return;
+            } else if (user.isMember) {
+                 // Fallback: If network failed but they were previously unlocked locally
+                 if (confirm("Return to Hub to access the Member Contractor Suite? (Local Cache)")) {
+                     window.location.href = 'index.html';
+                 }
+                 return;
+            }
+        } catch(e) {
+            console.error("Error checking member status on home click:", e);
         }
     }
 

@@ -99,13 +99,33 @@
             }
 
             if (user && user.email) {
-                // Wait for Firebase to initialize in api.js
+                // If they are already known to be a member locally, show it immediately!
+                if (user.isMember) {
+                    memberBtn.classList.remove('hidden');
+                    grid.classList.add('md:grid-cols-2');
+                    grid.classList.remove('flex', 'flex-col');
+                }
+
+                // Double check with Firebase to keep them synced
                 setTimeout(async () => {
-                    const isMember = await API.checkMemberStatus(user.email);
-                    if (isMember) {
-                        memberBtn.classList.remove('hidden');
-                        grid.classList.add('md:grid-cols-2');
-                        grid.classList.remove('flex', 'flex-col');
+                    try {
+                        const isMember = await API.checkMemberStatus(user.email);
+                        if (isMember) {
+                            user.isMember = true;
+                            localStorage.setItem('goldmorr_settings', JSON.stringify(user));
+                            memberBtn.classList.remove('hidden');
+                            grid.classList.add('md:grid-cols-2');
+                            grid.classList.remove('flex', 'flex-col');
+                        } else if (!isMember && user.isMember) {
+                            // If they were locked from the dashboard, hide it again
+                            user.isMember = false;
+                            localStorage.setItem('goldmorr_settings', JSON.stringify(user));
+                            memberBtn.classList.add('hidden');
+                            grid.classList.remove('md:grid-cols-2');
+                            grid.classList.add('flex', 'flex-col');
+                        }
+                    } catch (e) {
+                        console.error("Hub init member check error:", e);
                     }
                 }, 1000); // Small delay to ensure db is ready
             }
