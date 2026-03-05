@@ -26,7 +26,57 @@ messaging.onBackgroundMessage(function(payload) {
     notificationOptions);
 });
 
-const CACHE_NAME = 'goldmorr-v12-member-suite';
+// FCM Push Notification Handling
+self.addEventListener('push', function(event) {
+    console.log('[Service Worker] Push Received.');
+    let title = 'Goldmorr Hub';
+    let options = {
+        body: 'New update available!',
+        icon: '/icon-512.png',
+        badge: '/icon-512.png',
+        data: {
+            url: '/'
+        }
+    };
+
+    if (event.data) {
+        try {
+            const data = event.data.json();
+            title = data.notification.title || title;
+            options.body = data.notification.body || options.body;
+            options.data.url = data.data.url || '/';
+        } catch (e) {
+            console.log('Push data is not JSON:', event.data.text());
+            options.body = event.data.text();
+        }
+    }
+
+    event.waitUntil(self.registration.showNotification(title, options));
+});
+
+self.addEventListener('notificationclick', function(event) {
+    console.log('[Service Worker] Notification click Received.');
+    event.notification.close();
+
+    // This looks to see if the current window is already open and focuses it
+    // if not, it opens a new window
+    event.waitUntil(
+        clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
+            const urlToOpen = new URL(event.notification.data.url, self.location.origin).href;
+            for (let i = 0; i < clientList.length; i++) {
+                const client = clientList[i];
+                if (client.url === urlToOpen && 'focus' in client) {
+                    return client.focus();
+                }
+            }
+            if (clients.openWindow) {
+                return clients.openWindow(urlToOpen);
+            }
+        })
+    );
+});
+
+const CACHE_NAME = 'goldmorr-v13-member-suite';
 const ASSETS = [
     '/',
     '/index.html',
