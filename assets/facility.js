@@ -581,15 +581,23 @@ function openSettings() {
 }
 
 async function handleHomeClick() {
-    // 1. Check if launched from Admin Hub (via ?hub=true)
+    // 1. Check if launched from Admin Hub (via ?hub=true) vs Public Hub (via ?source=hub)
     const urlParams = new URLSearchParams(window.location.search);
-    const isHub = urlParams.get('hub') === 'true';
+    const isAdminHub = urlParams.get('hub') === 'true';
+    const isPublicHub = urlParams.get('source') === 'hub';
 
-    if (isHub) {
+    if (isAdminHub) {
         if(confirm("Return to Admin Hub? Any unsaved data will be lost.")) {
             window.location.href = 'admin.html';
             return;
         }
+        return; // Stay on page if cancelled
+    } else if (isPublicHub) {
+        if(confirm("Return to Hub? Any unsaved data will be lost.")) {
+            window.location.href = 'index.html';
+            return;
+        }
+        return; // Stay on page if cancelled
     }
 
     // 2. "Trojan Horse" Logic Check - Allow unlocked users to reach the hub

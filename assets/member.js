@@ -533,7 +533,7 @@ async function uploadReport() {
         };
 
         // Generate Blob directly from the now-flattened active DOM element
-        const pdfBlob = await html2pdf().set(opt).from(element).outputPdf('blob');
+        const pdfBlob = await html2pdf().set(opt).from(element).output('blob');
 
         // Restore action buttons so they exist if the user stays
         if(actionButtons) actionButtons.style.display = 'flex';
@@ -571,13 +571,18 @@ async function uploadReport() {
 }
 
 function handleHomeClick() {
-    // Check if launched from Hub/Admin (via ?hub=true)
+    // Check if launched from Hub/Admin (via ?hub=true) vs Public Hub (via ?source=hub)
     const urlParams = new URLSearchParams(window.location.search);
-    const isHub = urlParams.get('hub') === 'true';
+    const isAdminHub = urlParams.get('hub') === 'true';
+    const isPublicHub = urlParams.get('source') === 'hub';
 
-    if (isHub) {
+    if (isAdminHub) {
         if(confirm("Return to Admin Hub? Any unsaved data will be lost.")) {
             window.location.href = 'admin.html';
+        }
+    } else if (isPublicHub) {
+        if(confirm("Return to Hub? Any unsaved data will be lost.")) {
+            window.location.href = 'index.html';
         }
     } else {
         resetForm();

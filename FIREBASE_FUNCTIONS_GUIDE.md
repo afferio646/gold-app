@@ -96,8 +96,11 @@ exports.sendPushNotification = functions.https.onRequest((req, res) => {
                 return res.status(200).send({ success: true, message: 'No valid push tokens found to send to.' });
             }
 
-            // 3. Construct the FCM Payload
-            const payload = {
+            // 3. Construct the FCM Multicast Payload
+            // Note: sendToDevice is deprecated in recent Firebase SDKs.
+            // We must use sendEachForMulticast instead.
+            const multicastMessage = {
+                tokens: tokens,
                 notification: {
                     title: message.title,
                     body: message.body,
@@ -108,7 +111,7 @@ exports.sendPushNotification = functions.https.onRequest((req, res) => {
             };
 
             // 4. Send the notification via Firebase Admin SDK
-            const response = await admin.messaging().sendToDevice(tokens, payload);
+            const response = await admin.messaging().sendEachForMulticast(multicastMessage);
 
             console.log('Successfully sent message:', response);
             return res.status(200).send({
@@ -138,7 +141,17 @@ Firebase will upload the code to Google's servers. When it finishes, it will pri
 `https://us-central1-goldmorr-hub.cloudfunctions.net/sendPushNotification`
 
 ### Step 7: Update Your Dashboard
-Take that URL and paste it into your `dashboard.html` file on line 408 where it says:
-`const BACKEND_URL = 'https://us-central1-goldmorr-hub.cloudfunctions.net/sendPushNotification';`
+Take that URL and paste it into your `dashboard.html` file near the top where it says:
+`const PUSH_BACKEND_URL = 'https://us-central1-goldmorr-hub.cloudfunctions.net/sendPushNotification';`
+
+### Step 8: Secure Your Backend (Important!)
+Because your `dashboard.html` file is a static HTML file downloaded by the browser, anyone who views the source code can see your backend API calls.
+
+To prevent hackers from finding your Cloud Function URL and spamming your users with fake push notifications, we use a secret password. In the Cloud Function code above, you will see `YOUR_SECRET_TOKEN_123`.
+
+1. Change `YOUR_SECRET_TOKEN_123` in `functions/index.js` to a long, random password (e.g., `goldmorr_admin_88x2!Lq`).
+2. Open `dashboard.html` and search for `YOUR_SECRET_TOKEN_123` (it appears twice: once in `toggleUserAccess` and once in `sendPushNotification`).
+3. Change both instances in `dashboard.html` to perfectly match your new secret password.
+4. Redeploy your Cloud Function (`firebase deploy --only functions`) and commit your updated `dashboard.html` to Vercel.
 
 Your Dashboard will now have full power to send Push Notifications securely!
