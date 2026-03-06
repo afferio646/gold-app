@@ -63,7 +63,7 @@ self.addEventListener('notificationclick', function(event) {
     );
 });
 
-const CACHE_NAME = 'goldmorr-v13-member-suite';
+const CACHE_NAME = 'goldmorr-v14-member-suite-dashboard-removed';
 const ASSETS = [
     '/',
     '/index.html',
