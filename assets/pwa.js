@@ -92,6 +92,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
 window.addEventListener('appinstalled', () => {
     console.log('PWA was installed');
     // Hide the button immediately
+    sessionStorage.setItem('hideInstallBtn', 'true');
     const btn = document.getElementById('pwa-install-btn');
     if (btn) btn.remove();
     deferredPrompt = null;
@@ -105,22 +106,32 @@ async function triggerInstallFlow() {
     if (isIOS) {
         // iOS Custom Instruction
         alert("To save this app on iPhone:\n\n1. Tap the Share button (square with arrow) at the bottom of your screen.\n2. Scroll down and tap 'Add to Home Screen'.");
+        sessionStorage.setItem('hideInstallBtn', 'true'); // Assume they followed instructions to stop bugging them
+        if(btn) btn.remove();
     } else if (deferredPrompt) {
         // Android Native Prompt
         deferredPrompt.prompt();
         const { outcome } = await deferredPrompt.userChoice;
         console.log(`User response to the install prompt: ${outcome}`);
         deferredPrompt = null;
-        if(btn) btn.remove(); // Hide after install
+        if (outcome === 'accepted') {
+            sessionStorage.setItem('hideInstallBtn', 'true');
+        }
+        if(btn) btn.remove(); // Hide after install interaction
     } else {
         // Fallback
         alert("To save: Tap your browser menu (⋮) and select 'Add to Home Screen'.\n\nIf you don't see it, tap 'Open in Chrome' or 'Open in Browser' first.");
+        sessionStorage.setItem('hideInstallBtn', 'true'); // Assume they followed instructions
+        if(btn) btn.remove();
     }
 }
 
 function showInstallButton() {
     // GUARD: If already standalone (App Mode), NEVER show this button
     if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone) return;
+
+    // GUARD: If user already interacted with it this session, hide it
+    if (sessionStorage.getItem('hideInstallBtn') === 'true') return;
 
     const header = document.querySelector('header .flex.gap-4');
     if (!header) return;
