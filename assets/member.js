@@ -570,25 +570,56 @@ async function uploadReport() {
     }
 }
 
-function handleHomeClick() {
-    // 1. Check if launched from Admin Hub (via ?hub=true) vs Public Hub (via ?source=hub)
+async function handleHomeClick() {
+    // 1. Check if launched explicitly from Admin Hub
     const urlParams = new URLSearchParams(window.location.search);
     const isAdminHub = urlParams.get('hub') === 'true';
-    const isPublicHub = urlParams.get('source') === 'hub';
 
     if (isAdminHub) {
         if(confirm("Return to Admin Hub? Any unsaved data will be lost.")) {
             window.location.href = 'admin.html';
         }
-        return; // Important: Stay on page if cancelled, do not fall through to resetForm
-    } else if (isPublicHub) {
-        if(confirm("Return to Hub? Any unsaved data will be lost.")) {
-            window.location.href = 'index.html';
-        }
-        return; // Important: Stay on page if cancelled, do not fall through to resetForm
+        return; // Always stop execution here if they came from Admin Hub
     }
 
-    // 2. Normal public user behavior: Clear form to start new scan
+    // 2. Proactive Trojan Horse Check: Are they a member?
+    // (If they are in member.js, they almost certainly are, but we check to be safe)
+    const user = API.getSettings();
+    let isKnownMember = false;
+
+    if (user) {
+        // Fast local check first
+        if (user.isMember === true) {
+            isKnownMember = true;
+        } else if (user.email) {
+            // Slower network fallback if not cached locally yet
+            try {
+                if (typeof db === 'undefined' || !db) {
+                    await new Promise(r => setTimeout(r, 800));
+                }
+                const networkIsMember = await API.checkMemberStatus(user.email);
+                if (networkIsMember) {
+                    user.isMember = true;
+                    localStorage.setItem('goldmorr_settings', JSON.stringify(user));
+                    isKnownMember = true;
+                }
+            } catch(e) {
+                console.error("Home click network check failed", e);
+            }
+        }
+    }
+
+    // 3. Routing Logic based on Member Status
+    if (isKnownMember) {
+        // Members ALWAYs get the option to return to the dual-system hub
+        if (confirm("Return to Hub? Any unsaved data will be lost.")) {
+            window.location.href = 'index.html';
+        }
+        // If they hit cancel, they just stay on the page.
+        return;
+    }
+
+    // 4. Fallback: Clear form to start new scan
     resetForm();
 }
 

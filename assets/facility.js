@@ -581,60 +581,54 @@ function openSettings() {
 }
 
 async function handleHomeClick() {
-    // 1. Check if launched from Admin Hub (via ?hub=true) vs Public Hub (via ?source=hub)
+    // 1. Check if launched explicitly from Admin Hub
     const urlParams = new URLSearchParams(window.location.search);
     const isAdminHub = urlParams.get('hub') === 'true';
-    const isPublicHub = urlParams.get('source') === 'hub';
 
     if (isAdminHub) {
         if(confirm("Return to Admin Hub? Any unsaved data will be lost.")) {
             window.location.href = 'admin.html';
-            return;
         }
-        return; // Stay on page if cancelled
-    } else if (isPublicHub) {
-        if(confirm("Return to Hub? Any unsaved data will be lost.")) {
-            window.location.href = 'index.html';
-            return;
-        }
-        return; // Stay on page if cancelled
+        return; // Always stop execution here if they came from Admin Hub
     }
 
-    // 2. "Trojan Horse" Logic Check - Allow unlocked users to reach the hub
+    // 2. Proactive Trojan Horse Check: Are they a member?
     const user = API.getSettings();
-    if (user && user.email) {
-        console.log("Checking member status for:", user.email);
-        try {
-            // Wait slightly in case db isn't fully initialized
-            if (typeof db === 'undefined' || !db) {
-                console.log("Waiting for db init...");
-                await new Promise(r => setTimeout(r, 1000));
-            }
-            const isMember = await API.checkMemberStatus(user.email);
-            console.log("Member Status result:", isMember);
+    let isKnownMember = false;
 
-            if (isMember) {
-                // Also save it locally as a backup so they don't have to keep fetching it
-                user.isMember = true;
-                localStorage.setItem('goldmorr_settings', JSON.stringify(user));
-
-                if (confirm("Return to Hub to access the Goldmorr Scope & Profit Tool?")) {
-                    window.location.href = 'index.html';
+    if (user) {
+        // Fast local check first
+        if (user.isMember === true) {
+            isKnownMember = true;
+        } else if (user.email) {
+            // Slower network fallback if not cached locally yet
+            try {
+                if (typeof db === 'undefined' || !db) {
+                    await new Promise(r => setTimeout(r, 800));
                 }
-                return;
-            } else if (user.isMember) {
-                 // Fallback: If network failed but they were previously unlocked locally
-                 if (confirm("Return to Hub to access the Goldmorr Scope & Profit Tool? (Local Cache)")) {
-                     window.location.href = 'index.html';
-                 }
-                 return;
+                const networkIsMember = await API.checkMemberStatus(user.email);
+                if (networkIsMember) {
+                    user.isMember = true;
+                    localStorage.setItem('goldmorr_settings', JSON.stringify(user));
+                    isKnownMember = true;
+                }
+            } catch(e) {
+                console.error("Home click network check failed", e);
             }
-        } catch(e) {
-            console.error("Error checking member status on home click:", e);
         }
     }
 
-    // 3. Normal public user behavior: Clear form to start new scan
+    // 3. Routing Logic based on Member Status
+    if (isKnownMember) {
+        // Members ALWAYs get the option to return to the dual-system hub
+        if (confirm("Return to Hub to access the Goldmorr Scope & Profit Tool?")) {
+            window.location.href = 'index.html';
+        }
+        // If they hit cancel, they just stay on the page.
+        return;
+    }
+
+    // 4. Normal public user behavior: Not a member, just offer to clear form
     if (confirm("Start a new assessment? This will clear current inputs.")) {
         resetForm();
     }
