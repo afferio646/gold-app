@@ -47,7 +47,7 @@ self.addEventListener('notificationclick', function(event) {
     );
 });
 
-const CACHE_NAME = 'goldmorr-v16-force-network-html';
+const CACHE_NAME = 'goldmorr-v17-force-network-js';
 const ASSETS = [
     '/',
     '/index.html',
@@ -97,17 +97,24 @@ self.addEventListener('activate', (event) => {
     self.clients.claim();
 });
 
-// Fetch Event: Stale-While-Revalidate for HTML, Cache-First for Assets
+// Fetch Event: Network-First for App Logic, Cache-First for Images/Assets
 self.addEventListener('fetch', (event) => {
-    // For HTML files, always try the network first so the UI updates!
-    if (event.request.mode === 'navigate') {
+    const url = new URL(event.request.url);
+
+    // If it's a page navigation, or requesting our core JS/CSS files, go to network first!
+    // This prevents Android/Desktop from getting "stuck" on old buggy logic.
+    if (
+        event.request.mode === 'navigate' ||
+        url.pathname.endsWith('.js') ||
+        url.pathname.endsWith('.css')
+    ) {
         event.respondWith(
             fetch(event.request).catch(() => caches.match(event.request))
         );
         return;
     }
 
-    // For everything else, serve from cache, fallback to network
+    // For everything else (like the heavy icon-512.png or external fonts), serve from cache, fallback to network
     event.respondWith(
         caches.match(event.request).then(cachedResponse => {
             return cachedResponse || fetch(event.request);
