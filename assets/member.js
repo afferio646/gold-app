@@ -571,7 +571,7 @@ async function uploadReport() {
 }
 
 function handleHomeClick() {
-    // Check if launched from Hub/Admin (via ?hub=true) vs Public Hub (via ?source=hub)
+    // 1. Check if launched from Admin Hub (via ?hub=true) vs Public Hub (via ?source=hub)
     const urlParams = new URLSearchParams(window.location.search);
     const isAdminHub = urlParams.get('hub') === 'true';
     const isPublicHub = urlParams.get('source') === 'hub';
@@ -580,13 +580,16 @@ function handleHomeClick() {
         if(confirm("Return to Admin Hub? Any unsaved data will be lost.")) {
             window.location.href = 'admin.html';
         }
+        return; // Important: Stay on page if cancelled, do not fall through to resetForm
     } else if (isPublicHub) {
         if(confirm("Return to Hub? Any unsaved data will be lost.")) {
             window.location.href = 'index.html';
         }
-    } else {
-        resetForm();
+        return; // Important: Stay on page if cancelled, do not fall through to resetForm
     }
+
+    // 2. Normal public user behavior: Clear form to start new scan
+    resetForm();
 }
 
 function resetForm() {
