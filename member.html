@@ -454,6 +454,9 @@
 
             document.getElementById(tab + '-view').classList.remove('hidden');
             document.getElementById('tab-' + tab).classList.add('active-tab');
+
+            // Scroll to the top of the newly opened tab view smoothly
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     </script>
 

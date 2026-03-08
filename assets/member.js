@@ -549,8 +549,15 @@ async function uploadReport() {
             }
             alert(`Report for "${pName}" exported successfully to Firebase Cloud Storage! \n(A local copy will now download)`);
 
-            // Trigger local download too
-            html2pdf().set(opt).from(element).save();
+            // Trigger local download too using the clean blob we already made
+            const blobUrl = URL.createObjectURL(pdfBlob);
+            const a = document.createElement('a');
+            a.href = blobUrl;
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(blobUrl);
         } else {
             throw new Error("Upload returned null");
         }
