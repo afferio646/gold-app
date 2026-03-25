@@ -25,24 +25,8 @@
                 // Load Admin Manifest (Full Suite)
                 document.getElementById('manifest-link').href = 'manifest-admin.json';
                 console.log("Admin Role Detected: Loading Full Suite Manifest");
-            } else {
-                // Trojan Horse Guard: Only bounce them if they are NOT a locally known member
-                let isKnownMember = false;
-                try {
-                    const s = localStorage.getItem('goldmorr_settings');
-                    if (s) {
-                        const user = JSON.parse(s);
-                        if (user.isMember) isKnownMember = true;
-                    }
-                } catch(e) {}
-
-                if (!isKnownMember) {
-                    console.log("Public User Detected: Redirecting to Facility Tool...");
-                    window.location.replace('facility.html');
-                } else {
-                    console.log("Unlocked User Detected: Allowed to view Hub");
-                }
             }
+            // Removed automatic bounce: we now show the dual-system hub to everyone
         })();
     </script>
 </head>
@@ -53,22 +37,67 @@
         <p class="text-[var(--g-cyan)] uppercase text-[10px] tracking-[0.5em] font-light mb-4">Select Your Utility</p>
     </div>
 
-    <div id="hub-grid" class="grid grid-cols-1 md:grid-cols-2 gap-10 max-w-4xl px-6 w-full place-items-center">
-        <a href="member.html?source=hub" id="member-suite-btn" class="hidden glass p-10 rounded-[40px] cursor-pointer hover:border-[var(--g-cyan)] transition-all group shadow-xl w-full text-center max-w-sm">
-            <div class="w-16 h-16 bg-[var(--g-cyan)] rounded-2xl mb-8 flex items-center justify-center text-navy-900 shadow-lg mx-auto">
-                <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
-            </div>
-            <h2 class="tech-font text-xl mb-4 text-white uppercase tracking-tight font-bold">Scope & Profit Tool</h2>
-            <div class="text-[var(--g-cyan)] font-bold tracking-[0.2em] text-[9px] uppercase group-hover:underline">Launch Suite →</div>
-        </a>
+    <div id="hub-grid" class="grid grid-cols-1 md:grid-cols-2 gap-10 max-w-4xl px-6 w-full place-items-start">
 
-        <a href="facility.html?source=hub" class="glass p-10 rounded-[40px] cursor-pointer hover:border-white transition-all group shadow-xl w-full text-center max-w-sm">
-            <div class="w-16 h-16 bg-white rounded-2xl mb-8 flex items-center justify-center shadow-lg mx-auto">
-                <svg class="w-10 h-10" style="color: var(--g-cyan);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+        <!-- Scope & Profit Tool (Conditionally Locked) -->
+        <div id="member-suite-container" class="relative w-full max-w-sm mx-auto h-full">
+            <a href="javascript:void(0)" id="member-suite-btn" onclick="handleMemberClick()" class="block h-full glass p-10 rounded-[40px] cursor-pointer hover:border-[var(--g-cyan)] transition-all group shadow-xl w-full text-center">
+                <div class="w-16 h-16 bg-[var(--g-cyan)] rounded-2xl mb-8 flex items-center justify-center text-navy-900 shadow-lg mx-auto">
+                    <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                </div>
+                <h2 class="tech-font text-xl mb-2 text-white uppercase tracking-tight font-bold">Scope & Profit Tool</h2>
+
+                <!-- Locked Text & Button -->
+                <div id="locked-ui" class="block">
+                    <p class="text-[9px] text-gray-400 uppercase tracking-widest mb-4">(Available to Licensed Partners)</p>
+                    <button onclick="requestAccess(event)" class="bg-gray-800 text-white border border-gray-600 px-4 py-2 rounded text-[10px] uppercase tracking-widest hover:border-[var(--g-cyan)] hover:text-white transition-all shadow-lg w-full">
+                        Get Access
+                    </button>
+                </div>
+
+                <!-- Unlocked Text -->
+                <div id="unlocked-ui" class="hidden">
+                    <div class="text-[var(--g-cyan)] font-bold tracking-[0.2em] text-[9px] uppercase group-hover:underline mt-6">Launch Suite →</div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Fungal Risk Assessment Tool (Always Free) -->
+        <div class="w-full max-w-sm mx-auto h-full">
+            <a href="facility.html?source=hub" class="block h-full glass p-10 rounded-[40px] cursor-pointer hover:border-white transition-all group shadow-xl w-full text-center">
+                <div class="w-16 h-16 bg-white rounded-2xl mb-8 flex items-center justify-center shadow-lg mx-auto">
+                    <svg class="w-10 h-10" style="color: var(--g-cyan);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                </div>
+                <h2 class="tech-font text-xl mb-2 text-white uppercase tracking-tight font-bold">Fungal Risk Assessment Tool</h2>
+                <p class="text-[9px] text-[var(--g-cyan)] uppercase tracking-widest mb-4">(Free)</p>
+                <div class="text-white font-bold tracking-[0.2em] text-[9px] uppercase group-hover:underline mt-6">Start Assessment →</div>
+            </a>
+        </div>
+    </div>
+
+    <!-- Registration Modal for "Get Access" Flow -->
+    <div id="access-modal" class="fixed inset-0 bg-black/95 z-[3000] hidden flex justify-center items-center p-6">
+        <div class="bg-slate-900 border border-cyan-900/50 p-8 rounded-2xl max-w-sm w-full relative shadow-2xl">
+            <button onclick="closeAccessModal()" class="absolute top-4 right-4 text-gray-500 hover:text-white">✕</button>
+            <h2 class="tech-font text-xl text-white uppercase tracking-widest mb-2 font-bold">Request Access</h2>
+            <p class="text-xs text-gray-400 mb-6">Please enter your information to request an unlock from a Goldmorr Admin.</p>
+
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-[10px] text-[var(--g-cyan)] uppercase tracking-widest mb-1">Your Name</label>
+                    <input type="text" id="req-name" class="w-full bg-slate-800 border border-slate-700 rounded p-2 text-white text-sm focus:border-cyan-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-[10px] text-[var(--g-cyan)] uppercase tracking-widest mb-1">Company</label>
+                    <input type="text" id="req-company" class="w-full bg-slate-800 border border-slate-700 rounded p-2 text-white text-sm focus:border-cyan-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-[10px] text-[var(--g-cyan)] uppercase tracking-widest mb-1">Email Address</label>
+                    <input type="email" id="req-email" class="w-full bg-slate-800 border border-slate-700 rounded p-2 text-white text-sm focus:border-cyan-500 outline-none">
+                </div>
+                <button onclick="submitAccessRequest()" id="req-submit-btn" class="w-full bg-[var(--g-cyan)] text-navy-900 font-bold py-3 rounded-lg text-xs uppercase tracking-widest mt-4 hover:brightness-110 transition-all">Send Email Request</button>
             </div>
-            <h2 class="tech-font text-xl mb-4 text-white uppercase tracking-tight font-bold">Fungal Risk Assessment Tool</h2>
-            <div class="text-white font-bold tracking-[0.2em] text-[9px] uppercase group-hover:underline">Start Assessment →</div>
-        </a>
+        </div>
     </div>
 
     <!-- Firebase Core (Needed for DB queries) -->
@@ -84,24 +113,39 @@
             });
         }
 
-        // Trojan Horse Logic
+        // Trojan Horse Logic: Dual Display Mode
+        let isUnlocked = false;
+
         document.addEventListener('DOMContentLoaded', async () => {
             const user = API.getSettings();
-            const memberBtn = document.getElementById('member-suite-btn');
-            const grid = document.getElementById('hub-grid');
+            const lockedUI = document.getElementById('locked-ui');
+            const unlockedUI = document.getElementById('unlocked-ui');
 
-            // Initial UI state: Center the Facility button if Member is hidden
-            if (memberBtn.classList.contains('hidden')) {
-                grid.classList.remove('md:grid-cols-2');
-                grid.classList.add('flex', 'flex-col');
+            function unlockUI() {
+                isUnlocked = true;
+                lockedUI.classList.add('hidden');
+                lockedUI.classList.remove('block');
+                unlockedUI.classList.remove('hidden');
+                unlockedUI.classList.add('block');
+            }
+
+            function lockUI() {
+                isUnlocked = false;
+                lockedUI.classList.remove('hidden');
+                lockedUI.classList.add('block');
+                unlockedUI.classList.add('hidden');
+                unlockedUI.classList.remove('block');
             }
 
             if (user && user.email) {
-                // If they are already known to be a member locally, show it immediately!
+                // Pre-fill request modal just in case they need it
+                document.getElementById('req-name').value = user.name || '';
+                document.getElementById('req-company').value = user.company || '';
+                document.getElementById('req-email').value = user.email || '';
+
+                // Fast local check
                 if (user.isMember) {
-                    memberBtn.classList.remove('hidden');
-                    grid.classList.add('md:grid-cols-2');
-                    grid.classList.remove('flex', 'flex-col');
+                    unlockUI();
                 }
 
                 // Double check with Firebase to keep them synced
@@ -111,23 +155,81 @@
                         if (isMember) {
                             user.isMember = true;
                             localStorage.setItem('goldmorr_settings', JSON.stringify(user));
-                            memberBtn.classList.remove('hidden');
-                            grid.classList.add('md:grid-cols-2');
-                            grid.classList.remove('flex', 'flex-col');
+                            unlockUI();
                         } else if (!isMember && user.isMember) {
-                            // If they were locked from the dashboard, hide it again
                             user.isMember = false;
                             localStorage.setItem('goldmorr_settings', JSON.stringify(user));
-                            memberBtn.classList.add('hidden');
-                            grid.classList.remove('md:grid-cols-2');
-                            grid.classList.add('flex', 'flex-col');
+                            lockUI();
                         }
                     } catch (e) {
                         console.error("Hub init member check error:", e);
                     }
-                }, 1000); // Small delay to ensure db is ready
+                }, 1000);
             }
         });
+
+        // Click Handler for Profit Tool
+        function handleMemberClick() {
+            if (isUnlocked) {
+                window.location.href = 'member.html?source=hub';
+            } else {
+                // Do nothing if locked, the "Get Access" button catches the click instead
+            }
+        }
+
+        // Click Handler for Get Access
+        function requestAccess(e) {
+            e.stopPropagation(); // Stop the link click from firing
+            document.getElementById('access-modal').classList.remove('hidden');
+        }
+
+        function closeAccessModal() {
+            document.getElementById('access-modal').classList.add('hidden');
+        }
+
+        async function submitAccessRequest() {
+            const name = document.getElementById('req-name').value.trim();
+            const company = document.getElementById('req-company').value.trim();
+            const email = document.getElementById('req-email').value.trim();
+
+            if (!name || !email || !company) {
+                alert("Please fill out all fields.");
+                return;
+            }
+
+            const btn = document.getElementById('req-submit-btn');
+            btn.innerText = "Sending...";
+            btn.disabled = true;
+
+            // 1. Save Settings Locally (so they are registered in the system!)
+            const userSettings = { name, company, email, userType: 'facility' };
+            API.saveSettings(userSettings);
+
+            // 2. Open pre-filled Email on the user's device
+            const subject = encodeURIComponent("Profit Tool Access Request");
+            const body = encodeURIComponent(`Hi,\n\nI have downloaded the app and would like to request access to the Goldmorr Scope & Profit Tool.\n\nName: ${name}\nCompany: ${company}\nEmail: ${email}`);
+
+            // Multiple 'to' emails separated by comma in mailto
+            const mailtoLink = `mailto:randyg@goldmorrusa.com,brets@goldmorrusa.com?subject=${subject}&body=${body}`;
+
+            window.location.href = mailtoLink;
+
+            // Note: We also still log it in Firestore just in case the email fails to send, so there is a backup record.
+            try {
+                if (typeof API !== 'undefined' && API.requestAccessAlert) {
+                     await API.requestAccessAlert({ name, company, email });
+                }
+            } catch(error) {
+                console.error("Failed to log request to database:", error);
+            }
+
+            // Close modal after a short delay
+            setTimeout(() => {
+                closeAccessModal();
+                btn.innerText = "Send Email Request";
+                btn.disabled = false;
+            }, 1000);
+        }
     </script>
 </body>
 </html>
