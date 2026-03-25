@@ -41,7 +41,7 @@
 
         <!-- Scope & Profit Tool (Conditionally Locked) -->
         <div id="member-suite-container" class="relative w-full max-w-sm mx-auto h-full">
-            <a href="javascript:void(0)" id="member-suite-btn" onclick="handleMemberClick()" class="block h-full glass p-10 rounded-[40px] cursor-pointer hover:border-[var(--g-cyan)] transition-all group shadow-xl w-full text-center">
+            <div id="member-suite-btn" onclick="handleMemberClick()" class="block h-full glass p-10 rounded-[40px] cursor-pointer hover:border-[var(--g-cyan)] transition-all group shadow-xl w-full text-center">
                 <div class="w-16 h-16 bg-[var(--g-cyan)] rounded-2xl mb-8 flex items-center justify-center text-navy-900 shadow-lg mx-auto">
                     <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
                 </div>
@@ -59,7 +59,7 @@
                 <div id="unlocked-ui" class="hidden">
                     <div class="text-[var(--g-cyan)] font-bold tracking-[0.2em] text-[9px] uppercase group-hover:underline mt-6">Launch Suite →</div>
                 </div>
-            </a>
+            </div>
         </div>
 
         <!-- Fungal Risk Assessment Tool (Always Free) -->
@@ -210,7 +210,7 @@
             const body = encodeURIComponent(`Hi,\n\nI have downloaded the app and would like to request access to the Goldmorr Scope & Profit Tool.\n\nName: ${name}\nCompany: ${company}\nEmail: ${email}`);
 
             // Multiple 'to' emails separated by comma in mailto
-            const mailtoLink = `mailto:randyg@goldmorrusa.com,brets@goldmorrusa.com?subject=${subject}&body=${body}`;
+            const mailtoLink = `mailto:hallken9@gmail.com?subject=${subject}&body=${body}`;
 
             window.location.href = mailtoLink;
 
