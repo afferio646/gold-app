@@ -23,6 +23,23 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <script src="assets/api.js"></script>
+    <script>
+        // Legacy PWA Interceptor:
+        // If a user clicks an old "Facility Guard" app icon they saved to their home screen
+        // before the "Dual Hub" update, it will launch this page directly.
+        // This script intercepts that standalone launch and teleports them to the Dual Hub.
+        (function() {
+            const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+            const urlParams = new URLSearchParams(window.location.search);
+            const isFromHub = urlParams.get('source') === 'hub' || urlParams.get('hub') === 'true';
+
+            // If they opened the old PWA directly (not routed through the new hub buttons)
+            if (isStandalone && !isFromHub) {
+                console.log("Legacy PWA Launch Detected. Teleporting to Dual Hub...");
+                window.location.replace('index.html');
+            }
+        })();
+    </script>
     <script src="assets/script.js"></script>
     <script src="assets/facility.js"></script>
     <script src="assets/pwa.js"></script>
