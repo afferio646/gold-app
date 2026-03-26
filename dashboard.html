@@ -261,6 +261,18 @@
 
         const PUSH_BACKEND_URL = 'https://sendpushnotification-svojuu4dwa-uc.a.run.app';
 
+        // Helper to securely get the admin password for cloud function calls
+        function getAdminToken() {
+            let token = sessionStorage.getItem('admin_cloud_token');
+            if (!token) {
+                token = prompt("Please enter the Admin Security Password to send Push Notifications:");
+                if (token) {
+                    sessionStorage.setItem('admin_cloud_token', token);
+                }
+            }
+            return token || '';
+        }
+
         // Toggle User Access
         async function toggleUserAccess(docId, currentStatus, pushToken) {
             const newStatus = !currentStatus;
@@ -274,25 +286,30 @@
 
                 // Trigger an unlock notification if they have a token
                 if (newStatus && pushToken) {
-                    try {
-                        await fetch(PUSH_BACKEND_URL, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'Authorization': 'Bearer YOUR_SECRET_TOKEN_123'
-                            },
-                            body: JSON.stringify({
-                                message: {
-                                    title: 'Contractor Suite Unlocked!',
-                                    body: 'Your Goldmorr app has been upgraded to the full Member Suite.',
-                                    link: 'https://gold-app-two.vercel.app/'
+                    const secretToken = getAdminToken();
+                    if (!secretToken) {
+                        console.warn("Unlock succeeded, but no admin token provided to send notification.");
+                    } else {
+                        try {
+                            await fetch(PUSH_BACKEND_URL, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'Authorization': `Bearer ${secretToken}`
                                 },
-                                targetFilter: 'Specific',
-                                targetToken: pushToken
-                            })
-                        });
-                    } catch (pushErr) {
-                        console.warn("User access updated, but push notification failed to send:", pushErr);
+                                body: JSON.stringify({
+                                    message: {
+                                        title: 'Contractor Suite Unlocked!',
+                                        body: 'Your Goldmorr app has been upgraded to the full Member Suite.',
+                                        link: 'https://gold-app-two.vercel.app/'
+                                    },
+                                    targetFilter: 'Specific',
+                                    targetToken: pushToken
+                                })
+                            });
+                        } catch (pushErr) {
+                            console.warn("User access updated, but push notification failed to send:", pushErr);
+                        }
                     }
                 }
 
@@ -513,15 +530,22 @@ async function sendPushNotification() {
         }
     };
 
+    const secretToken = getAdminToken();
+    if (!secretToken) {
+        alert("Notification cancelled. Admin password required.");
+        sendBtn.disabled = false;
+        sendBtn.textContent = 'Send Notification Now';
+        return;
+    }
+
     try {
-        // Example integration:
-        const BACKEND_URL = 'https://sendpushnotification-svojuu4dwa-uc.a.run.app'; // Change if your region/project name differs
+        const BACKEND_URL = 'https://sendpushnotification-svojuu4dwa-uc.a.run.app';
         try {
             const response = await fetch(BACKEND_URL, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': 'Bearer YOUR_SECRET_TOKEN_123'
+                    'Authorization': `Bearer ${secretToken}`
                 },
                 body: JSON.stringify(pushPayload)
             });
