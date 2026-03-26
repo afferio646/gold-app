@@ -105,11 +105,44 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
     <script>
+        // Safari Aggressive Cache Buster - v1.0
+        async function bustGhostCache() {
+            const currentVersion = 'v1.0-dual-hub';
+            if (localStorage.getItem('gh_cache_version') !== currentVersion) {
+                console.log("Old iOS cache detected. Purging all Service Workers and Caches...");
+
+                // Unregister all Service Workers
+                if ('serviceWorker' in navigator) {
+                    const registrations = await navigator.serviceWorker.getRegistrations();
+                    for (let r of registrations) {
+                        await r.unregister();
+                    }
+                }
+
+                // Delete all Cache Storage
+                if ('caches' in window) {
+                    const keys = await caches.keys();
+                    for (let key of keys) {
+                        await caches.delete(key);
+                    }
+                }
+
+                // Set new version and force a hard reload from the server
+                localStorage.setItem('gh_cache_version', currentVersion);
+                window.location.href = window.location.pathname + '?nocache=' + new Date().getTime();
+                return true; // We are reloading
+            }
+            return false;
+        }
+
         if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js')
-                    .then(registration => console.log('SW registered:', registration.scope))
-                    .catch(err => console.log('SW registration failed:', err));
+            window.addEventListener('load', async () => {
+                const isReloading = await bustGhostCache();
+                if (!isReloading) {
+                    navigator.serviceWorker.register('/sw.js?v=2')
+                        .then(registration => console.log('SW registered:', registration.scope))
+                        .catch(err => console.log('SW registration failed:', err));
+                }
             });
         }
 
