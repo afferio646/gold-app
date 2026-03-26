@@ -581,31 +581,33 @@ function openSettings() {
 }
 
 async function handleHomeClick() {
-    // 1. Check if launched explicitly from Admin Hub
+    // 1. Check Explicit Routing Flags (?hub=true or ?source=hub)
     const urlParams = new URLSearchParams(window.location.search);
     const isAdminHub = urlParams.get('hub') === 'true';
+    const isPublicHub = urlParams.get('source') === 'hub';
 
     if (isAdminHub) {
-        if(confirm("Return to Admin Hub? Any unsaved data will be lost.")) {
+        if (confirm("Return to Admin Hub? Any unsaved data will be lost.")) {
             window.location.href = 'admin.html';
         }
-        return; // Always stop execution here if they came from Admin Hub
+        return; // Stop execution if they cancel
+    } else if (isPublicHub) {
+        if (confirm("Return to Dual System Hub? Any unsaved data will be lost.")) {
+            window.location.href = 'index.html';
+        }
+        return; // Stop execution if they cancel
     }
 
-    // 2. Proactive Trojan Horse Check: Are they a member?
+    // 2. Proactive Trojan Horse Check (for users who opened the app directly from a home screen icon without parameters)
     const user = API.getSettings();
     let isKnownMember = false;
 
     if (user) {
-        // Fast local check first
         if (user.isMember === true) {
             isKnownMember = true;
         } else if (user.email) {
-            // Slower network fallback if not cached locally yet
             try {
-                if (typeof db === 'undefined' || !db) {
-                    await new Promise(r => setTimeout(r, 800));
-                }
+                if (typeof db === 'undefined' || !db) await new Promise(r => setTimeout(r, 800));
                 const networkIsMember = await API.checkMemberStatus(user.email);
                 if (networkIsMember) {
                     user.isMember = true;
@@ -618,17 +620,16 @@ async function handleHomeClick() {
         }
     }
 
-    // 3. Routing Logic based on Member Status
+    // 3. Routing Logic based on Member Status (if no URL flags were present)
     if (isKnownMember) {
-        // Members ALWAYs get the option to return to the dual-system hub
         if (confirm("Return to Hub to access the Goldmorr Scope & Profit Tool?")) {
             window.location.href = 'index.html';
         }
-        // If they hit cancel, they just stay on the page.
         return;
     }
 
-    // 4. Normal public user behavior: Not a member, just offer to clear form
+    // 4. Normal public user behavior: Not a member, and not from the hub.
+    // They must have scanned a generic facility QR code. Just clear the form.
     if (confirm("Start a new assessment? This will clear current inputs.")) {
         resetForm();
     }
