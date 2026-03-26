@@ -24,11 +24,48 @@
 
     <script src="assets/api.js"></script>
     <script>
+        // Safari Aggressive Cache Buster - v1.0
+        async function bustGhostCache() {
+            const currentVersion = 'v1.0-dual-hub';
+            if (localStorage.getItem('gh_cache_version') !== currentVersion) {
+                console.log("Old iOS cache detected. Purging all Service Workers and Caches...");
+
+                // Unregister all Service Workers
+                if ('serviceWorker' in navigator) {
+                    try {
+                        const registrations = await navigator.serviceWorker.getRegistrations();
+                        for (let r of registrations) {
+                            await r.unregister();
+                        }
+                    } catch(e) {}
+                }
+
+                // Delete all Cache Storage
+                if ('caches' in window) {
+                    try {
+                        const keys = await caches.keys();
+                        for (let key of keys) {
+                            await caches.delete(key);
+                        }
+                    } catch(e) {}
+                }
+
+                // Set new version and force a hard reload from the server
+                localStorage.setItem('gh_cache_version', currentVersion);
+                window.location.href = window.location.pathname + '?nocache=' + new Date().getTime();
+                return true; // We are reloading
+            }
+            return false;
+        }
+
         // Legacy PWA Interceptor:
         // If a user clicks an old "Facility Guard" app icon they saved to their home screen
         // before the "Dual Hub" update, it will launch this page directly.
         // This script intercepts that standalone launch and teleports them to the Dual Hub.
-        (function() {
+        (async function() {
+            const isReloading = await bustGhostCache();
+            if (isReloading) return; // Stop executing if we are blowing up the cache
+
             const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
             const urlParams = new URLSearchParams(window.location.search);
             const isFromHub = urlParams.get('source') === 'hub' || urlParams.get('hub') === 'true';
