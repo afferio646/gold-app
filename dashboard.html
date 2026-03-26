@@ -304,6 +304,20 @@
             }
         }
 
+        // Helper function to prevent XSS in table rendering
+        function escapeHTML(str) {
+            if (!str) return 'N/A';
+            return str.replace(/[&<>'"]/g,
+                tag => ({
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    "'": '&#39;',
+                    '"': '&quot;'
+                }[tag])
+            );
+        }
+
         async function refreshDashboard() {
             // 1. Fetch Real Data + Stats from API (Firebase)
             const data = await API.getDashboardData();
@@ -347,9 +361,9 @@
                         : `<button id="btn-toggle-${user.id}" class="btn-primary" style="background:#D4AF37; width:120px; color:black;" onclick="toggleUserAccess('${user.id}', false, '${user.pushToken || ''}')">Unlock System</button>`;
 
                     r.innerHTML = `
-                        <td style="font-weight: bold;">${user.name || 'N/A'}</td>
-                        <td>${user.company || 'N/A'}</td>
-                        <td>${user.email || 'N/A'}</td>
+                        <td style="font-weight: bold;">${escapeHTML(user.name)}</td>
+                        <td>${escapeHTML(user.company)}</td>
+                        <td>${escapeHTML(user.email)}</td>
                         <td>${user.timestamp ? new Date(user.timestamp).toLocaleDateString() : 'N/A'}</td>
                         <td>${statusText}</td>
                         <td>${actionBtn}</td>
@@ -372,8 +386,8 @@
 
                 row.innerHTML = `
                     <td>${new Date(lead.serverTimestamp || lead.timestamp).toLocaleString()}</td>
-                    <td>${lead.leadId || lead.id}</td>
-                    <td><span style="color:${systemColor}; font-weight:bold;">${systemType}</span> Submission</td>
+                    <td>${escapeHTML(lead.leadId || lead.id)}</td>
+                    <td><span style="color:${systemColor}; font-weight:bold;">${escapeHTML(systemType)}</span> Submission</td>
                     <td><span class="status-badge ${badgeClass}">${status}</span></td>
                 `;
             });
@@ -394,10 +408,10 @@
                     const shortSystemType = systemType === 'Member Suite' ? 'Member' : (systemType === 'Facility Guard' ? 'Facility' : systemType);
 
                     r.innerHTML = `
-                        <td>${lead.leadId || lead.id}</td>
-                        <td><span class="status-badge" style="background: rgba(255,255,255,0.1); color:${systemColor}; border:1px solid ${systemColor}; white-space: nowrap;">${shortSystemType}</span></td>
-                        <td><span style="font-weight:bold; color:#9ca3af">${src}</span></td>
-                        <td>${userName}<br><span style="font-size:0.8em; color:#9ca3af">${email}</span></td>
+                        <td>${escapeHTML(lead.leadId || lead.id)}</td>
+                        <td><span class="status-badge" style="background: rgba(255,255,255,0.1); color:${systemColor}; border:1px solid ${systemColor}; white-space: nowrap;">${escapeHTML(shortSystemType)}</span></td>
+                        <td><span style="font-weight:bold; color:#9ca3af">${escapeHTML(src)}</span></td>
+                        <td>${escapeHTML(userName)}<br><span style="font-size:0.8em; color:#9ca3af">${escapeHTML(email)}</span></td>
                         <td>${new Date(lead.serverTimestamp || lead.timestamp).toLocaleDateString()}</td>
                         <td><span class="status-badge status-low">Active</span></td>
                         <td>
