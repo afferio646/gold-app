@@ -81,6 +81,18 @@ const API = {
         }
     },
 
+    deleteActivation: async (docId) => {
+        if (!db) return false;
+        try {
+            await db.collection('activations').doc(docId).delete();
+            console.log("Activation Deleted:", docId);
+            return true;
+        } catch (e) {
+            console.error("Delete Activation Failed:", e);
+            return false;
+        }
+    },
+
     savePushToken: async (token) => {
         const user = API.getSettings();
         if (user && db) {

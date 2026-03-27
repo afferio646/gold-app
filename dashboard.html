@@ -186,6 +186,7 @@
                             <th>Date</th>
                             <th>Status</th>
                             <th>Actions</th>
+                                <th></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -377,6 +378,12 @@
                         ? `<button id="btn-toggle-${user.id}" class="btn-primary" style="background:#ef4444; width:120px;" onclick="toggleUserAccess('${user.id}', true, '${user.pushToken || ''}')">Lock Access</button>`
                         : `<button id="btn-toggle-${user.id}" class="btn-primary" style="background:#D4AF37; width:120px; color:black;" onclick="toggleUserAccess('${user.id}', false, '${user.pushToken || ''}')">Unlock System</button>`;
 
+                    const deleteBtn = `
+                        <button onclick="deleteActivationRow('${user.id}')" style="background: none; border: none; color: #ef4444; cursor: pointer; padding: 4px;" title="Delete User">
+                            <svg style="width: 16px; height: 16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                        </button>
+                    `;
+
                     r.innerHTML = `
                         <td style="font-weight: bold;">${escapeHTML(user.name)}</td>
                         <td>${escapeHTML(user.company)}</td>
@@ -384,10 +391,11 @@
                         <td>${user.timestamp ? new Date(user.timestamp).toLocaleDateString() : 'N/A'}</td>
                         <td>${statusText}</td>
                         <td>${actionBtn}</td>
+                        <td>${deleteBtn}</td>
                     `;
                 });
             } else {
-                userBody.innerHTML = '<tr><td colspan="6" style="text-align: center;">No users registered yet.</td></tr>';
+                userBody.innerHTML = '<tr><td colspan="7" style="text-align: center;">No users registered yet.</td></tr>';
             }
 
             // 3. Update Recent Activity Table
@@ -446,6 +454,13 @@
         async function deleteRow(docId) {
             if(confirm("Delete this lead permanently?")) {
                 const success = await API.deleteLead(docId);
+                if(success) refreshDashboard();
+            }
+        }
+
+        async function deleteActivationRow(docId) {
+            if(confirm("Delete this user registration permanently? This cannot be undone.")) {
+                const success = await API.deleteActivation(docId);
                 if(success) refreshDashboard();
             }
         }
